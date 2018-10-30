@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.*;
 import javafx.event.*;
 import javafx.event.*;
@@ -23,6 +24,7 @@ public class FileView extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		
+		Platform.setImplicitExit(false);
 		
 		//Setting up the grid
 		GridPane fileCanvas = new GridPane();
@@ -70,7 +72,7 @@ public class FileView extends Application {
 			                public void handle(final ActionEvent e) {
 			                	//Add listener for if file type isn't selected later
 			                	if(file != null)
-			                		openFile(file);
+			                		openFile(file, primaryStage);
 			                	else
 			                		fileName.setText("Please select a file.");
 			                }//handle
@@ -93,10 +95,11 @@ public class FileView extends Application {
 	}//start
 	
 	//Private method to test if the file works
-	private void openFile(File file) {
+	private void openFile(File file, Stage primaryStage) {
         try {
-            mastCon.parseFile(file);
-        } catch (IOException ex) {
+        	primaryStage.hide();
+        	mastCon.parseFile(file);
+        } catch (Exception ex) {
             Logger.getLogger(
                 FileView.class.getName()).log(
                     Level.SEVERE, null, ex
