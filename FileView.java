@@ -95,7 +95,7 @@ public class FileView extends Application {
 	//Private method to test if the file works
 	private void openFile(File file) {
         try {
-            mastCon.startRender(file);
+            mastCon.parseFile(file);
         } catch (IOException ex) {
             Logger.getLogger(
                 FileView.class.getName()).log(
