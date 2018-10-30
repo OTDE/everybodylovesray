@@ -33,6 +33,7 @@ public class FileView extends Application {
 		fileCanvas.setVgap(5);
 		fileCanvas.setHgap(10);
 		
+		//File field for the file chooser
 		TextField fileName = new TextField();
 		fileName.setPromptText("Select a file:");
 		fileName.setEditable(false);
