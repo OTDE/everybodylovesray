@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,20 +19,18 @@ public class MasterController {
 		
 		public Environment enviro;
 		
-		public void promptForFile() {
-			Application.launch(FileView.class, args);
-		}
-		
 		public void beginRender() {
-		
-		    // Make RenderController
-		    rendCon = new RenderController(this, enviro);
-		
-		    // start display loop
-		    rendCon.display();
-	    }
+			
+			// Make RenderController
+			rendCon = new RenderController(this, enviro);	
+			// TO-DO: Send File to JSON Parser
+			
+			// start display loop
+			rendCon.display();
+		}
 
-		public void parseFile(File input) {
+		public void parseFile(String path) {
+			File input = new File(path);
 			try {
 				InputStream fileStream = new FileInputStream(input);
 				Reader fileReader = new InputStreamReader(fileStream, "UTF-8");
@@ -39,7 +38,9 @@ public class MasterController {
 			    JsonStreamParser fileParser = new JsonStreamParser(fileReader);
 			    
 			    JsonElement e = fileParser.next();
-			    enviro = gson.fromJson(e, Environment.class);
+			    EnviroShell shell = gson.fromJson(e, EnviroShell.class);
+			    enviro = shell.environment;
+			    
 			    this.beginRender();
 			} catch (FileNotFoundException | UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
