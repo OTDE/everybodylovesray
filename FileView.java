@@ -48,7 +48,6 @@ public class FileView extends Application {
 	                public void handle(final ActionEvent e) {
 	                	configureImportChooser(importChooser);
 	                    file = importChooser.showOpenDialog(primaryStage);
-	                    System.out.println("file: " + file);
 	                    if(file != null)
 	                    	fileName.setText(file.getName());
 	                }//handle
@@ -73,7 +72,6 @@ public class FileView extends Application {
 			                public void handle(final ActionEvent e) {
 			                	//Add listener for if file type isn't selected later
 			                	if(file != null) {
-			                		System.out.println("Second test: " + file);
 			                		mastCon = new MasterController();
 			                		openFile(file, primaryStage);
 			                	} else
@@ -101,7 +99,6 @@ public class FileView extends Application {
 	private void openFile(File file, Stage primaryStage) {
         try {
         	//primaryStage.hide();
-        	System.out.println("Test three: " + file);
         	String path = file.getPath();
         	mastCon.parseFile(path);
         } catch (Exception ex) {
