@@ -23,14 +23,13 @@ public class MasterController {
 		}
 		
 		public void beginRender() {
-			
-			// Make RenderController
-			rendCon = new RenderController(this);	
-			// TO-DO: Send File to JSON Parser
-			
-			// start display loop
-			rendCon.display();
-		}
+		
+		    // Make RenderController
+		    rendCon = new RenderController(this, enviro);
+		
+		    // start display loop
+		    rendCon.display();
+	    }
 
 		public void parseFile(File input) {
 			try {
