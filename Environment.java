@@ -1,5 +1,11 @@
 import java.util.Map;
-
+/**
+ * @author Ethan Wiederspan and Seth Chapman
+ * 
+ * Environment class. GSON parses into this,
+ * which represents a 3D scene and everything
+ * it contains within it.
+ */
 public class Environment {
 
 	public int height;
