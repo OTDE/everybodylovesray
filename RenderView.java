@@ -1,3 +1,5 @@
+import java.awt.image.BufferedImage;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -16,22 +18,29 @@ public class RenderView extends javax.swing.JFrame {
 	private RenderController rendCon;
 	private ImageIcon displayImage;
 	
+	private JPanel panelMid;
+	private JPanel panelSouth;
+	
 	private JButton exportButton;
 	private JButton returnButton;
+	
+	private JLabel imageLabel;
 	
 	/**
 	 * Constructor for RenderView, set default values 
 	 * for the JFrame and connects this view to the 
 	 * controller.
+	 * @param height 
+	 * @param width 
 	 * @param renderController
 	 */
-	public RenderView(RenderController rCon) {
+	public RenderView(RenderController rCon, int width, int height) {
 		this.rendCon = rCon;
 		
 		buildView();
 		
 		setTitle("Ray Tracing");
-		setSize(1024,768);
+		setSize(width,(height+60));
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -45,14 +54,14 @@ public class RenderView extends javax.swing.JFrame {
 	 */
 	private void buildView() {
 		
-		JPanel panelMid = new JPanel();
-		JPanel panelSouth = new JPanel();
+		panelMid = new JPanel();
+		panelSouth = new JPanel();
 		
 		getContentPane().add(panelMid);
 		getContentPane().add(panelSouth, "South");
 		
 		displayImage = new ImageIcon();
-		JLabel imageLabel = new JLabel(displayImage);
+		imageLabel = new JLabel(displayImage);
 		panelMid.add(imageLabel);
 		
 		returnButton = new JButton("Render Another Image");
@@ -62,5 +71,15 @@ public class RenderView extends javax.swing.JFrame {
 		panelSouth.add(exportButton);
 		
 	}// buildView
+	
+	public void updateView(BufferedImage newImage) {
+		
+		displayImage = new ImageIcon(newImage);
+		imageLabel = new JLabel(displayImage);
+		panelMid.add(imageLabel);
+		
+		System.out.println("View updated!");
+		
+	}
 
 }
