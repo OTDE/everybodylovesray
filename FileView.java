@@ -16,6 +16,13 @@ import javafx.scene.text.*;
 import javafx.stage.*;
 import javafx.scene.*;
 
+/**
+ * @author Ethan Wiederspan and Seth Chapman
+ * 
+ * The file selector GUI. Allows user to select
+ * a JSON file for input into the renderer, and choose between
+ * two options for output filetype.
+ */
 public class FileView extends Application {
 	
 	private MasterController mastCon;
