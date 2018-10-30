@@ -19,7 +19,7 @@ public class MasterController {
 		public Environment enviro;
 		
 		public void promptForFile() {
-			
+			Application.launch(FileView.class, args);
 		}
 		
 		public void beginRender() {
@@ -47,4 +47,5 @@ public class MasterController {
 				e.printStackTrace();
 			}
 		}
+		
 	}
