@@ -72,6 +72,12 @@ public class RenderView extends javax.swing.JFrame {
 		
 	}// buildView
 	
+	/**
+	 * Called every 2 seconds by the RenderController to update 
+	 * the image display to the User via the Render GUI
+	 * 
+	 * @param newImage the updated BufferedIMage to be displayed
+	 */
 	public void updateView(BufferedImage newImage) {
 		
 		displayImage = new ImageIcon(newImage);
@@ -80,6 +86,6 @@ public class RenderView extends javax.swing.JFrame {
 		
 		System.out.println("View updated!");
 		
-	}
+	}// updateView
 
 }
