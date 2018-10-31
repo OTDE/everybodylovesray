@@ -30,6 +30,8 @@ public class FileView extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+	    
+	    mastCon = new MasterController();
 		
 		Platform.setImplicitExit(false);
 		
@@ -80,7 +82,6 @@ public class FileView extends Application {
 			                public void handle(final ActionEvent e) {
 			                	//Add listener for if file type isn't selected later
 			                	if(file != null) {
-			                		mastCon = new MasterController();
 			                		openFile(file, primaryStage);
 			                	} else
 			                		fileName.setText("Please select a file.");
