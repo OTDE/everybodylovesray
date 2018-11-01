@@ -124,5 +124,7 @@ public class FileView extends Application {
 		chooser.setInitialDirectory(new File(System.getProperty("user.home")));                 
 	    chooser.getExtensionFilters().addAll(
 	    		new FileChooser.ExtensionFilter("JSON file", "*.json*"));
+	    chooser.getExtensionFilters().addAll(
+	    		new FileChooser.ExtensionFilter("JSON file", "*.json*"));
 	}//configureInputChooser
 }
