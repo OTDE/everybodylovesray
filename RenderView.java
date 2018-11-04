@@ -81,7 +81,7 @@ public class RenderView extends javax.swing.JFrame {
 	public void updateView(BufferedImage newImage) {
 		
 		displayImage = new ImageIcon(newImage);
-		imageLabel = new JLabel(displayImage);
+		imageLabel.setIcon(displayImage);
 		panelMid.add(imageLabel);
 		
 		System.out.println("View updated!");
