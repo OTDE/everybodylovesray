@@ -1,3 +1,5 @@
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 /**
@@ -31,5 +33,20 @@ public class Film {
 	public BufferedImage getRenderedImage() {
 		return renderedImage;
 	}// getRenderedImage
+	
+	/**
+	 * Draws the entire buffered image red, used to test 
+	 * various systems.
+	 */
+	public void makeTestImage() {
+		
+		System.out.println("making a test Image");
+		Graphics2D g2d = renderedImage.createGraphics();
+        g2d.setColor(Color.RED);
+        g2d.fillRect(0, 0, renderedImage.getWidth(), renderedImage.getHeight());
+        g2d.dispose();
+        
+        System.out.println("done with Test image!");
+	}// makeTestImage
 
 }
