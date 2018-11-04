@@ -82,6 +82,7 @@ public class FileView extends Application {
 			                public void handle(final ActionEvent e) {
 			                	//Add listener for if file type isn't selected later
 			                	if(file != null) {
+			             
 			                		openFile(file, primaryStage);
 			                	} else
 			                		fileName.setText("Please select a file.");
@@ -122,9 +123,9 @@ public class FileView extends Application {
 	private static void configureImportChooser(FileChooser chooser) {      
 		chooser.setTitle("Load JSON File");
 		chooser.setInitialDirectory(new File(System.getProperty("user.home")));                 
-	    chooser.getExtensionFilters().addAll(
-	    		new FileChooser.ExtensionFilter("JSON file", "*.json*"));
-	    chooser.getExtensionFilters().addAll(
-	    		new FileChooser.ExtensionFilter("JSON file", "*.json*"));
+//	    chooser.getExtensionFilters().addAll(
+//	    		new FileChooser.ExtensionFilter("JSON file", "*.json*"));
+//	    chooser.getExtensionFilters().addAll(
+//	    		new FileChooser.ExtensionFilter("JSON file", "*.JSON*"));
 	}//configureInputChooser
 }
