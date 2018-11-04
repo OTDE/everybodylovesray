@@ -31,7 +31,7 @@ public class FileView extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 	    
-	    mastCon = new MasterController();
+	    mastCon = new MasterController(this);
 		
 		Platform.setImplicitExit(false);
 		
