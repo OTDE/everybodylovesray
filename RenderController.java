@@ -1,3 +1,8 @@
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 /**
  * @author Ethan Wiederspan and Seth Chapman
@@ -54,20 +59,17 @@ public class RenderController {
 	 */
 	public void startRendering() {
 
-		System.out.println("in renderCon.startRender");
 
-		// Makes the Thread fo rendering and defines its run function
+		// Makes the Thread for rendering and defines its run function
 		Thread renderThread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				running = true;
-
-				System.out.println("in renderThread.run");
-
+				
 				// Updates the image displaying to the GUI after a certain increment of time
 				while(running) {
-					System.out.println("getting buffered Image from the film...");
+					
 					rendView.updateView(film.getRenderedImage());
 					
 					// Wait 2 seconds
@@ -83,11 +85,35 @@ public class RenderController {
 
 	}// startRendering
 
+	
+
+	public void exportImage() {
+		
+		stopRendering();
+		
+		System.out.println("making file");
+		try {
+		    BufferedImage finalImage = film.getRenderedImage(); 
+		    File outputfile = new File(mastCon.getFilename() + ".png");
+		    ImageIO.write(finalImage, "png", outputfile);
+		} catch (IOException e) {
+		    System.out.println("ERROR WHILE WRITING: " + e.getMessage());
+		}
+		
+		System.out.println("done writing!");
+		
+		continueRendering();
+		
+	}// exportImage
+	
 	/**
 	 * Sets running to false to end the loop in the Render Thread.
 	 */
 	public void stopRendering() {
 		running = false;
 	}// stopRendering
+	public void continueRendering() {
+		running = true;
+	}// continueRendering
 
 }
