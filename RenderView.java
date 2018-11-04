@@ -1,5 +1,10 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -38,6 +43,7 @@ public class RenderView extends javax.swing.JFrame {
 		this.rendCon = rCon;
 		
 		buildView();
+		initActionListeners();
 		
 		setTitle("Ray Tracing");
 		setSize(width,(height+60));
@@ -71,6 +77,27 @@ public class RenderView extends javax.swing.JFrame {
 		panelSouth.add(exportButton);
 		
 	}// buildView
+	
+	private void initActionListeners() {
+		ActionListener buttonListener = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				System.out.println("Pressed a button: " + e.getActionCommand());
+				
+				if(e.getActionCommand().equals("Export")) {
+					System.out.println("exporting image");
+					rendCon.exportImage();
+				}
+				
+				
+			}
+		};
+		
+		exportButton.addActionListener(buttonListener);
+		
+	}
 	
 	/**
 	 * Called every 2 seconds by the RenderController to update 
