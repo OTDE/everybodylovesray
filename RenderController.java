@@ -37,7 +37,7 @@ public class RenderController {
 		// Connect to MasterController and Environment
 		this.mastCon = mCon;
 		this.enviro = env;
-		//cam = new Camera(enviro.getAt(), enviro.getEye(), enviro.getUp(), film);
+		cam = new Camera(enviro.getAt(), enviro.getEye(), enviro.getUp(), film);
 		
 		
 		// Build new Film based on Environment's specs
