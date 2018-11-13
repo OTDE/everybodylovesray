@@ -78,6 +78,9 @@ public class RenderView extends javax.swing.JFrame {
 		
 	}// buildView
 	
+	/**
+	 * Sets up the action listeners for the buttons
+	 */
 	private void initActionListeners() {
 		ActionListener buttonListener = new ActionListener() {
 			
@@ -94,13 +97,11 @@ public class RenderView extends javax.swing.JFrame {
 				
 			}
 		};
-		
 		exportButton.addActionListener(buttonListener);
-		
-	}
+	}// initActionListeners
 	
 	/** 
-	 * Called every 2 seconds by the RenderController to update 
+	 * Called every by the RenderController to update 
 	 * the image display to the User via the Render GUI
 	 * 
 	 * @param newImage the updated BufferedIMage to be displayed
