@@ -31,7 +31,7 @@ public class FileView extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 	    
-	    mastCon = new MasterController();
+	    mastCon = new MasterController(this);
 		
 		Platform.setImplicitExit(false);
 		
@@ -81,11 +81,15 @@ public class FileView extends Application {
 			                @Override
 			                public void handle(final ActionEvent e) {
 			                	//Add listener for if file type isn't selected later
-			                	if(file != null) {
+			                	if(file != null && isValid(file)) {
 			                		openFile(file, primaryStage);
-			                	} else
+			                	} else if(!isValid(file)) {
+			                		fileName.setText("Select a JSON file.");
+			                	}else 
 			                		fileName.setText("Please select a file.");
 			                }//handle
+
+							
 			            });
 		
 		//Popping the nodes into the grid, reading order
@@ -121,8 +125,24 @@ public class FileView extends Application {
 	//Private method to configure the file chooser's input
 	private static void configureImportChooser(FileChooser chooser) {      
 		chooser.setTitle("Load JSON File");
-		chooser.setInitialDirectory(new File(System.getProperty("user.home")));                 
-	    chooser.getExtensionFilters().addAll(
-	    		new FileChooser.ExtensionFilter("JSON file", "*.json*"));
+		chooser.setInitialDirectory(new File(System.getProperty("user.home")));
 	}//configureInputChooser
+	
+	private boolean isValid(File f) {
+		
+		System.out.println("testing the filename");
+		
+		String name = f.getName();
+		int extStart = name.lastIndexOf(".");
+		String ext = name.substring(extStart, name.length());
+		
+		System.out.println("ext:" + ext);
+		
+		if(ext.equals(".json") || ext.equals(".JSON")) {
+			System.out.println("returning true");
+			return true;
+		}
+		
+		return false;
+	}
 }
