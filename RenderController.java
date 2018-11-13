@@ -15,7 +15,11 @@ public class RenderController {
 
 	private Film film;
 	private Environment enviro;
-
+	private Camera cam;
+	
+	Thread displayThread;
+	Thread renderThread;
+	
 	private MasterController mastCon;
 	private RenderView rendView;
 	private boolean running = false;
@@ -33,6 +37,8 @@ public class RenderController {
 		// Connect to MasterController and Environment
 		this.mastCon = mCon;
 		this.enviro = env;
+		//cam = new Camera(enviro.getAt(), enviro.getEye(), enviro.getUp(), film);
+		
 		
 		// Build new Film based on Environment's specs
 		film = new Film(enviro.width, enviro.height);
@@ -48,23 +54,79 @@ public class RenderController {
 		rendView = new RenderView(this, enviro.width, enviro.height);
 		
 		// Call the render loop
+		this.startDisplaying();
 		this.startRendering();
 		
 	}// display
+
+	private void startRendering() {
+		
+		Thread renderThread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				System.out.println("began render");
+				// Starts the Thread, calling its run method
+				
+				Sampler sampler = new Sampler(10);
+				
+				// Split pixels into squares
+				int n = enviro.width / 5;
+				int m = enviro.height / 5;
+				
+				int j,k,xi,xn,yi,yn;
+				for(int i = 0; i < 25; i++) {
+					j = Tags.TILE_ORDER[i][1];
+					k = Tags.TILE_ORDER[i][0];
+					
+					if(j != 4 ) {
+						xi = j*n;
+						xn = ((j+1)*n)-1;
+					}else {
+						xi = j*n;
+						xn = ((j+1)*n) + enviro.width % 5;
+						xn -=1;
+					}
+					if(k != 4 ) {
+						yi = k*m;
+						yn = ((k+1)*m)-1;
+					}else {
+						yi = k*m;
+						yn = ((k+1)*m) + enviro.height % 5;
+						yn -= 1;
+					}
+					
+					for(int a = xi; a <= xn; a++) {
+						for(int b = yi; b <= yn; b++) {
+							film.testDevelop(sampler.getPixelSamples(a, b));
+						}
+					}
+					
+					//System.out.println("done with a cube");
+				}
+				
+			}
+			
+		});
+		
+		renderThread.start();
+	}
 
 	/**
 	 * The loop that retrieves the BufferedImage periodically 
 	 * as it is being developed.  Makes a separate Thread so
 	 * film can continue to develop on another.
 	 */
-	public void startRendering() {
-
+	public void startDisplaying() {
+		
 
 		// Makes the Thread for rendering and defines its run function
-		Thread renderThread = new Thread(new Runnable() {
+		displayThread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
+				System.out.println("started running");
+				
 				running = true;
 				
 				// Updates the image displaying to the GUI after a certain increment of time
@@ -73,17 +135,14 @@ public class RenderController {
 					rendView.updateView(film.getRenderedImage());
 					
 					// Wait 2 seconds
-					try { Thread.sleep(2000); } catch (InterruptedException e) {
+					try { displayThread.sleep(10); } catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
 			}
 		});
-
-		// Starts the Thread, calling its run method
-		renderThread.start();
-
-	}// startRendering
+		displayThread.start();
+	}// startDisplaying
 
 	
 
