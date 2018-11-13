@@ -20,11 +20,14 @@ public class Camera {
 		Vector3d n = eye.sub(at);
 		Vector3d u = up.cross(n);
 		Vector3d v = n.cross(u);
- 		n.normalize();
+  		n.normalize();
 		u.normalize();
 		v.normalize();
+		this.setRotation(u, v, n);
 		
-		
+		System.out.println("Made camera,");
+		System.out.println("pos:"+eye);
+		System.out.println("rotation:"+rotation);
 		this.film = f;
 	}
 
