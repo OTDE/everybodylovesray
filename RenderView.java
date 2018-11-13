@@ -99,7 +99,7 @@ public class RenderView extends javax.swing.JFrame {
 		
 	}
 	
-	/**
+	/** 
 	 * Called every 2 seconds by the RenderController to update 
 	 * the image display to the User via the Render GUI
 	 * 
@@ -111,7 +111,6 @@ public class RenderView extends javax.swing.JFrame {
 		imageLabel.setIcon(displayImage);
 		panelMid.add(imageLabel);
 		
-		System.out.println("View updated!");
 		
 	}// updateView
 
