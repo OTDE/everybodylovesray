@@ -10,6 +10,9 @@ public class Environment {
 
 	public int height;
 	public int width;
+	public double[] eye;
+	public double[] at;
+	public int[] up;
 	
 	//private transient Map<String, LightSource> lightMap;
 	//private transient Map<String, Model> modelMap;
