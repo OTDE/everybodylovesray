@@ -40,6 +40,7 @@ public class Camera {
 	 * @param n vector defined by eye - at
 	 */
 	private void setRotation(Vector3d u, Vector3d v, Vector3d n) {
+	    rotation = new Matrix4d();
 		rotation._m00(u.x); rotation._m01(u.y); rotation._m02(u.z);
 		rotation._m10(v.x); rotation._m11(v.y); rotation._m12(v.z);
 		rotation._m20(n.x); rotation._m21(n.y); rotation._m22(n.z);
