@@ -35,6 +35,9 @@ public class MasterController {
 	
 		private FileView fView;
 		private RenderController rendCon;
+		private String filename;
+		
+
 		public Environment enviro;
 		
 		/**
@@ -73,6 +76,10 @@ public class MasterController {
 			// Build file from path
 			File input = new File(path);
 			
+			// Store file name for exporting
+			setFilename(input.getName());
+			System.out.println("setting filename: " + filename);
+			
 			try {
 				
 				// Read data from file using GSON
@@ -96,4 +103,15 @@ public class MasterController {
 			}
 		}// parseFile
 		
+		
+		public String getFilename() {
+			return filename;
+		}// getFilename
+		public void setFilename(String name) {
+			
+			// clip off the extension
+			int extStart = name.lastIndexOf('.');
+			filename = name.substring(0, extStart);
+			
+		}// setFilename
 	}
