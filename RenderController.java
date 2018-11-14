@@ -59,6 +59,11 @@ public class RenderController {
 		
 	}// display
 
+	/**
+	 * builds the thread that holds the loop to render the image. 
+	 * Sends pixels to the sample in a pattern that renders the 
+	 * middle of the frame first, working its way out.
+	 */
 	private void startRendering() {
 		
 		Thread renderThread = new Thread(new Runnable() {
@@ -93,7 +98,7 @@ public class RenderController {
 					}else {
 						yi = k*m;
 						yn = ((k+1)*m) + enviro.height % 5;
-						yn -= 1;
+	 					yn -= 1;
 					}
 					
 					for(int a = xi; a <= xn; a++) {
@@ -102,7 +107,6 @@ public class RenderController {
 						}
 					}
 					
-					//System.out.println("done with a cube");
 				}
 				
 			}
@@ -146,6 +150,10 @@ public class RenderController {
 
 	
 
+	/**
+	 * Takes image in Film class and exports it to a png with
+	 * the name of the input file
+	 */
 	public void exportImage() {
 		
 		stopRendering();
