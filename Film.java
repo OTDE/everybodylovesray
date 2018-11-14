@@ -1,3 +1,5 @@
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 /**
@@ -12,6 +14,7 @@ import java.awt.image.BufferedImage;
 public class Film {
 	
 	private BufferedImage renderedImage;
+	public Graphics2D g2d;
 	
 	/**
 	 * Constructor for Film Class. Builds the Buffered Image 
@@ -22,6 +25,10 @@ public class Film {
 	 */
 	public Film(int width, int height) {
 		renderedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		
+		// FOR TESTING PURPOSES
+		g2d = renderedImage.createGraphics();
+        g2d.setColor(Color.RED);
 	}// Film
 	
 	/**
@@ -31,5 +38,34 @@ public class Film {
 	public BufferedImage getRenderedImage() {
 		return renderedImage;
 	}// getRenderedImage
+	
+	public void testDevelop(SampleArray samps) {
+		int x = samps.getPixelX();
+		int y = samps.getPixelY();
+		//System.out.println("("+x+","+y+")");
+		renderedImage.setRGB(x,y,Color.BLUE.getRGB());
+		try {
+			Thread.sleep(1);
+	 	} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * Draws the entire buffered image red, used to test 
+	 * various systems.
+	 */
+	public void makeTestImage() {
+		
+		System.out.println("making a test Image");
+		Graphics2D g2d = renderedImage.createGraphics();
+        g2d.setColor(Color.RED);
+        g2d.fillRect(0, 0, renderedImage.getWidth(), renderedImage.getHeight());
+        g2d.dispose();
+        
+        System.out.println("done with Test image!");
+	}// makeTestImage
 
 }
