@@ -11,12 +11,6 @@ apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'eclipse'
 
-jar {
-    manifest {
-        attributes 'Main-Class': 'RayTracer'
-    }
-}
-
 eclipse {
     classpath {
         file {
@@ -27,8 +21,14 @@ eclipse {
         }
     }
 }
+
+
+
 project.ext.jomlVersion = "1.9.11"
 dependencies {
+	// JOML for matrix mathematics 
+    compile "org.joml:joml:${jomlVersion}"
+
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api 'org.apache.commons:commons-math3:3.6.1'
 
@@ -39,10 +39,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     
     // GSON: for JSON file parsing.
-    implementation 'com.google.code.gson:gson:2.8.5'
-    
-    // JOML for matrix mathematics 
-    compile "org.joml:joml:${jomlVersion}"
+    compile "com.google.code.gson:gson:2.8.5"
 }
 
 // In this section you declare where to find the dependencies of your project
@@ -55,4 +52,14 @@ repositories {
     maven {
     		url "https://oss.sonatype.org/content/repositories/snapshots/"
   	}
+}
+
+jar {
+	manifest {
+        attributes 'Main-Class': 'RayTracer'
+    }
+
+    from {
+            configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        }
 }
