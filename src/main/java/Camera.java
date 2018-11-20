@@ -9,7 +9,6 @@ import org.joml.Vector3d;
  * coordinates to camera coordinates.
  */
 
-// sending this to master
 public class Camera {
 	
 	private Film film;
