@@ -8,6 +8,8 @@ import org.joml.Vector3d;
  * also defines the rotation matrix needed to transform from world 
  * coordinates to camera coordinates.
  */
+
+//Testing out some interactivity
 public class Camera {
 	
 	private Film film;
