@@ -42,7 +42,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.5'
     
     // oObjLoader: for parsing .obj files
-    compile 'com.github.seanrowens:oObjLoader:master-SNAPSHOT'
+    implementation 'com.github.seanrowens:oObjLoader:-SNAPSHOT'
 }
 
 // In this section you declare where to find the dependencies of your project
@@ -57,7 +57,7 @@ repositories {
     		
   	}
   	maven {
-  			url 'https://jitpack.io'
+  			url "https://jitpack.io"
   	}
 }
 
