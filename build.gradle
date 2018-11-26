@@ -39,7 +39,11 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     
     // GSON: for JSON file parsing.
-    compile "com.google.code.gson:gson:2.8.5"
+    compile 'com.google.code.gson:gson:2.8.5'
+    
+    // oObjLoader: for parsing .obj files
+	implementation 'com.github.OTDE:oObjLoaderJitPack:master'
+
 }
 
 // In this section you declare where to find the dependencies of your project
@@ -50,7 +54,11 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven {
-    		url "https://oss.sonatype.org/content/repositories/snapshots/"
+    		url 'https://oss.sonatype.org/content/repositories/snapshots/'
+    		
+  	}
+  	maven {
+  			url 'https://jitpack.io'
   	}
 }
 
