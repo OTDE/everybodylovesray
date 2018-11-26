@@ -24,10 +24,10 @@ eclipse {
 
 
 
-project.ext.jomlVersion = '1.9.11'
+project.ext.jomlVersion = "1.9.11"
 dependencies {
 	// JOML for matrix mathematics 
-    compile 'org.joml:joml:${jomlVersion}'
+    compile "org.joml:joml:${jomlVersion}"
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api 'org.apache.commons:commons-math3:3.6.1'
