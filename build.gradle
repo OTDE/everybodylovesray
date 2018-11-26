@@ -42,7 +42,8 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.5'
     
     // oObjLoader: for parsing .obj files
-    implementation 'com.github.seanrowens:oObjLoader:-SNAPSHOT'
+	implementation 'com.github.OTDE:oObjLoaderJitPack:master'
+
 }
 
 // In this section you declare where to find the dependencies of your project
