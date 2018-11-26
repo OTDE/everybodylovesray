@@ -20,8 +20,6 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-import com.google.gson.*;
-
 /**
  * @author Seth Chapman and Ethan Wiederspan 
  * 
