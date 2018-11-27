@@ -70,6 +70,7 @@ public class Camera {
 			double rayY = sampArr.getPixelY() + samp.getOffsetY();
 			double rayZ = 1.0;
 			
+			
 			rayX -= (film.getWidth()/2);
 			rayY -= (film.getHeight()/2);
 			

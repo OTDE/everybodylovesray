@@ -15,6 +15,7 @@ public class Ray {
 		this.direction = d;
 	}
 	
+	
 	public Vector3d positionAtTime(double t) {
 		return origin.add(direction.mul(t));
 	}
