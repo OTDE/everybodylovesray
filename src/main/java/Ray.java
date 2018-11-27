@@ -19,5 +19,4 @@ public class Ray {
 	public Vector3d positionAtTime(double t) {
 		return origin.add(direction.mul(t));
 	}
-
 }

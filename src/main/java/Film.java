@@ -73,7 +73,6 @@ public class Film {
         System.out.println("done with Test image!");
 	}// makeTestImage
 	
-	
 	public int getWidth() {
 		return this.width;
 	}
