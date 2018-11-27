@@ -74,6 +74,7 @@ public class RenderController {
 				// Starts the Thread, calling its run method
 				
 				Sampler sampler = new Sampler(10);
+				SampleArray sampArr = null;
 				
 				// Split pixels into squares
 				int n = enviro.width / 5;
@@ -103,7 +104,10 @@ public class RenderController {
 					
 					for(int a = xi; a <= xn; a++) {
 						for(int b = yi; b <= yn; b++) {
-							film.testDevelop(sampler.getPixelSamples(a, b));
+							sampArr = sampler.getPixelSamples(a, b);
+							for(Sample s: sampArr.samples) {
+								cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelX());
+							}
 						}
 					}
 					
