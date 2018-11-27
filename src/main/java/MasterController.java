@@ -37,7 +37,7 @@ public class MasterController {
 		
 
 		public Environment enviro;
-		
+		public ObjModel[] objArray;
 		/**
 		 * Constructor for MasterController Class. Connects 
 		 * this to the FileView.
@@ -88,10 +88,23 @@ public class MasterController {
 			    
 			    // Load data into Environment Wrapper Class
 			    JsonElement e = fileParser.next();
-			    EnviroShell shell = gson.fromJson(e, EnviroShell.class);
+			    EnviroShell eShell = gson.fromJson(e, EnviroShell.class);
 			    
 			    // Make Environment from wrapper
-			    enviro = shell.environment;
+			    enviro = eShell.environment;
+			    
+			    // Load the models into the ObjModel Wrapper Class
+			    e = fileParser.next();
+			    ObjShell oShell = gson.fromJson(e, ObjShell.class);
+			    
+			    // Make ObjModel array from wrapper
+			    objArray = oShell.objects;
+			    
+			    // Build each object
+			    for(int i = 0; i < objArray.length; i++) {
+			    	objArray[i].build();
+			    	objArray[i].parse();
+			    }
 			    
 			    // Start rendering and displaying the Environment
 			    this.beginRender();

@@ -16,6 +16,9 @@ public class Film {
 	private BufferedImage renderedImage;
 	public Graphics2D g2d;
 	
+	private int width;
+	private int height;
+	
 	/**
 	 * Constructor for Film Class. Builds the Buffered Image 
 	 * with the dimensions given.
@@ -23,7 +26,9 @@ public class Film {
 	 * @param width the width specified by the input JSON
 	 * @param height the height specified by the input JSON
 	 */
-	public Film(int width, int height) {
+	public Film(int w, int h) {
+		this.width = w;
+		this.height = h;
 		renderedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		
 		// FOR TESTING PURPOSES
@@ -67,5 +72,12 @@ public class Film {
         
         System.out.println("done with Test image!");
 	}// makeTestImage
+	
+	public int getWidth() {
+		return this.width;
+	}
+	public int getHeight() {
+		return this.height;
+	}
 
 }

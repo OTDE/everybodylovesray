@@ -6,11 +6,14 @@
 			"at": [1, 1, 3.5],
 			"up": [0, 1, 0]
 	}
-	
+}
+
+{		
 	"objects": {
 			"gourd": {
-					
+					"filepath": "C:\Users\mail\gourd.obj"
+					"translation": "TODO: add test info"
+					"rotation": "TODO: add test into"		
 			}
 	}
 }
-

@@ -42,7 +42,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.5'
     
     // oObjLoader: for parsing .obj files
-	implementation 'com.github.OTDE:oObjLoaderJitPack:master'
+	implementation 'com.github.OTDE:oObjJitPack:master'
 
 }
 
@@ -70,4 +70,8 @@ jar {
     from {
             configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
         }
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }

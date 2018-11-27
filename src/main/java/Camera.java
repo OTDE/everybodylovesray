@@ -63,9 +63,22 @@ public class Camera {
 		return m;
 	}
 	
-	public void generateRay( Sample samp) {
-		// method stub for future sprint
+	public void generateRay( Sample samp, int pixelX, int pixelY) {
+		
+		
+		double rayX = pixelX + samp.getOffsetX();
+		double rayY = pixelY + samp.getOffsetY();
+		double rayZ = 1.0;
+			
+			
+		rayX -= (film.getWidth()/2);
+		rayY -= (film.getHeight()/2);
+			
+		Vector3d rayV = new Vector3d(rayX, rayY, rayZ);
+		rayV.normalize();
+			
+		Ray r = new Ray(new Vector3d(0,0,0), rayV);
+		
 	}
 	
-
 }
