@@ -1,5 +1,3 @@
-import javafx.application.Application;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,18 +5,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.google.gson.*;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.util.Map;
 
 /**
  * @author Seth Chapman and Ethan Wiederspan 
@@ -37,7 +28,7 @@ public class MasterController {
 		
 
 		public Environment enviro;
-		public ObjModel[] objArray;
+		public HashMap<String, ObjModel> objArray;
 		/**
 		 * Constructor for MasterController Class. Connects 
 		 * this to the FileView.
@@ -101,10 +92,13 @@ public class MasterController {
 			    objArray = oShell.objects;
 			    
 			    // Build each object
-			    for(int i = 0; i < objArray.length; i++) {
-			    	objArray[i].build();
-			    	objArray[i].parse();
+			    Iterator<Map.Entry<String, ObjModel>> iter = objArray.entrySet().iterator();
+			    while(iter.hasNext()) {
+			    	Map.Entry<String, ObjModel> pair = iter.next();
+			    	pair.getValue().build();
+			    	pair.getValue().parse();
 			    }
+			    
 			    
 			    // Start rendering and displaying the Environment
 			    this.beginRender();

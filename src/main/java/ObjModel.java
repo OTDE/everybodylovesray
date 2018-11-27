@@ -1,8 +1,16 @@
 import java.io.IOException;
 
+import org.joml.Matrix4d;
+import org.joml.Vector3d;
+
 import com.owens.oobjloader.builder.*;
 import com.owens.oobjloader.parser.*;
 
+/**
+ * Object Model class.
+ * @author Ethan Wiederspan and Seth Chapman
+ *
+ */
 public class ObjModel {
 	
 	public String filepath;
@@ -23,9 +31,27 @@ public class ObjModel {
 	 */
 	
 	private transient Build objData;
+	private transient Vector3d objTranslate;
+	private transient Matrix4d objRotate;
 	
 	public void build() {
 		objData = new Build();
+		try {
+			objTranslate = new Vector3d(translation[0],
+						translation[1], translation[2]);
+		} catch(IndexOutOfBoundsException e) {
+			System.out.println("Input array is incorrectly sized");
+		}
+		try {
+			objRotate = new Matrix4d(
+					rotation[0], rotation[1], rotation[2], rotation[3],
+					rotation[4], rotation[5], rotation[6], rotation[7],
+					rotation[8], rotation[9], rotation[10], rotation[11], 
+					rotation[12], rotation[13], rotation[14], rotation[15] );
+		} catch(IndexOutOfBoundsException e) {
+			System.out.println("Input matrix is incorrectly sized");
+		}
+		
 	}
 	
 	public void parse() {
