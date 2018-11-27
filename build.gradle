@@ -42,7 +42,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.5'
     
     // oObjLoader: for parsing .obj files
-	implementation 'com.github.OTDE:oObjJitPack:master-SNAPSHOT'
+	implementation 'com.github.OTDE:oObjJitPack:master'
 
 }
 
