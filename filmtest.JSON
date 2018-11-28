@@ -10,16 +10,10 @@
 
 {		
 	"objects": {
-			"gourd": {
-					"filepath": "C:\Users\mail\gourd.obj",
-					"translation": "TODO: add test info",
-					"rotation": "TODO: add test into"		
-			}
-			
 			"cube": {
 					"filepath": "C:\Users\mail\cube.obj",
-					"translation": "TODO: add test info",
-					"rotation": "TODO: add test into"
+					"translation": [0,0,0],
+					"rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
 			}
 	}
 }
