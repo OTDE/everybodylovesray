@@ -63,4 +63,19 @@ public class ObjModel {
 			System.out.println("File not found");
 		}
 	}
+	
+	public boolean intersect(Ray r, Intersection inter) {
+		
+		for(Face f: objData.faces) {
+			
+			// do math to determine if there was an intersection
+			
+			// if ray hit the triangle\
+			// update intersection object
+			// set maxT of ray
+			// return true and leave the loop 
+		}
+		
+		return false;
+	}
 }
