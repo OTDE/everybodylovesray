@@ -80,4 +80,11 @@ public class Film {
 		return this.height;
 	}
 
+	public void develop(Sample s, int pixelX, int pixelY, Color c) {
+		
+		// TODO: more robust calculations for developing nearby pixels
+		renderedImage.setRGB(pixelX,pixelY,c.getRGB());
+		
+	}
+
 }
