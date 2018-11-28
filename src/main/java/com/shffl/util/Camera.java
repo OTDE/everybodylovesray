@@ -1,5 +1,8 @@
+package com.shffl.util;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
+
+import com.shffl.assets.Ray;
 
 /**
  * @author Ethan Wiederspan and Seth Chapman

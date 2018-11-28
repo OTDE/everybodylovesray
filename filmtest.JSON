@@ -10,10 +10,12 @@
 
 {		
 	"objects": {
-			"cube": {
+			[
+				{
 					"filepath": "C:\\Users\\Seth\\cube.obj",
 					"translation": [0,0,0],
 					"rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
-			}
+				}
+			]
 	}
 }

@@ -1,9 +1,20 @@
+package com.shffl.control;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import com.shffl.assets.Environment;
+import com.shffl.assets.Ray;
+import com.shffl.util.Camera;
+import com.shffl.util.Film;
+import com.shffl.util.Integrator;
+import com.shffl.util.Sample;
+import com.shffl.util.SampleArray;
+import com.shffl.util.Sampler;
+import com.shffl.util.Tags;
 
 /**
  * @author Ethan Wiederspan and Seth Chapman

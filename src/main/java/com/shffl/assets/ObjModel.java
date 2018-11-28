@@ -1,3 +1,4 @@
+package com.shffl.assets;
 import java.io.IOException;
 
 import org.joml.Matrix4d;

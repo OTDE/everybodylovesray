@@ -1,4 +1,8 @@
+package com.shffl.util;
 import java.awt.Color;
+
+import com.shffl.assets.Ray;
+import com.shffl.control.RenderController;
 
 public class Integrator {
 	

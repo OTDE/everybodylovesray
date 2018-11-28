@@ -1,3 +1,4 @@
+package com.shffl.control;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,6 +11,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.google.gson.*;
+import com.shffl.assets.EnviroShell;
+import com.shffl.assets.Environment;
+import com.shffl.assets.ObjModel;
+import com.shffl.assets.ObjShell;
 
 /**
  * @author Seth Chapman and Ethan Wiederspan 
@@ -28,7 +33,7 @@ public class MasterController {
 		
 
 		public Environment enviro;
-		public HashMap<String, ObjModel> objArray;
+		public ObjModel[] objArray;
 		/**
 		 * Constructor for MasterController Class. Connects 
 		 * this to the FileView.
@@ -92,14 +97,10 @@ public class MasterController {
 			    objArray = oShell.objects;
 			    
 			    // Build each object
-			    Iterator<Map.Entry<String, ObjModel>> iter = objArray.entrySet().iterator();
-			    while(iter.hasNext()) {
-			    	Map.Entry<String, ObjModel> pair = iter.next();
-			    	System.out.println(pair.getKey());
-			    	pair.getValue().build();
-			    	pair.getValue().parse();
+			    for(int i = 0; i < objArray.length; i++) {
+			    	objArray[i].build();
+			    	objArray[i].parse();
 			    }
-			    
 			    
 			    // Start rendering and displaying the Environment
 			    this.beginRender();

@@ -1,3 +1,4 @@
+package com.shffl.assets;
 /**
  * @author Ethan Wiederspan and Seth Chapman
  * 

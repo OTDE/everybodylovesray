@@ -1,3 +1,4 @@
+package com.shffl.util;
 
 /**
  * @author EthanWiederspan & Seth Chapman

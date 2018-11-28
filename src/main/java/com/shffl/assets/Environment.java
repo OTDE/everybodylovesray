@@ -1,3 +1,4 @@
+package com.shffl.assets;
 import org.joml.Vector3d;
 
 /**
