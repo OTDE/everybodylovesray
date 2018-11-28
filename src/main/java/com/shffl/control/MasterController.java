@@ -101,6 +101,7 @@ public class MasterController {
 			    	objArray[i].build();
 			    	objArray[i].parse();
 			    }
+			    enviro.addObjects(objArray);
 			    
 			    // Start rendering and displaying the Environment
 			    this.beginRender();
