@@ -28,7 +28,7 @@ public class RenderController {
 	private Film film;
 	private Environment enviro;
 	private Camera cam;
-	private Integrator inter;
+	private Integrator integrator;
 	
 	Thread displayThread;
 	Thread renderThread;
@@ -51,7 +51,7 @@ public class RenderController {
 		this.mastCon = mCon;
 		this.enviro = env;
 		
-		inter = new Integrator(this);
+		integrator = new Integrator(this);
 		cam = new Camera(enviro.getAt(), enviro.getEye(), enviro.getUp(), film);
 		
 		// Build new Film based on Environment's specs
@@ -124,7 +124,7 @@ public class RenderController {
 								
 								// For each sample, generate and cast ray
 								ray = cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelX());
-								Color c = inter.propagate(ray);
+								Color c = integrator.propagate(ray) ;
 								
 								film.develop(s, sampArr.getPixelX(), sampArr.getPixelY(), c);
 								
