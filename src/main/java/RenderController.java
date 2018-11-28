@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +17,7 @@ public class RenderController {
 	private Film film;
 	private Environment enviro;
 	private Camera cam;
+	private Integrator inter;
 	
 	Thread displayThread;
 	Thread renderThread;
@@ -37,8 +39,9 @@ public class RenderController {
 		// Connect to MasterController and Environment
 		this.mastCon = mCon;
 		this.enviro = env;
-		cam = new Camera(enviro.getAt(), enviro.getEye(), enviro.getUp(), film);
 		
+		inter = new Integrator(this);
+		cam = new Camera(enviro.getAt(), enviro.getEye(), enviro.getUp(), film);
 		
 		// Build new Film based on Environment's specs
 		film = new Film(enviro.width, enviro.height);
@@ -75,6 +78,7 @@ public class RenderController {
 				
 				Sampler sampler = new Sampler(10);
 				SampleArray sampArr = null;
+				Ray ray = null;
 				
 				// Split pixels into squares
 				int n = enviro.width / 5;
@@ -106,7 +110,13 @@ public class RenderController {
 						for(int b = yi; b <= yn; b++) {
 							sampArr = sampler.getPixelSamples(a, b);
 							for(Sample s: sampArr.samples) {
-								cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelX());
+								
+								// For each sample, generate and cast ray
+								ray = cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelX());
+								Color c = inter.propagate(ray);
+								
+								film.develop(s, sampArr.getPixelX(), sampArr.getPixelY(), c);
+								
 							}
 						}
 					}
@@ -186,5 +196,9 @@ public class RenderController {
 	public void continueRendering() {
 		running = true;
 	}// continueRendering
+	
+	public Environment getEnvironement() {
+		return this.enviro;
+	}
 
 }
