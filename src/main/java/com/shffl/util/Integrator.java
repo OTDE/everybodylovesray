@@ -16,9 +16,12 @@ public class Integrator {
 	
 	public Color propagate(Ray r) {
 		
+		if( rendCon.getEnvironement().intersect(r, inter)) {;
+			// If this returned true, we hit an object
+			return Color.PINK;
+		}
 		
-		return Color.PINK;
-		
+		return Color.BLUE;
 	}
 
 }
