@@ -95,6 +95,7 @@ public class MasterController {
 			    Iterator<Map.Entry<String, ObjModel>> iter = objArray.entrySet().iterator();
 			    while(iter.hasNext()) {
 			    	Map.Entry<String, ObjModel> pair = iter.next();
+			    	System.out.println(pair.getKey());
 			    	pair.getValue().build();
 			    	pair.getValue().parse();
 			    }
