@@ -3,6 +3,6 @@
 /build/
 
 .settings/
-.classpath
-.project
-.class
+.classpath/
+.project/
+.class/
