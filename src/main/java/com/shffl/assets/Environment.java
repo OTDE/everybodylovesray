@@ -16,6 +16,8 @@ public class Environment {
 	public double[] at;
 	public int[] up;
 	
+	public ObjModel[] objects;
+	
 	public transient Vector3d eyeV;
 	public transient Vector3d atV;
 	public transient Vector3d upV;
@@ -66,6 +68,22 @@ public class Environment {
 			return new Vector3d(0, 0, 0);
 		}
 		return upV;
+	}
+	
+	public void addObjects(ObjModel[] objs) {
+		this.objects  = objs;
+	}
+	
+	public boolean intersect(Ray r, Intersection inter) {
+		
+		// Call intersect on every object in the environment
+		for(ObjModel obj: objects) {
+			if(obj.intersect(r, inter)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	//Future fields, not implemented yet!
