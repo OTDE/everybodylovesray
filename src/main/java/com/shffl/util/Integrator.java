@@ -19,7 +19,7 @@ public class Integrator {
 		
 		if( rendCon.getEnvironement().intersect(r, inter)) {;
 			// If this returned true, we hit an object
-			return Color.PINK;
+			return Color.RED;
 		}
 		
 		return Color.BLUE;

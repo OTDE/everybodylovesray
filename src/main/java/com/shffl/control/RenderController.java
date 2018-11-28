@@ -51,12 +51,12 @@ public class RenderController {
 		this.mastCon = mCon;
 		this.enviro = env;
 		
-		integrator = new Integrator(this);
-		cam = new Camera(enviro.getAt(), enviro.getEye(), enviro.getUp(), film);
-		
 		// Build new Film based on Environment's specs
 		film = new Film(enviro.width, enviro.height);
 		
+		integrator = new Integrator(this);
+		cam = new Camera(enviro.getAt(), enviro.getEye(), enviro.getUp(), film);
+	
 	}// RenderController
 
 	/**
