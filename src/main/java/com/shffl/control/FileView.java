@@ -1,20 +1,23 @@
+package com.shffl.control;
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.shffl.util.Tags;
+
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.*;
-import javafx.event.*;
-import javafx.event.*;
-import javafx.geometry.*;
-import javafx.scene.Group;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.text.*;
-import javafx.stage.*;
-import javafx.scene.*;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 /**
  * @author Ethan Wiederspan and Seth Chapman

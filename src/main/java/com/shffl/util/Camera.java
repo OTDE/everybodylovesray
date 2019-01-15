@@ -1,5 +1,8 @@
+package com.shffl.util;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
+
+import com.shffl.assets.Ray;
 
 /**
  * @author Ethan Wiederspan and Seth Chapman
@@ -8,7 +11,6 @@ import org.joml.Vector3d;
  * also defines the rotation matrix needed to transform from world 
  * coordinates to camera coordinates.
  */
-
 public class Camera {
 	
 	private Film film;
@@ -64,9 +66,21 @@ public class Camera {
 		return m;
 	}
 	
-	public void generateRay( Sample samp) {
-		// method stub for future sprint
+	public Ray generateRay( Sample samp, int pixelX, int pixelY) {
+		
+		
+		double rayX = pixelX + samp.getOffsetX();
+		double rayY = pixelY + samp.getOffsetY();
+		double rayZ = 1.0;
+			
+		rayX -= (film.getWidth()/2);
+		rayY -= (film.getHeight()/2);
+			
+		Vector3d rayV = new Vector3d(rayX, rayY, rayZ);
+		rayV.normalize();
+			
+		return new Ray(new Vector3d(0,0,0), rayV);
+		
 	}
 	
-
 }

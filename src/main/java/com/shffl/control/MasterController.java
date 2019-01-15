@@ -1,5 +1,4 @@
-import javafx.application.Application;
-
+package com.shffl.control;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,20 +6,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.google.gson.*;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.util.Map;
-
-import com.google.gson.*;
+import com.shffl.assets.EnviroShell;
+import com.shffl.assets.Environment;
+import com.shffl.assets.ObjModel;
+import com.shffl.assets.ObjShell;
 
 /**
  * @author Seth Chapman and Ethan Wiederspan 
@@ -39,7 +33,7 @@ public class MasterController {
 		
 
 		public Environment enviro;
-		
+		public ObjModel[] objArray;
 		/**
 		 * Constructor for MasterController Class. Connects 
 		 * this to the FileView.
@@ -90,10 +84,24 @@ public class MasterController {
 			    
 			    // Load data into Environment Wrapper Class
 			    JsonElement e = fileParser.next();
-			    EnviroShell shell = gson.fromJson(e, EnviroShell.class);
+			    EnviroShell eShell = gson.fromJson(e, EnviroShell.class);
 			    
 			    // Make Environment from wrapper
-			    enviro = shell.environment;
+			    enviro = eShell.environment;
+			    
+			    // Load the models into the ObjModel Wrapper Class
+			    e = fileParser.next();
+			    ObjShell oShell = gson.fromJson(e, ObjShell.class);
+			    
+			    // Make ObjModel array from wrapper
+			    objArray = oShell.objects;
+			    
+			    // Build each object
+			    for(int i = 0; i < objArray.length; i++) {
+			    	objArray[i].build();
+			    	objArray[i].parse();
+			    }
+			    enviro.addObjects(objArray);
 			    
 			    // Start rendering and displaying the Environment
 			    this.beginRender();

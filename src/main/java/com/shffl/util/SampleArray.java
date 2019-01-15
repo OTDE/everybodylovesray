@@ -1,3 +1,4 @@
+package com.shffl.util;
 import java.util.Random;
 
 /**

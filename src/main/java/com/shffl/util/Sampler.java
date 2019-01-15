@@ -1,3 +1,4 @@
+package com.shffl.util;
 /**
  * Sampler class for fetching arrays of samples for input
  * @author Ethan Wiederspan and Seth Chapman

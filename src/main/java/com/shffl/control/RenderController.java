@@ -1,8 +1,20 @@
+package com.shffl.control;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import com.shffl.assets.Environment;
+import com.shffl.assets.Ray;
+import com.shffl.util.Camera;
+import com.shffl.util.Film;
+import com.shffl.util.Integrator;
+import com.shffl.util.Sample;
+import com.shffl.util.SampleArray;
+import com.shffl.util.Sampler;
+import com.shffl.util.Tags;
 
 /**
  * @author Ethan Wiederspan and Seth Chapman
@@ -16,6 +28,7 @@ public class RenderController {
 	private Film film;
 	private Environment enviro;
 	private Camera cam;
+	private Integrator integrator;
 	
 	Thread displayThread;
 	Thread renderThread;
@@ -37,12 +50,13 @@ public class RenderController {
 		// Connect to MasterController and Environment
 		this.mastCon = mCon;
 		this.enviro = env;
-		cam = new Camera(enviro.getAt(), enviro.getEye(), enviro.getUp(), film);
-		
 		
 		// Build new Film based on Environment's specs
 		film = new Film(enviro.width, enviro.height);
 		
+		integrator = new Integrator(this);
+		cam = new Camera(enviro.getAt(), enviro.getEye(), enviro.getUp(), film);
+	
 	}// RenderController
 
 	/**
@@ -74,6 +88,8 @@ public class RenderController {
 				// Starts the Thread, calling its run method
 				
 				Sampler sampler = new Sampler(10);
+				SampleArray sampArr = null;
+				Ray ray = null;
 				
 				// Split pixels into squares
 				int n = enviro.width / 5;
@@ -103,7 +119,16 @@ public class RenderController {
 					
 					for(int a = xi; a <= xn; a++) {
 						for(int b = yi; b <= yn; b++) {
-							film.testDevelop(sampler.getPixelSamples(a, b));
+							sampArr = sampler.getPixelSamples(a, b);
+							for(Sample s: sampArr.samples) {
+								
+								// For each sample, generate and cast ray
+								ray = cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelX());
+								Color c = integrator.propagate(ray) ;
+								
+								film.develop(s, sampArr.getPixelX(), sampArr.getPixelY(), c);
+								
+							}
 						}
 					}
 					
@@ -182,5 +207,9 @@ public class RenderController {
 	public void continueRendering() {
 		running = true;
 	}// continueRendering
+	
+	public Environment getEnvironement() {
+		return this.enviro;
+	}
 
 }
