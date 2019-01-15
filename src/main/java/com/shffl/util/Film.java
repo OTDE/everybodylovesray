@@ -28,6 +28,7 @@ public class Film {
 	 * @param height the height specified by the input JSON
 	 */
 	public Film(int w, int h) {
+
 		this.width = w;
 		this.height = h;
 		renderedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -42,10 +43,12 @@ public class Film {
 	 * @return
 	 */
 	public BufferedImage getRenderedImage() {
+
 		return renderedImage;
 	}// getRenderedImage
 	
 	public void testDevelop(SampleArray samps) {
+
 		int x = samps.getPixelX();
 		int y = samps.getPixelY();
 		//System.out.println("("+x+","+y+")");
@@ -55,8 +58,7 @@ public class Film {
 	 	} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
+		}	
 	}
 	
 	/**
@@ -74,18 +76,13 @@ public class Film {
         System.out.println("done with Test image!");
 	}// makeTestImage
 	
-	public int getWidth() {
-		return this.width;
-	}
-	public int getHeight() {
-		return this.height;
-	}
+	public int getWidth() {	return this.width; }
+	
+	public int getHeight() { return this.height; }
 
 	public void develop(Sample s, int pixelX, int pixelY, Color c) {
 		
 		// TODO: more robust calculations for developing nearby pixels
-		renderedImage.setRGB(pixelX,pixelY,c.getRGB());
-		
+		renderedImage.setRGB(pixelX,pixelY,c.getRGB());		
 	}
-
 }

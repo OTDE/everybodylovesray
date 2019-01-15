@@ -95,51 +95,45 @@ public class RenderController {
 				int n = enviro.width / 5;
 				int m = enviro.height / 5;
 				
-				int j,k,xi,xn,yi,yn;
+				int tileX, tileY, xStart, xEnd, yStart, yEnd;
 				for(int i = 0; i < 25; i++) {
-					j = Tags.TILE_ORDER[i][1];
-					k = Tags.TILE_ORDER[i][0];
+					tileX = Tags.TILE_ORDER[i][1];
+					tileY = Tags.TILE_ORDER[i][0];
 					
-					if(j != 4 ) {
-						xi = j*n;
-						xn = ((j+1)*n)-1;
-					}else {
-						xi = j*n;
-						xn = ((j+1)*n) + enviro.width % 5;
-						xn -=1;
+					if(tileX != 4 ) {
+						xStart = tileX*n;
+						xEnd = ((tileX+1)*n)-1;
+					} else {
+						xStart = tileX*n;
+						xEnd = ((tileX+1)*n) + enviro.width % 5;
+						xEnd -=1;
 					}
-					if(k != 4 ) {
-						yi = k*m;
-						yn = ((k+1)*m)-1;
-					}else {
-						yi = k*m;
-						yn = ((k+1)*m) + enviro.height % 5;
-	 					yn -= 1;
+					if(tileY != 4 ) {
+						yStart = tileY*m;
+						yEnd = ((tileY+1)*m)-1;
+					} else {
+						yStart = tileY*m;
+						yEnd = ((tileY+1)*m) + enviro.height % 5;
+	 					yEnd -= 1;
 					}
 					
-					for(int a = xi; a <= xn; a++) {
-						for(int b = yi; b <= yn; b++) {
+					for(int a = xStart; a <= xEnd; a++) {
+						for(int b = yStart; b <= yEnd; b++) {
 							sampArr = sampler.getPixelSamples(a, b);
 							for(Sample s: sampArr.samples) {
 								
 								// For each sample, generate and cast ray
-								ray = cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelX());
-								Color c = integrator.propagate(ray) ;
-								
-								film.develop(s, sampArr.getPixelX(), sampArr.getPixelY(), c);
-								
+								ray = cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelY());
+								Color c = integrator.propagate(ray);
+								film.develop(s, sampArr.getPixelX(), sampArr.getPixelY(), c);				
 							}
 						}
 					}
-					
-				}
-				
-			}
-			
-		});
-		
+				}		
+			}//run		
+		});//thread	
 		renderThread.start();
-	}
+	}//startRendering
 
 	/**
 	 * The loop that retrieves the BufferedImage periodically 
@@ -147,7 +141,6 @@ public class RenderController {
 	 * film can continue to develop on another.
 	 */
 	public void startDisplaying() {
-		
 
 		// Makes the Thread for rendering and defines its run function
 		displayThread = new Thread(new Runnable() {
@@ -168,10 +161,10 @@ public class RenderController {
 						e.printStackTrace();
 					}
 				}
-			}
-		});
+			}//run
+		});//thread
 		displayThread.start();
-	}// startDisplaying
+	}//startDisplaying
 
 	
 
@@ -181,8 +174,7 @@ public class RenderController {
 	 */
 	public void exportImage() {
 		
-		stopRendering();
-		
+		stopRendering();		
 		System.out.println("making file");
 		try {
 		    BufferedImage finalImage = film.getRenderedImage(); 
@@ -190,12 +182,9 @@ public class RenderController {
 		    ImageIO.write(finalImage, "png", outputfile);
 		} catch (IOException e) {
 		    System.out.println("ERROR WHILE WRITING: " + e.getMessage());
-		}
-		
+		}		
 		System.out.println("done writing!");
-		
 		continueRendering();
-		
 	}// exportImage
 	
 	/**

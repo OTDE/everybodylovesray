@@ -84,9 +84,9 @@ public class FileView extends Application {
 			                @Override
 			                public void handle(final ActionEvent e) {
 			                	//Add listener for if file type isn't selected later
-			                	if(file != null && isValid(file)) {
+			                	if(file != null && isFileValid(file)) {
 			                		openFile(file, primaryStage);
-			                	} else if(!isValid(file)) {
+			                	} else if(!isFileValid(file)) {
 			                		fileName.setText("Select a JSON file.");
 			                	}else 
 			                		fileName.setText("Please select a file.");
@@ -131,7 +131,7 @@ public class FileView extends Application {
 		chooser.setInitialDirectory(new File(System.getProperty("user.home")));
 	}//configureInputChooser
 	
-	private boolean isValid(File f) {
+	private boolean isFileValid(File f) {
 		
 		System.out.println("testing the filename");
 		

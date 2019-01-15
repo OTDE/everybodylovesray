@@ -14,6 +14,7 @@ public class Sampler {
 	 * @param sampNum number of samples per pixel.
 	 */
 	public Sampler(int sampNum) {
+		
 		samplesPerPixel = sampNum;
 		sampleSet = new SampleArray(samplesPerPixel);
 	}
@@ -25,6 +26,7 @@ public class Sampler {
 	 * @return an array of samples for that pixel
 	 */
 	public SampleArray getPixelSamples(int pixelX, int pixelY) {
+		
 		sampleSet.setPixelX(pixelX);
 		sampleSet.setPixelY(pixelY);
 		sampleSet.fill();

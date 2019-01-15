@@ -83,15 +83,15 @@ public class MasterController {
 			    JsonStreamParser fileParser = new JsonStreamParser(fileReader);
 			    
 			    // Load data into Environment Wrapper Class
-			    JsonElement e = fileParser.next();
-			    EnviroShell eShell = gson.fromJson(e, EnviroShell.class);
+			    JsonElement sceneElement = fileParser.next();
+			    EnviroShell eShell = gson.fromJson(sceneElement, EnviroShell.class);
 			    
 			    // Make Environment from wrapper
 			    enviro = eShell.environment;
 			    
 			    // Load the models into the ObjModel Wrapper Class
-			    e = fileParser.next();
-			    ObjShell oShell = gson.fromJson(e, ObjShell.class);
+			    sceneElement = fileParser.next();
+			    ObjShell oShell = gson.fromJson(sceneElement, ObjShell.class);
 			    
 			    // Make ObjModel array from wrapper
 			    objArray = oShell.objects;
@@ -101,7 +101,7 @@ public class MasterController {
 			    	objArray[i].build();
 			    	objArray[i].parse();
 			    }
-			    enviro.addObjects(objArray);
+			    enviro.objects = objArray;
 			    
 			    // Start rendering and displaying the Environment
 			    this.beginRender();
@@ -115,11 +115,11 @@ public class MasterController {
 		public String getFilename() {
 			return filename;
 		}// getFilename
+		
 		public void setFilename(String name) {
 			
 			// clip off the extension
 			int extStart = name.lastIndexOf('.');
 			filename = name.substring(0, extStart);
-			
-		}// setFilename
-	}
+		}//setFilename
+}

@@ -19,6 +19,7 @@ public class Camera {
 	
 	
 	public Camera(Vector3d pos, Vector3d at, Vector3d up, Film f) {
+
 		eye = pos;
 		
 		Vector3d n = eye.sub(at);
@@ -43,7 +44,8 @@ public class Camera {
 	 * @param n vector defined by eye - at
 	 */
 	private void setRotation(Vector3d u, Vector3d v, Vector3d n) {
-	    rotation = new Matrix4d();
+
+		rotation = new Matrix4d();
 		rotation._m00(u.x); rotation._m01(u.y); rotation._m02(u.z);
 		rotation._m10(v.x); rotation._m11(v.y); rotation._m12(v.z);
 		rotation._m20(n.x); rotation._m21(n.y); rotation._m22(n.z);
@@ -56,6 +58,7 @@ public class Camera {
 	 * @return Matrix4d containing the view matrix
 	 */
 	private Matrix4d viewMatrix() {
+
 		Matrix4d m = new Matrix4d();
 		m._m30(this.eye.x);
 		m._m30(this.eye.y);
@@ -67,8 +70,7 @@ public class Camera {
 	}
 	
 	public Ray generateRay( Sample samp, int pixelX, int pixelY) {
-		
-		
+				
 		double rayX = pixelX + samp.getOffsetX();
 		double rayY = pixelY + samp.getOffsetY();
 		double rayZ = 1.0;
@@ -76,11 +78,9 @@ public class Camera {
 		rayX -= (film.getWidth()/2);
 		rayY -= (film.getHeight()/2);
 			
-		Vector3d rayV = new Vector3d(rayX, rayY, rayZ);
-		rayV.normalize();
+		Vector3d rayVector = new Vector3d(rayX, rayY, rayZ);
+		rayVector.normalize();
 			
-		return new Ray(new Vector3d(0,0,0), rayV);
-		
-	}
-	
+		return new Ray(new Vector3d(0,0,0), rayVector);
+	}	
 }

@@ -22,6 +22,7 @@ public class SampleArray {
 	 * @param size the size of the sample array
 	 */
 	public SampleArray(int pX, int pY, int size) {
+		
 		pixelX = pX;
 		pixelY = pY;
 		sampleSize = size;
@@ -34,6 +35,7 @@ public class SampleArray {
 	 * @param size the size of the sample array
 	 */
 	public SampleArray(int size) {
+		
 		sampleSize = size;
 		samples = new Sample[sampleSize];
 		rng = new Random();
@@ -43,32 +45,23 @@ public class SampleArray {
 	 * Fills the array of samples with new samples
 	 */
 	public void fill() {
+		
 		for(int i = 0; i < sampleSize; i++) {
 			samples[i] = new Sample(rng.nextDouble(), rng.nextDouble());
 		}
 	}
 	
 	/**
-	 * Getters and setters
+	 * Accessors and mutators
 	 */
 	
-	public void setPixelX(int pixelX) {
-		this.pixelX = pixelX;
-	}
+	public void setPixelX(int pixelX) { this.pixelX = pixelX; }
 
-	public void setPixelY(int pixelY) {
-		this.pixelY = pixelY;
-	}
+	public void setPixelY(int pixelY) { this.pixelY = pixelY; }
 
-	public int getPixelX() {
-		return pixelX;
-	}
+	public int getPixelX() { return pixelX; }
 
-	public int getPixelY() {
-		return pixelY;
-	}
+	public int getPixelY() { return pixelY; }
 
-	public int getSampleSize() {
-		return sampleSize;
-	}
+	public int getSampleSize() { return sampleSize; }
 }

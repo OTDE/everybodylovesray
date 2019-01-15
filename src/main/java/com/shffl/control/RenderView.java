@@ -41,6 +41,7 @@ public class RenderView extends javax.swing.JFrame {
 	 * @param renderController
 	 */
 	public RenderView(RenderController rCon, int width, int height) {
+
 		this.rendCon = rCon;
 		
 		buildView();
@@ -53,7 +54,6 @@ public class RenderView extends javax.swing.JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		setVisible(true);
-
 	}// RenderView
 
 	/**
@@ -76,7 +76,6 @@ public class RenderView extends javax.swing.JFrame {
 		
 		panelSouth.add(returnButton);
 		panelSouth.add(exportButton);
-		
 	}// buildView
 	
 	/**
@@ -112,8 +111,6 @@ public class RenderView extends javax.swing.JFrame {
 		displayImage = new ImageIcon(newImage);
 		imageLabel.setIcon(displayImage);
 		panelMid.add(imageLabel);
-		
-		
 	}// updateView
 
 }

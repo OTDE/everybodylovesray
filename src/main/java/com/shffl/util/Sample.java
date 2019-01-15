@@ -7,6 +7,7 @@ package com.shffl.util;
  *
  */
 public class Sample {
+	
 	private double offsetX;
 	private double offsetY;
 	
@@ -21,18 +22,15 @@ public class Sample {
 	 * @param offY the amount by which a ray is offset in the y direction in a given pixel
 	 */
 	public Sample(double offX, double offY) {
+		
 		offsetX = offX;
 		offsetY = offY;
 	}
 
 	/**
-	 * Getters and setters
+	 * Accessors and mutators
 	 */
-	public double getOffsetX() {
-		return offsetX;
-	}
+	public double getOffsetX() { return offsetX; }
 
-	public double getOffsetY() {
-		return offsetY;
-	}
+	public double getOffsetY() { return offsetY; }
 }
