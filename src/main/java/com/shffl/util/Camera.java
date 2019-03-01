@@ -1,7 +1,9 @@
 package com.shffl.util;
 import org.joml.Matrix3dc;
 import org.joml.Matrix4d;
+import org.joml.Matrix4dc;
 import org.joml.Vector3d;
+import org.joml.Vector4d;
 
 import com.shffl.assets.Ray;
 
@@ -22,6 +24,8 @@ public class Camera {
 	public Camera(Vector3d pos, Vector3d at, Vector3d up, Film f) {
 
 		eye = pos;
+		
+		System.out.println(pos + "\n" + at + "\n" + up);
 		
 		Vector3d n = eye.sub(at);
 		Vector3d u = up.cross(n);
@@ -71,22 +75,25 @@ public class Camera {
 	}
 	
 	public Ray generateRay( Sample samp, int pixelX, int pixelY) {
-				
+		//System.out.println(pixelX);
+		//System.out.println(pixelY);
 		double rayX = pixelX + samp.getOffsetX();
 		double rayY = pixelY + samp.getOffsetY();
-		double rayZ = -1.0;
+		double rayZ = -10.0;
 		
 		// Offset ray based on the dimensions of the film	
 		rayX -= (film.getWidth()/2);
 		rayY -= (film.getHeight()/2);
 			
 		
-		Vector3d rayVector = new Vector3d(rayX, rayY, rayZ);
-		rayVector.normalize();
+		Vector4d rayVector = new Vector4d(rayX, rayY, rayZ, 1);
+		
 			
 		// Convert ray back to world by multiplying by camera's rotation matrix 
-		rayVector = rayVector.mul((Matrix3dc)this.rotation.transpose());
+		//System.out.println("BINGUS " + rayVector);
+		rayVector = rayVector.mul((Matrix4dc)this.rotation.transpose());
+		rayVector.normalize();
 		
-		return new Ray(new Vector3d(0,0,0), rayVector);
+		return new Ray(new Vector3d(0,0,0), new Vector3d(rayVector.w, rayVector.x, rayVector.y));
 	}	
 }

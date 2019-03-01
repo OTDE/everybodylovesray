@@ -3,6 +3,7 @@ import java.io.IOException;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
+import org.joml.Vector4d;
 
 import com.owens.oobjloader.builder.*;
 import com.owens.oobjloader.parser.*;
@@ -58,7 +59,6 @@ public class ObjModel {
 	public void parse() {
 		try {
 			Parse objParser = new Parse(objData, filepath);
-			objData.doneParsingObj(filepath);
 		} catch(IOException e) {
 			System.out.println("File not found");
 		}
@@ -71,6 +71,8 @@ public class ObjModel {
 			// Determine if there is an intersection between the ray and face.
 			Vector3d s, edge1, edge2;
 			double coefficient, barometric1, barometric2;
+			
+			//System.out.println("testing triangle at:\n("+ f.vertices.get(0)+", "+f.vertices.get(1)+", "+f.vertices.get(2)+")");
 			
 			// Get edge vertices
 			s = subtractVertices(r.origin, f.vertices.get(0).v);
@@ -93,8 +95,10 @@ public class ObjModel {
 			}
 		
 			// The ray intersected the face, update the intersection's data
+			
 			inter.hasNormal = true;
 			inter.setNormal(new Vector3d(f.faceNormal.x, f.faceNormal.y, f.faceNormal.z));
+			System.out.println("Normal vector:" + inter.getNormal());
 			return inter;
 		}
 		
@@ -103,10 +107,12 @@ public class ObjModel {
 	}
 	
 	public Vector3d subtractVertices(VertexGeometric leftSide, VertexGeometric rightSide) {
-		return null;
+		
+		return new Vector3d(leftSide.x - rightSide.x, leftSide.y - rightSide.y, leftSide.z - rightSide.z);
 	}
 	
 	public Vector3d subtractVertices(Vector3d leftSide, VertexGeometric rightSide) {
-		return null;
+		
+		return new Vector3d(leftSide.x - rightSide.x, leftSide.y - rightSide.y, leftSide.z - rightSide.z);
 	}
 }

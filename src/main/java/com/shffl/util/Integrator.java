@@ -19,10 +19,13 @@ public class Integrator {
 	
 	public Color propagate(Ray r) {
 		
+		System.out.println("propping this damn ray, bingus: "+r.direction);
+		
 		Color rayColor = Color.GRAY;
 		
+		inter = new Intersection();
 		inter = rendCon.getScene().intersect(r, inter);
-		if(inter != null) {
+		if(inter.hasNormal) {
 			
 			// If this returned true, we hit an object
 			rayColor = getColorFromIntersection(inter);
