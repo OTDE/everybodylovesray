@@ -84,6 +84,7 @@ public class ObjModel {
 			barometric1 = coefficient * r.direction.cross(edge2).dot(s);
 			if (barometric1 < 0 || barometric1 > 1) {
 				// Return the null intersection
+				System.out.println("didn't hit it!");
 				return inter;
 			}
 			
@@ -91,6 +92,7 @@ public class ObjModel {
 			barometric2 = coefficient * s.cross(edge1).dot(r.direction);
 			if(barometric2 < 0 || barometric1 + barometric2 > 1) {
 				// Return the null intersection
+				System.out.println("didn't hit it!");
 				return inter;
 			}
 		
