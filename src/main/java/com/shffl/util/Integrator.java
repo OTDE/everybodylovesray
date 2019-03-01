@@ -21,7 +21,7 @@ public class Integrator {
 		
 		Color rayColor = Color.GRAY;
 		
-		inter = rendCon.getEnvironement().intersect(r, inter);
+		inter = rendCon.getScene().intersect(r, inter);
 		if(inter != null) {
 			
 			// If this returned true, we hit an object

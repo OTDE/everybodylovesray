@@ -4,6 +4,7 @@ import org.joml.Vector3d;
 /**
  * @author Ethan Wiederspan and Seth Chapman
  * 
+<<<<<<< HEAD
  * Scene class. GSON parses into this,
  * which represents a 3D scene and everything
  * it contains within it.
