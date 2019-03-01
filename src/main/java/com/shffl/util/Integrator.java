@@ -1,6 +1,8 @@
 package com.shffl.util;
 import java.awt.Color;
 
+import org.joml.Vector3d;
+
 import com.shffl.assets.Intersection;
 import com.shffl.assets.Ray;
 import com.shffl.control.RenderController;
@@ -17,13 +19,23 @@ public class Integrator {
 	
 	public Color propagate(Ray r) {
 		
-		if( rendCon.getEnvironement().intersect(r, inter)) {
+		Color rayColor = Color.GRAY;
+		
+		inter = rendCon.getEnvironement().intersect(r, inter);
+		if(inter != null) {
 			
 			// If this returned true, we hit an object
-			return Color.RED;
+			rayColor = getColorFromIntersection(inter);
+			
 		}
 		
-		return Color.BLUE;
+		return rayColor;
+	}
+	
+	public Color getColorFromIntersection(Intersection inter) {
+		
+		Vector3d normal = new Vector3d(inter.getNormal());
+		return new Color((float)normal.x, (float)normal.y, (float)normal.z);
 	}
 
 }

@@ -12,7 +12,7 @@ import java.util.Map;
 
 import com.google.gson.*;
 import com.shffl.assets.EnviroShell;
-import com.shffl.assets.Environment;
+import com.shffl.assets.Scene;
 import com.shffl.assets.ObjModel;
 import com.shffl.assets.ObjShell;
 
@@ -32,7 +32,7 @@ public class MasterController {
 		private String filename;
 		
 
-		public Environment enviro;
+		public Scene enviro;
 		public ObjModel[] objArray;
 		/**
 		 * Constructor for MasterController Class. Connects 
@@ -61,7 +61,7 @@ public class MasterController {
 		/**
 		 * Parses the input JSON chosen in FileView. Uses GSON 
 		 * to convert input file to wrapper class EnviroShell. 
-		 * Then build Environment Class from wrapper shell.
+		 * Then build Scene Class from wrapper shell.
 		 * 
 		 * @param path String of path to to JSON file
 		 */
@@ -82,12 +82,12 @@ public class MasterController {
 			    Gson gson = new GsonBuilder().create();
 			    JsonStreamParser fileParser = new JsonStreamParser(fileReader);
 			    
-			    // Load data into Environment Wrapper Class
+			    // Load data into Scene Wrapper Class
 			    JsonElement sceneElement = fileParser.next();
 			    EnviroShell eShell = gson.fromJson(sceneElement, EnviroShell.class);
 			    
-			    // Make Environment from wrapper
-			    enviro = eShell.environment;
+			    // Make Scene from wrapper
+			    enviro = eShell.scene;
 			    
 			    // Load the models into the ObjModel Wrapper Class
 			    sceneElement = fileParser.next();
@@ -103,7 +103,7 @@ public class MasterController {
 			    }
 			    enviro.objects = objArray;
 			    
-			    // Start rendering and displaying the Environment
+			    // Start rendering and displaying the Scene
 			    this.beginRender();
 			    
 			} catch (FileNotFoundException | UnsupportedEncodingException e) {

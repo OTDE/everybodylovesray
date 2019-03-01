@@ -1,4 +1,5 @@
 package com.shffl.util;
+import org.joml.Matrix3dc;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
@@ -46,9 +47,9 @@ public class Camera {
 	private void setRotation(Vector3d u, Vector3d v, Vector3d n) {
 
 		rotation = new Matrix4d();
-		rotation._m00(u.x); rotation._m01(u.y); rotation._m02(u.z);
-		rotation._m10(v.x); rotation._m11(v.y); rotation._m12(v.z);
-		rotation._m20(n.x); rotation._m21(n.y); rotation._m22(n.z);
+		rotation._m00(u.x); rotation._m10(u.y); rotation._m20(u.z);
+		rotation._m01(v.x); rotation._m11(v.y); rotation._m21(v.z);
+		rotation._m02(n.x); rotation._m12(n.y); rotation._m22(n.z);
 	}
 	
 	/*
@@ -73,14 +74,19 @@ public class Camera {
 				
 		double rayX = pixelX + samp.getOffsetX();
 		double rayY = pixelY + samp.getOffsetY();
-		double rayZ = 1.0;
-			
+		double rayZ = -1.0;
+		
+		// Offset ray based on the dimensions of the film	
 		rayX -= (film.getWidth()/2);
 		rayY -= (film.getHeight()/2);
 			
+		
 		Vector3d rayVector = new Vector3d(rayX, rayY, rayZ);
 		rayVector.normalize();
 			
+		// Convert ray back to world by multiplying by camera's rotation matrix 
+		rayVector = rayVector.mul((Matrix3dc)this.rotation.transpose());
+		
 		return new Ray(new Vector3d(0,0,0), rayVector);
 	}	
 }

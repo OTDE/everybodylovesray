@@ -64,18 +64,49 @@ public class ObjModel {
 		}
 	}
 	
-	public boolean intersect(Ray r, Intersection inter) {
+	public Intersection intersect(Ray r, Intersection inter) {
 		
 		for(Face f: objData.faces) {
 			
-			// do math to determine if there was an intersection
+			// Determine if there is an intersection between the ray and face.
+			Vector3d s, edge1, edge2;
+			double coefficient, barometric1, barometric2;
 			
-			// if ray hit the triangle\
-			// update intersection object
-			// set maxT of ray
-			// return true and leave the loop 
+			// Get edge vertices
+			s = subtractVertices(r.origin, f.vertices.get(0).v);
+			edge1 = subtractVertices(f.vertices.get(1).v, f.vertices.get(0).v);
+			edge2 = subtractVertices(f.vertices.get(2).v, f.vertices.get(0).v);
+			coefficient = 1 / (r.direction.cross(edge2).dot(edge1));
+			
+			// First check b1, must satisfy b1 >= 0 && b1 + b2 =< 1
+			barometric1 = coefficient * r.direction.cross(edge2).dot(s);
+			if (barometric1 < 0 || barometric1 > 1) {
+				// Return the null intersection
+				return inter;
+			}
+			
+			// Next check b2 with the same parameters
+			barometric2 = coefficient * s.cross(edge1).dot(r.direction);
+			if(barometric2 < 0 || barometric1 + barometric2 > 1) {
+				// Return the null intersection
+				return inter;
+			}
+		
+			// The ray intersected the face, update the intersection's data
+			inter.hasNormal = true;
+			inter.setNormal(new Vector3d(f.faceNormal.x, f.faceNormal.y, f.faceNormal.z));
+			return inter;
 		}
 		
-		return false;
+		return inter;
+
+	}
+	
+	public Vector3d subtractVertices(VertexGeometric leftSide, VertexGeometric rightSide) {
+		return null;
+	}
+	
+	public Vector3d subtractVertices(Vector3d leftSide, VertexGeometric rightSide) {
+		return null;
 	}
 }

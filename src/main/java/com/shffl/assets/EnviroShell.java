@@ -6,4 +6,4 @@ package com.shffl.assets;
  * can set up all the relevant fields using the
  * JSON file.
  */
-public class EnviroShell { public Environment environment; } 
+public class EnviroShell { public Scene scene; } 

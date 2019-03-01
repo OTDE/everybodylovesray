@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.shffl.assets.Environment;
+import com.shffl.assets.Scene;
 import com.shffl.assets.Ray;
 import com.shffl.util.Camera;
 import com.shffl.util.Film;
@@ -26,7 +26,7 @@ import com.shffl.util.Tags;
 public class RenderController {
 
 	private Film film;
-	private Environment enviro;
+	private Scene enviro;
 	private Camera cam;
 	private Integrator integrator;
 	
@@ -40,18 +40,18 @@ public class RenderController {
 	/**
 	 * Constructor for the RenderController Class. Connects
 	 * this controller to the master controller and the 
-	 * Environment build off of the input JSON.
+	 * Scene build off of the input JSON.
 	 * 
 	 * @param mCon MasterController to connect to 
-	 * @param env Environment built from the input JSON
+	 * @param env Scene built from the input JSON
 	 */
-	public RenderController(MasterController mCon, Environment env) {
+	public RenderController(MasterController mCon, Scene env) {
 		
-		// Connect to MasterController and Environment
+		// Connect to MasterController and Scene
 		this.mastCon = mCon;
 		this.enviro = env;
 		
-		// Build new Film based on Environment's specs
+		// Build new Film based on Scene's specs
 		film = new Film(enviro.width, enviro.height);
 		
 		integrator = new Integrator(this);
@@ -123,7 +123,7 @@ public class RenderController {
 							for(Sample s: sampArr.samples) {
 								
 								// For each sample, generate and cast ray
-								ray = cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelY());
+								ray = cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelY()); 
 								Color c = integrator.propagate(ray);
 								film.develop(s, sampArr.getPixelX(), sampArr.getPixelY(), c);				
 							}
@@ -197,7 +197,7 @@ public class RenderController {
 		running = true;
 	}// continueRendering
 	
-	public Environment getEnvironement() {
+	public Scene getEnvironement() {
 		return this.enviro;
 	}
 
