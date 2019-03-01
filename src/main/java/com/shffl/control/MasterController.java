@@ -11,8 +11,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.google.gson.*;
-import com.shffl.assets.EnviroShell;
-import com.shffl.assets.Environment;
+import com.shffl.assets.SceneShell;
+import com.shffl.assets.Scene;
 import com.shffl.assets.ObjModel;
 import com.shffl.assets.ObjShell;
 
@@ -32,7 +32,7 @@ public class MasterController {
 		private String filename;
 		
 
-		public Environment enviro;
+		public Scene enviro;
 		public ObjModel[] objArray;
 		/**
 		 * Constructor for MasterController Class. Connects 
@@ -84,10 +84,10 @@ public class MasterController {
 			    
 			    // Load data into Environment Wrapper Class
 			    JsonElement sceneElement = fileParser.next();
-			    EnviroShell eShell = gson.fromJson(sceneElement, EnviroShell.class);
+			    SceneShell shell = gson.fromJson(sceneElement, SceneShell.class);
 			    
 			    // Make Environment from wrapper
-			    enviro = eShell.environment;
+			    enviro = shell.environment;
 			    
 			    // Load the models into the ObjModel Wrapper Class
 			    sceneElement = fileParser.next();

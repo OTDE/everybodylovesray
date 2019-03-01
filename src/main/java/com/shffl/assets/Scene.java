@@ -8,7 +8,7 @@ import org.joml.Vector3d;
  * which represents a 3D scene and everything
  * it contains within it.
  */
-public class Environment {
+public class Scene {
 
 	public int height;
 	public int width;

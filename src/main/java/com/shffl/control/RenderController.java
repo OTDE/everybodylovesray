@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.shffl.assets.Environment;
+import com.shffl.assets.Scene;
 import com.shffl.assets.Ray;
 import com.shffl.util.Camera;
 import com.shffl.util.Film;
@@ -26,7 +26,7 @@ import com.shffl.util.Tags;
 public class RenderController {
 
 	private Film film;
-	private Environment enviro;
+	private Scene scene;
 	private Camera cam;
 	private Integrator integrator;
 	
@@ -45,17 +45,17 @@ public class RenderController {
 	 * @param mCon MasterController to connect to 
 	 * @param env Environment built from the input JSON
 	 */
-	public RenderController(MasterController mCon, Environment env) {
+	public RenderController(MasterController mCon, Scene env) {
 		
 		// Connect to MasterController and Environment
 		this.mastCon = mCon;
-		this.enviro = env;
+		this.scene = env;
 		
 		// Build new Film based on Environment's specs
-		film = new Film(enviro.width, enviro.height);
+		film = new Film(scene.width, scene.height);
 		
 		integrator = new Integrator(this);
-		cam = new Camera(enviro.getAt(), enviro.getEye(), enviro.getUp(), film);
+		cam = new Camera(scene.getAt(), scene.getEye(), scene.getUp(), film);
 	
 	}// RenderController
 
@@ -65,7 +65,7 @@ public class RenderController {
 	public void display() {
 		
 		// Build the Rendering GUI
-		rendView = new RenderView(this, enviro.width, enviro.height);
+		rendView = new RenderView(this, scene.width, scene.height);
 		
 		// Call the render loop
 		this.startDisplaying();
@@ -92,8 +92,8 @@ public class RenderController {
 				Ray ray = null;
 				
 				// Split pixels into squares
-				int n = enviro.width / 5;
-				int m = enviro.height / 5;
+				int n = scene.width / 5;
+				int m = scene.height / 5;
 				
 				int tileX, tileY, xStart, xEnd, yStart, yEnd;
 				for(int i = 0; i < 25; i++) {
@@ -105,7 +105,7 @@ public class RenderController {
 						xEnd = ((tileX+1)*n)-1;
 					} else {
 						xStart = tileX*n;
-						xEnd = ((tileX+1)*n) + enviro.width % 5;
+						xEnd = ((tileX+1)*n) + scene.width % 5;
 						xEnd -=1;
 					}
 					if(tileY != 4 ) {
@@ -113,7 +113,7 @@ public class RenderController {
 						yEnd = ((tileY+1)*m)-1;
 					} else {
 						yStart = tileY*m;
-						yEnd = ((tileY+1)*m) + enviro.height % 5;
+						yEnd = ((tileY+1)*m) + scene.height % 5;
 	 					yEnd -= 1;
 					}
 					
@@ -197,8 +197,8 @@ public class RenderController {
 		running = true;
 	}// continueRendering
 	
-	public Environment getEnvironement() {
-		return this.enviro;
+	public Scene getScene() {
+		return this.scene;
 	}
 
 }

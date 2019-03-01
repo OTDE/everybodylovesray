@@ -17,7 +17,7 @@ public class Integrator {
 	
 	public Color propagate(Ray r) {
 		
-		if( rendCon.getEnvironement().intersect(r, inter)) {
+		if( rendCon.getScene().intersect(r, inter)) {
 			
 			// If this returned true, we hit an object
 			return Color.RED;
