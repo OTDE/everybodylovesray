@@ -101,8 +101,11 @@ public class MasterController {
 			    for(int i = 0; i < objArray.length; i++) {
 			    	objArray[i].build();
 			    	objArray[i].parse();
+			    	//objArray[i].translatePoints();
 			    }
 			    enviro.objects = objArray;
+			    
+			    
 			    
 			    // Start rendering and displaying the Scene
 			    this.beginRender();

@@ -76,10 +76,7 @@ public class Scene {
 		// Call intersect on every object in the scene
 		for(ObjModel obj: objects) {
 			inter = obj.intersect(r, inter);
-			if(inter.hasNormal) {
-				return inter;
-			}
 		}
-		return null;
+		return inter;
 	}	
 }

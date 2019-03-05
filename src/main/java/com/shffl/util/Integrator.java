@@ -18,9 +18,7 @@ public class Integrator {
 	}
 	
 	public Color propagate(Ray r) {
-		
-		System.out.println("propping this damn ray, bingus: "+r.direction);
-		
+				
 		Color rayColor = Color.GRAY;
 		
 		inter = new Intersection();
@@ -37,8 +35,28 @@ public class Integrator {
 	
 	public Color getColorFromIntersection(Intersection inter) {
 		
-		Vector3d normal = new Vector3d(inter.getNormal());
-		return new Color((float)normal.x, (float)normal.y, (float)normal.z);
+		Vector3d n = new Vector3d(inter.getNormal());
+		double[] normal = {n.x, n.y, n.z};
+		
+		for(int i = 0; i < 3; i++){
+			//System.out.println("blap");
+			if(normal[i] < 0){
+				normal[i] = -normal[i];
+			}
+			if(normal[i] > 1){
+				normal[i] = 1/normal[i];
+			} 
+		}
+		
+		Color c = new Color(0,0,0);
+		try {
+			 c = new Color((float)normal[0], (float)normal[1], (float)normal[2]);
+		}catch(IllegalArgumentException e){
+			System.out.println("Bad Color: ("+normal[0]+","+normal[1]+","+normal[2]+")");
+		}
+		
+		return c;
+		
 	}
 
 }

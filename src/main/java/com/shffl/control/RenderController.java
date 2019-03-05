@@ -56,7 +56,7 @@ public class RenderController {
 		film = new Film(scene.width, scene.height);
 		
 		integrator = new Integrator(this);
-		cam = new Camera(scene.getAt(), scene.getEye(), scene.getUp(), film);
+		cam = new Camera(scene.getEye(), scene.getAt(), scene.getUp(), film);
 	
 	}// RenderController
 
@@ -88,7 +88,7 @@ public class RenderController {
 				System.out.println("began render");
 				// Starts the Thread, calling its run method
 				
-				Sampler sampler = new Sampler(10);
+				Sampler sampler = new Sampler(1); // Increase number of Samples later in the process
 				SampleArray sampArr = null;
 				Ray ray = null;
 				
@@ -156,11 +156,6 @@ public class RenderController {
 				while(running) {
 					
 					rendView.updateView(film.getRenderedImage());
-					
-					// Wait 2 seconds
-					try { displayThread.sleep(10); } catch (InterruptedException e) {
-						e.printStackTrace();
-					}
 				}
 			}//run
 		});//thread
