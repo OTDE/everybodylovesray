@@ -126,7 +126,7 @@ public class ObjModel {
 
 	}
 		
-	public Vector3d translatePoint(VertexGeometric v) {
+	public Vector3d translatePoint(Vector3d v) {
 		
 		Vector3d point = new Vector3d(v.x, v.y, v.z);
 		point.mulPosition(this.objRotate);
