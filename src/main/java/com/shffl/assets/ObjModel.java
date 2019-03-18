@@ -36,6 +36,12 @@ public class ObjModel {
 	private transient Vector4d objTranslate;
 	private transient Matrix4d objRotate;
 	
+	
+	/**
+	 * Builds this ObjModel from the data collected from the .obj file. 
+	 * Constructs transformation from the rotation and translation in the 
+	 * JSON file. 
+	 */
 	public void build() {
 		objData = new Build();
 		try {
@@ -54,11 +60,9 @@ public class ObjModel {
 			System.out.println("Rotation Input matrix is incorrectly sized");
 		}
 		
-		
 		objData.setTranslation(this.objRotate);
 		System.out.println("obj rotate: \n"+objRotate);
-		
-	}
+	}// build
 	
 	
 	
@@ -68,8 +72,18 @@ public class ObjModel {
 		} catch(IOException e) {
 			System.out.println("File not found");
 		}
-	}
+	}// parse
 	
+	
+	/**
+	 * Checks a given ray against all the objects in a scene for intersections. 
+	 * Utilizes barycentric coordinates to make an intersection test against 
+	 * each triangle in each model contained in the scene. 
+	 * 
+	 * @param r Ray cast on the scene
+	 * @param inter Intsection to fill with information about the triangle hit 
+	 *        by the ray
+	 */
 	public Intersection intersect(Ray r, Intersection inter) {
 		
 		int i = 0;
@@ -85,28 +99,23 @@ public class ObjModel {
 			v1 = new Vector3d(f.vertices.get(1).v);
 			v2 = new Vector3d(f.vertices.get(2).v);
 			
-			//System.out.println("using points: \n"+v0+" "+v1+" "+v2);
-			
 			s = (new Vector3d(r.origin)).sub(v0); 
-			
 			edge1 = (new Vector3d(v1)).sub(v0);   
 			edge2 = (new Vector3d(v2)).sub(v0);  
 			
 			rayDirection = new Vector3d(r.direction);
 			denom = (rayDirection.cross(edge2).dot(edge1));
-
 			coefficient = 1 / denom;
+			
 			// First check b1
 			rayDirection = new Vector3d(r.direction);
 			barycentric1 = coefficient * rayDirection.cross(edge2).dot(s);
-			//System.out.println("b1: "+barycentric1);
+			
 			if (barycentric1 > 0 && barycentric1 < 1) {
-				
+			    
 				// Next check b2 with the same parameters
 				rayDirection = new Vector3d(r.direction);
 				barycentric2 = coefficient * s.cross(edge1).dot(rayDirection);
-				
-				//System.out.println("b2: "+barycentric2);
 				
 				if(barycentric2 > 0 && barycentric1 + barycentric2 <= 1) {
 					
@@ -122,10 +131,7 @@ public class ObjModel {
 			}else {
 				// Didn't hit
 			}
-			
-			
 		}
 		return inter;
-
-	}
+	}// intersect
 }
