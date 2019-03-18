@@ -43,7 +43,7 @@ public class Camera {
 		System.out.println("ViewMatrix: \n"+this.viewMatrix());
 		this.film = f;
 		
-	}
+	}// Constructor
 
 	/**
 	 * Builds the camera's rotation matrix based on imput from JSON file
@@ -58,7 +58,7 @@ public class Camera {
 		rotation._m00(u.x); rotation._m01(u.y); rotation._m02(u.z);
 		rotation._m10(v.x); rotation._m11(v.y); rotation._m12(v.z);
 		rotation._m20(n.x); rotation._m21(n.y); rotation._m22(n.z);
-	}
+	}// setRotation
 	
 	/*
 	 * Returns the view matrix of this camera generated via
@@ -72,8 +72,17 @@ public class Camera {
 		view.translate(this.eye);
 		
 		return view;
-	}
+	}// viewMatrix
 	
+	/**
+	 * Constructor for the RenderController Class. Connects
+	 * this controller to the master controller and the 
+	 * Scene build off of the input JSON.
+	 * 
+	 * @param samp Sample containing the subpixel location of the ray 
+	 * @param pixelX, pixelY, ints containing the ray directions x & y 
+	 *        coordinates in pixel space
+	 */
 	public Ray generateRay( Sample samp, int pixelX, int pixelY) {
 		
 		//double pX = pixelX + samp.getOffsetX();
@@ -96,6 +105,6 @@ public class Camera {
 		rayDirection.normalize();
 
 		return new Ray(rayOrigin, rayDirection);
-	}	
+	}// generateRay
 
 }
