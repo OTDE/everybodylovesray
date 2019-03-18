@@ -2,6 +2,7 @@ package com.shffl.util;
 import org.joml.Matrix3dc;
 import org.joml.Matrix4d;
 import org.joml.Matrix4dc;
+import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
 
@@ -23,22 +24,25 @@ public class Camera {
 	
 	public Camera(Vector3d pos, Vector3d at, Vector3d up, Film f) {
 
-		eye = pos;
+		eye = new Vector3d(pos);
 		
-		System.out.println(pos + "\n" + at + "\n" + up);
+		System.out.println("INPUT:\npos:"+pos + "\nat:" + at + "\nup:" + up);
 		
-		Vector3d n = eye.sub(at);
-		Vector3d u = up.cross(n);
-		Vector3d v = n.cross(u);
+		Vector3d n = (new Vector3d(pos)).sub(at);
+		Vector3d u = (new Vector3d(up)).cross(n);
+		Vector3d v = (new Vector3d(n)).cross(u);
   		n.normalize();
-		u.normalize();
+		//u.normalize();
 		v.normalize();
 		this.setRotation(u, v, n);
 		
 		System.out.println("Made camera,");
 		System.out.println("pos:"+eye);
-		System.out.println("rotation:"+rotation);
+		System.out.println("u: "+u+", v: "+v+", n:"+n);
+		System.out.println("rotation:\n"+rotation);
+		System.out.println("ViewMatrix: \n"+this.viewMatrix());
 		this.film = f;
+		
 	}
 
 	/**
@@ -51,9 +55,9 @@ public class Camera {
 	private void setRotation(Vector3d u, Vector3d v, Vector3d n) {
 
 		rotation = new Matrix4d();
-		rotation._m00(u.x); rotation._m10(u.y); rotation._m20(u.z);
-		rotation._m01(v.x); rotation._m11(v.y); rotation._m21(v.z);
-		rotation._m02(n.x); rotation._m12(n.y); rotation._m22(n.z);
+		rotation._m00(u.x); rotation._m01(u.y); rotation._m02(u.z);
+		rotation._m10(v.x); rotation._m11(v.y); rotation._m12(v.z);
+		rotation._m20(n.x); rotation._m21(n.y); rotation._m22(n.z);
 	}
 	
 	/*
@@ -63,37 +67,35 @@ public class Camera {
 	 * @return Matrix4d containing the view matrix
 	 */
 	private Matrix4d viewMatrix() {
-
-		Matrix4d m = new Matrix4d();
-		m._m30(this.eye.x);
-		m._m30(this.eye.y);
-		m._m30(this.eye.z);
+				
+		Matrix4d view = new Matrix4d(this.rotation);
+		view.translate(this.eye);
 		
-		this.rotation.mul(m,m);
-		
-		return m;
+		return view;
 	}
 	
 	public Ray generateRay( Sample samp, int pixelX, int pixelY) {
-		//System.out.println(pixelX);
-		//System.out.println(pixelY);
-		double rayX = pixelX + samp.getOffsetX();
-		double rayY = pixelY + samp.getOffsetY();
-		double rayZ = -10.0;
 		
-		// Offset ray based on the dimensions of the film	
-		rayX -= (film.getWidth()/2);
-		rayY -= (film.getHeight()/2);
-			
+		//double pX = pixelX + samp.getOffsetX();
+		//double pY = pixelY + samp.getOffsetX();
 		
-		Vector4d rayVector = new Vector4d(rayX, rayY, rayZ, 1);
+		double pX = pixelX + 0.5;
+		double pY = pixelY + 0.5;
 		
-			
-		// Convert ray back to world by multiplying by camera's rotation matrix 
-		//System.out.println("BINGUS " + rayVector);
-		rayVector = rayVector.mul((Matrix4dc)this.rotation.transpose());
-		rayVector.normalize();
+		double aspectRatio = film.getWidth() / (double)film.getHeight();
+		double scale = Math.tan(0.78); // convert fov to radians
 		
-		return new Ray(new Vector3d(0,0,0), new Vector3d(rayVector.w, rayVector.x, rayVector.y));
+		// Get camera coordinates of pixels
+		double camX = ((2 * pX / film.getWidth()) - 1);//  * scale * aspectRatio;
+		double camY = (1 - (2 * pY / film.getHeight()));// * scale;
+
+		// Get direction and origin in world coordinates
+		Vector3d rayDirection = (new Vector3d(camX, camY, -1)).mulDirection(this.viewMatrix());
+		Vector3d rayOrigin = new Vector3d(this.eye);
+	
+		rayDirection.normalize();
+
+		return new Ray(rayOrigin, rayDirection);
 	}	
+
 }

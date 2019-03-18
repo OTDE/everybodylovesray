@@ -33,28 +33,34 @@ public class ObjModel {
 	 */
 	
 	private transient Build objData;
-	private transient Vector3d objTranslate;
+	private transient Vector4d objTranslate;
 	private transient Matrix4d objRotate;
 	
 	public void build() {
 		objData = new Build();
 		try {
-			objTranslate = new Vector3d(translation[0],
-						translation[1], translation[2]);
+			objTranslate = new Vector4d(translation[0],
+						translation[1], translation[2],1);
 		} catch(IndexOutOfBoundsException e) {
-			System.out.println("Input array is incorrectly sized");
+			System.out.println("Translation Input array is incorrectly sized");
 		}
 		try {
 			objRotate = new Matrix4d(
 					rotation[0], rotation[1], rotation[2], rotation[3],
 					rotation[4], rotation[5], rotation[6], rotation[7],
 					rotation[8], rotation[9], rotation[10], rotation[11], 
-					rotation[12], rotation[13], rotation[14], rotation[15] );
+					objTranslate.x, objTranslate.y, objTranslate.z, rotation[15] );
 		} catch(IndexOutOfBoundsException e) {
-			System.out.println("Input matrix is incorrectly sized");
+			System.out.println("Rotation Input matrix is incorrectly sized");
 		}
 		
+		
+		objData.setTranslation(this.objRotate);
+		System.out.println("obj rotate: \n"+objRotate);
+		
 	}
+	
+	
 	
 	public void parse() {
 		try {
@@ -66,55 +72,60 @@ public class ObjModel {
 	
 	public Intersection intersect(Ray r, Intersection inter) {
 		
+		int i = 0;
 		for(Face f: objData.faces) {
+			i++;
 			
 			// Determine if there is an intersection between the ray and face.
-			Vector3d s, edge1, edge2;
-			double coefficient, barometric1, barometric2;
-			
-			//System.out.println("testing triangle at:\n("+ f.vertices.get(0)+", "+f.vertices.get(1)+", "+f.vertices.get(2)+")");
-			
+			Vector3d s, edge1, edge2, v0, v1, v2, rayDirection;
+			double denom, coefficient, barycentric1, barycentric2;
+
 			// Get edge vertices
-			s = subtractVertices(r.origin, f.vertices.get(0).v);
-			edge1 = subtractVertices(f.vertices.get(1).v, f.vertices.get(0).v);
-			edge2 = subtractVertices(f.vertices.get(2).v, f.vertices.get(0).v);
-			coefficient = 1 / (r.direction.cross(edge2).dot(edge1));
+			v0 = new Vector3d(f.vertices.get(0).v);
+			v1 = new Vector3d(f.vertices.get(1).v);
+			v2 = new Vector3d(f.vertices.get(2).v);
 			
-			// First check b1, must satisfy b1 >= 0 && b1 + b2 =< 1
-			barometric1 = coefficient * r.direction.cross(edge2).dot(s);
-			if (barometric1 < 0 || barometric1 > 1) {
-				// Return the null intersection
-				System.out.println("didn't hit it!");
-				return inter;
+			//System.out.println("using points: \n"+v0+" "+v1+" "+v2);
+			
+			s = (new Vector3d(r.origin)).sub(v0); 
+			
+			edge1 = (new Vector3d(v1)).sub(v0);   
+			edge2 = (new Vector3d(v2)).sub(v0);  
+			
+			rayDirection = new Vector3d(r.direction);
+			denom = (rayDirection.cross(edge2).dot(edge1));
+
+			coefficient = 1 / denom;
+			// First check b1
+			rayDirection = new Vector3d(r.direction);
+			barycentric1 = coefficient * rayDirection.cross(edge2).dot(s);
+			//System.out.println("b1: "+barycentric1);
+			if (barycentric1 > 0 && barycentric1 < 1) {
+				
+				// Next check b2 with the same parameters
+				rayDirection = new Vector3d(r.direction);
+				barycentric2 = coefficient * s.cross(edge1).dot(rayDirection);
+				
+				//System.out.println("b2: "+barycentric2);
+				
+				if(barycentric2 > 0 && barycentric1 + barycentric2 <= 1) {
+					
+					// The ray intersected the face, update the intersection's data
+					f.calculateTriangleNormal();
+					inter.hasNormal = true;
+					f.faceNormal.normalize();
+					inter.setNormal(new Vector3d(f.faceNormal.x, f.faceNormal.y, f.faceNormal.z));
+					return inter;
+				}else {
+					// Didn't hit
+				}
+			}else {
+				// Didn't hit
 			}
 			
-			// Next check b2 with the same parameters
-			barometric2 = coefficient * s.cross(edge1).dot(r.direction);
-			if(barometric2 < 0 || barometric1 + barometric2 > 1) {
-				// Return the null intersection
-				System.out.println("didn't hit it!");
-				return inter;
-			}
-		
-			// The ray intersected the face, update the intersection's data
 			
-			inter.hasNormal = true;
-			inter.setNormal(new Vector3d(f.faceNormal.x, f.faceNormal.y, f.faceNormal.z));
-			System.out.println("Normal vector:" + inter.getNormal());
-			return inter;
 		}
-		
 		return inter;
 
-	}
-	
-	public Vector3d subtractVertices(VertexGeometric leftSide, VertexGeometric rightSide) {
-		
-		return new Vector3d(leftSide.x - rightSide.x, leftSide.y - rightSide.y, leftSide.z - rightSide.z);
-	}
-	
-	public Vector3d subtractVertices(Vector3d leftSide, VertexGeometric rightSide) {
-		
-		return new Vector3d(leftSide.x - rightSide.x, leftSide.y - rightSide.y, leftSide.z - rightSide.z);
 	}
 }
