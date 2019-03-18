@@ -43,7 +43,7 @@ public class Camera {
 		System.out.println("ViewMatrix: \n"+this.viewMatrix());
 		this.film = f;
 		
-	}
+	}// Constructor
 
 	/**
 	 * Builds the camera's rotation matrix based on imput from JSON file
@@ -58,7 +58,7 @@ public class Camera {
 		rotation._m00(u.x); rotation._m01(u.y); rotation._m02(u.z);
 		rotation._m10(v.x); rotation._m11(v.y); rotation._m12(v.z);
 		rotation._m20(n.x); rotation._m21(n.y); rotation._m22(n.z);
-	}
+	}// setRotation
 	
 	/*
 	 * Returns the view matrix of this camera generated via
@@ -72,27 +72,39 @@ public class Camera {
 		view.translate(this.eye);
 		
 		return view;
-	}
+	}// viewMatrix
 	
+	/**
+	 * Constructor for the RenderController Class. Connects
+	 * this controller to the master controller and the 
+	 * Scene build off of the input JSON.
+	 * 
+	 * @param samp Sample containing the subpixel location of the ray 
+	 * @param pixelX, pixelY, ints containing the ray directions x & y 
+	 *        coordinates in pixel space
+	 */
 	public Ray generateRay( Sample samp, int pixelX, int pixelY) {
 		
+		//double pX = pixelX + samp.getOffsetX();
+		//double pY = pixelY + samp.getOffsetX();
 		
-		double aspectRatio = film.getHeight() / (double)film.getHeight();   // imageWidth / (float)imageHeight;
-		double fov = 60 / 2 * Math.PI / 180; // convert fov to radians
+		double pX = pixelX + 0.5;
+		double pY = pixelY + 0.5;
+		
+		double aspectRatio = film.getWidth() / (double)film.getHeight();
+		double scale = Math.tan(0.78); // convert fov to radians
 		
 		// Get camera coordinates of pixels
-		double camX = (2 * (((double)pixelX + samp.getOffsetX()) / film.getWidth()) - 1) * Math.tan(fov) * aspectRatio;
-		double camY = (1 - 2 * (((double)pixelY + samp.getOffsetY()) / film.getHeight()))* Math.tan(fov);
-	
+		double camX = ((2 * pX / film.getWidth()) - 1);//  * scale * aspectRatio;
+		double camY = (1 - (2 * pY / film.getHeight()));// * scale;
+
 		// Get direction and origin in world coordinates
 		Vector3d rayDirection = (new Vector3d(camX, camY, -1)).mulDirection(this.viewMatrix());
 		Vector3d rayOrigin = new Vector3d(this.eye);
 	
 		rayDirection.normalize();
-		
-		//System.out.println("dir: "+rayDirection+"\norigin:"+rayOrigin);
 
 		return new Ray(rayOrigin, rayDirection);
-	}	
+	}// generateRay
 
 }
