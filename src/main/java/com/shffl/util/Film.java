@@ -47,42 +47,26 @@ public class Film {
 		return renderedImage;
 	}// getRenderedImage
 	
-	public void testDevelop(SampleArray samps) {
-
-		int x = samps.getPixelX();
-		int y = samps.getPixelY();
-		//System.out.println("("+x+","+y+")");
-		renderedImage.setRGB(x,y,Color.BLUE.getRGB());
-		try {
-			Thread.sleep(1);
-	 	} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
-	}
-	
-	/**
-	 * Draws the entire buffered image red, used to test 
-	 * various systems.
-	 */
-	public void makeTestImage() {
 		
-		System.out.println("making a test Image");
-		Graphics2D g2d = renderedImage.createGraphics();
-        g2d.setColor(Color.RED);
-        g2d.fillRect(0, 0, renderedImage.getWidth(), renderedImage.getHeight());
-        g2d.dispose();
-        
-        System.out.println("done with Test image!");
-	}// makeTestImage
-	
 	public int getWidth() {	return this.width; }
 	
 	public int getHeight() { return this.height; }
 
 	public void develop(Sample s, int pixelX, int pixelY, Color c) {
 		
-		// TODO: more robust calculations for developing nearby pixels
-		renderedImage.setRGB(pixelX,pixelY,c.getRGB());		
+		double rX = s.getOffsetX() + pixelX;
+		double rY = s.getOffsetX() + pixelY;
+		double pixelCenterX = 0.5 + pixelX;
+		double pixelCenterY = 0.5 + pixelY;
+						
+		if(renderedImage.getRGB(pixelX, pixelY) == Color.GRAY.getRGB() || renderedImage.getRGB(pixelX, pixelY) == 0 ) {
+			renderedImage.setRGB(pixelX,pixelY,c.getRGB());	
+		}else {
+			//System.out.println("color there");
+		}
+	}
+	
+	public Color blendColor(double weight, Color inFilm, Color fromRay) {
+		return null;
 	}
 }

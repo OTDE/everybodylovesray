@@ -54,9 +54,9 @@ public class ObjModel {
 			System.out.println("Rotation Input matrix is incorrectly sized");
 		}
 		
+		
+		objData.setTranslation(this.objRotate);
 		System.out.println("obj rotate: \n"+objRotate);
-		
-		
 		
 	}
 	
@@ -77,23 +77,25 @@ public class ObjModel {
 			i++;
 			
 			// Determine if there is an intersection between the ray and face.
-			Vector3d s, edge1, edge2, v0, v1, v2, rayDirection, rayOrigin;
-			double coefficient, barycentric1, barycentric2;
+			Vector3d s, edge1, edge2, v0, v1, v2, rayDirection;
+			double denom, coefficient, barycentric1, barycentric2;
 
-			
 			// Get edge vertices
-			v0 = translatePoint(f.vertices.get(0).v);
-			v1 = translatePoint(f.vertices.get(1).v);
-			v2 = translatePoint(f.vertices.get(2).v);
+			v0 = new Vector3d(f.vertices.get(0).v);
+			v1 = new Vector3d(f.vertices.get(1).v);
+			v2 = new Vector3d(f.vertices.get(2).v);
 			
-			s = (new Vector3d(r.origin)).sub(v1); 
+			//System.out.println("using points: \n"+v0+" "+v1+" "+v2);
+			
+			s = (new Vector3d(r.origin)).sub(v0); 
 			
 			edge1 = (new Vector3d(v1)).sub(v0);   
 			edge2 = (new Vector3d(v2)).sub(v0);  
 			
 			rayDirection = new Vector3d(r.direction);
-			coefficient = 1 / (rayDirection.cross(edge2).dot(edge1));
-			
+			denom = (rayDirection.cross(edge2).dot(edge1));
+
+			coefficient = 1 / denom;
 			// First check b1
 			rayDirection = new Vector3d(r.direction);
 			barycentric1 = coefficient * rayDirection.cross(edge2).dot(s);
@@ -106,11 +108,12 @@ public class ObjModel {
 				
 				//System.out.println("b2: "+barycentric2);
 				
-				if(barycentric2 > 0 && barycentric2 < 1 & barycentric1 + barycentric2 <= 1) {
+				if(barycentric2 > 0 && barycentric1 + barycentric2 <= 1) {
 					
 					// The ray intersected the face, update the intersection's data
 					f.calculateTriangleNormal();
 					inter.hasNormal = true;
+					f.faceNormal.normalize();
 					inter.setNormal(new Vector3d(f.faceNormal.x, f.faceNormal.y, f.faceNormal.z));
 					return inter;
 				}else {
@@ -124,13 +127,5 @@ public class ObjModel {
 		}
 		return inter;
 
-	}
-		
-	public Vector3d translatePoint(VertexGeometric v) {
-		
-		Vector3d point = new Vector3d(v.x, v.y, v.z);
-		point.mulPosition(this.objRotate);
-		
-		return point;
 	}
 }

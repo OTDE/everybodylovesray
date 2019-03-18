@@ -39,7 +39,6 @@ public class Integrator {
 		double[] normal = {n.x, n.y, n.z};
 		
 		for(int i = 0; i < 3; i++){
-			//System.out.println("blap");
 			if(normal[i] < 0){
 				normal[i] = -normal[i];
 			}

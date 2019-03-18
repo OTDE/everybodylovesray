@@ -126,6 +126,8 @@ public class RenderController {
 								// For each sample, generate and cast ray
 								ray = cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelY()); 
 								Color c = integrator.propagate(ray);
+								
+								
 								film.develop(s, sampArr.getPixelX(), sampArr.getPixelY(), c);				
 							}
 						}
