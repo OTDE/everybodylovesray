@@ -7,6 +7,10 @@ import org.joml.Vector3d;
 import com.owens.oobjloader.builder.Face;
 import com.owens.oobjloader.builder.FaceVertex;
 
+/**
+ * Octree data structure for optimizing Face processing.
+ * @author Ethan Wiederspan and Seth Chapman
+ */
 public class Octree {
 	
 	private static final int ZERO = 0;
@@ -19,6 +23,11 @@ public class Octree {
 	public BoundingBox bounds;
 	public int numObjects = 0;
 	
+	/**
+	 * Constructor with a given set of Faces.
+	 * @param faces the set of faces to add to this Octree
+	 * @param bounds the global bounds.
+	 */
 	public Octree(Face[] faces, BoundingBox bounds) {
 		this(bounds);
 		for(Face f : faces) {
@@ -26,6 +35,10 @@ public class Octree {
 		}
 	}
 	
+	/**
+	 * Default constructor.
+	 * @param bounds the global bounds.
+	 */
 	public Octree(BoundingBox bounds) {
 		this.bounds = bounds;
 		faces = new ArrayList<Face>();
@@ -33,15 +46,20 @@ public class Octree {
 		numObjects++;
 	}
 	
+	/**
+	 * Recursively inserts Face into Octree.
+	 * @param face the Face to be inserted.
+	 * @return True for successful insertion at a given depth, false otherwise
+	 */
 	public boolean insert(Face face) {
 		if(!isInside(face, bounds))
 			return false;
 		if(!hasSubdivided) {
 			if(faces.size() > MAX_FACES) {
-				this.subdivide(); // Subdivide if this node is over capacity and hasn't already
+				this.subdivide();
 				ArrayList<Face> facesCopy = new ArrayList<Face>(faces);
 				for(Face f : facesCopy) {
-					if(insert(f)) { //if this is successfully inserted into a lower level
+					if(insert(f)) {
 						faces.remove(f);
 					}
 				}
@@ -62,6 +80,9 @@ public class Octree {
 		return true;
 	}
 	
+    /**
+     * Divides a leaf node into 8 leaves, with the original node as the root.
+     */
     private void subdivide() { 
         if (hasSubdivided) { 
             System.err.println("We have already subdivided this."); 
@@ -86,6 +107,11 @@ public class Octree {
         } 
     } 
     
+    /**
+     * Query method for accessing elements in an Octree based on proximity.
+     * @param range the BoundingBox to check for faces inside.
+     * @return a list of all Faces within range of the input BoundingBox.
+     */
     public ArrayList<Face> getFacesWithinRange(BoundingBox range) { 
         ArrayList<Face> facesInRange = new ArrayList<Face>(); 
         for (Face f : faces) { 
@@ -103,6 +129,13 @@ public class Octree {
         return facesInRange; 
     }
 	
+	/**
+	 * Method for checking if a face is completely inside a bounding box.
+	 * Checks if all of the face's vertices are inside the bounding box.
+	 * @param face the Face to check against.
+	 * @param bounds the BoundingBox to check that the face is inside of.
+	 * @return if the Face is completely inside the BoundingBox.
+	 */
 	public boolean isInside(Face face, BoundingBox bounds) {
 		 for(FaceVertex vertex: face.vertices) {
 			 if(!bounds.containsPoint(vertex.v)) {
