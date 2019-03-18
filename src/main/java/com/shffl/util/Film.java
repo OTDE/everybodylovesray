@@ -52,6 +52,16 @@ public class Film {
 	
 	public int getHeight() { return this.height; }
 
+    /**
+	 * Constructor for the RenderController Class. Connects
+	 * this controller to the master controller and the 
+	 * Scene build off of the input JSON.
+	 * 
+	 * @param s Sample containing the subpixel location of the ray
+	 * @param pixelX, pixelY int X and Y coordinates of of the ray directions in
+	 *        pixel space
+	 * @param c Color derived from the intersection
+	 */
 	public void develop(Sample s, int pixelX, int pixelY, Color c) {
 		
 		double rX = s.getOffsetX() + pixelX;
@@ -64,7 +74,7 @@ public class Film {
 		}else {
 			//System.out.println("color there");
 		}
-	}
+	}// develop
 	
 	public Color blendColor(double weight, Color inFilm, Color fromRay) {
 		return null;
