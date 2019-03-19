@@ -32,7 +32,7 @@ public class ObjModel {
 	 * the method is called.
 	 */
 	
-	private transient Build objData;
+	public transient Build objData;
 	private transient Vector4d objTranslate;
 	private transient Matrix4d objRotate;
 	
@@ -75,63 +75,5 @@ public class ObjModel {
 	}// parse
 	
 	
-	/**
-	 * Checks a given ray against all the objects in a scene for intersections. 
-	 * Utilizes barycentric coordinates to make an intersection test against 
-	 * each triangle in each model contained in the scene. 
-	 * 
-	 * @param r Ray cast on the scene
-	 * @param inter Intsection to fill with information about the triangle hit 
-	 *        by the ray
-	 */
-	public Intersection intersect(Ray r, Intersection inter) {
-		
-		int i = 0;
-		for(Face f: objData.faces) {
-			i++;
-			
-			// Determine if there is an intersection between the ray and face.
-			Vector3d s, edge1, edge2, v0, v1, v2, rayDirection;
-			double denom, coefficient, barycentric1, barycentric2;
 
-			// Get edge vertices
-			v0 = new Vector3d(f.vertices.get(0).v);
-			v1 = new Vector3d(f.vertices.get(1).v);
-			v2 = new Vector3d(f.vertices.get(2).v);
-			
-			s = (new Vector3d(r.origin)).sub(v0); 
-			edge1 = (new Vector3d(v1)).sub(v0);   
-			edge2 = (new Vector3d(v2)).sub(v0);  
-			
-			rayDirection = new Vector3d(r.direction);
-			denom = (rayDirection.cross(edge2).dot(edge1));
-			coefficient = 1 / denom;
-			
-			// First check b1
-			rayDirection = new Vector3d(r.direction);
-			barycentric1 = coefficient * rayDirection.cross(edge2).dot(s);
-			
-			if (barycentric1 > 0 && barycentric1 < 1) {
-			    
-				// Next check b2 with the same parameters
-				rayDirection = new Vector3d(r.direction);
-				barycentric2 = coefficient * s.cross(edge1).dot(rayDirection);
-				
-				if(barycentric2 > 0 && barycentric1 + barycentric2 <= 1) {
-					
-					// The ray intersected the face, update the intersection's data
-					f.calculateTriangleNormal();
-					inter.hasNormal = true;
-					f.faceNormal.normalize();
-					inter.setNormal(new Vector3d(f.faceNormal.x, f.faceNormal.y, f.faceNormal.z));
-					return inter;
-				}else {
-					// Didn't hit
-				}
-			}else {
-				// Didn't hit
-			}
-		}
-		return inter;
-	}// intersect
 }

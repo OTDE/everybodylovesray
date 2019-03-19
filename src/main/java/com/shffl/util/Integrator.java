@@ -22,6 +22,7 @@ public class Integrator {
 		Color rayColor = Color.GRAY;
 		
 		inter = new Intersection();
+		rendCon.getScene().initializeFaces();
 		inter = rendCon.getScene().intersect(r, inter);
 		if(inter.hasNormal) {
 			
@@ -50,7 +51,7 @@ public class Integrator {
 		Color c = new Color(0,0,0);
 		try {
 			 c = new Color((float)normal[0], (float)normal[1], (float)normal[2]);
-		}catch(IllegalArgumentException e){
+		} catch(IllegalArgumentException e) {
 			System.out.println("Bad Color: ("+normal[0]+","+normal[1]+","+normal[2]+")");
 		}
 		
