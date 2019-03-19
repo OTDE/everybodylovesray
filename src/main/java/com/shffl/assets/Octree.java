@@ -114,19 +114,33 @@ public class Octree {
      */
     public ArrayList<Face> getFacesWithinRange(BoundingBox range) { 
         ArrayList<Face> facesInRange = new ArrayList<Face>(); 
-        for (Face f : faces) { 
+        for(Face f : faces) { 
             if (isInside(f, range)) { 
                 facesInRange.add(f); 
             } 
         } 
-        if (hasSubdivided) { 
-            for (Octree octree : children) { 
+        if(hasSubdivided) { 
+            for(Octree octree : children) { 
                 if (octree.bounds.isOverlappingWith(range)) { 
                     facesInRange.addAll(octree.getFacesWithinRange(range)); 
                 } 
             }  
         } 
         return facesInRange; 
+    }
+    
+    public ArrayList<Face> getFacesIntersectingWith(Ray r) {
+    	ArrayList<Face> facesIntersectingWithRay = new ArrayList<Face>();
+    	if(hasSubdivided) {
+    		for(Octree octree : children) {
+    			if(octree.intersectsWith(r)) {
+    				facesIntersectingWithRay.addAll(octree.getFacesIntersectingWith(r));
+    			}
+    		}
+    	}
+    	if(this.intersectsWith(r))
+    		facesIntersectingWithRay.addAll(faces);
+    	return facesIntersectingWithRay;
     }
 	
 	/**
@@ -143,5 +157,27 @@ public class Octree {
 			 }
 		 }
 		 return true;
+	}
+	
+	public boolean intersectsWith(Ray r) {
+		double tMin = Double.NEGATIVE_INFINITY;
+		double tMax = Double.POSITIVE_INFINITY;
+		
+		double t1 = (this.bounds.pMin.x - r.origin.x) * r.inverse.x;
+		double t2 = (this.bounds.pMax.x - r.origin.x) * r.inverse.x;
+		
+		tMin = Math.max(tMin, Math.min(t1, t2));
+		tMax = Math.min(tMax, Math.max(t1, t2));
+		
+		t1 = (this.bounds.pMin.y - r.origin.y) * r.inverse.y;
+		t2 = (this.bounds.pMax.y - r.origin.y) * r.inverse.y;
+
+		tMin = Math.max(tMin, Math.min(t1, t2));
+		tMax = Math.min(tMax, Math.max(t1, t2));
+
+		t1 = (this.bounds.pMin.z - r.origin.z) * r.inverse.z;
+		t2 = (this.bounds.pMax.z - r.origin.z) * r.inverse.z;
+		
+		return tMax > Math.max(tMin, 0.0);
 	}
 }
