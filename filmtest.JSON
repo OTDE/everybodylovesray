@@ -1,10 +1,10 @@
 {
-	"environment": {
+	"scene": {
 			"height": 420,
 			"width": 690,
-			"eye": [0.01, 0.3, -0.5],
-			"at": [1, 1, 3.5],
-			"up": [0, 1, 0]
+			"eyeInput": [20, 20, 20],
+			"atInput": [0, 0, 0],
+			"upInput": [0, 1, 0]
 	}
 }
 

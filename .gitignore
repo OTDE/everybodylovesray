@@ -3,6 +3,8 @@
 /build/
 
 .settings/
-.classpath/
-.project/
+/*.classpath
+/*.project
 .class/
+/filmtest.png
+/FilmTest.png

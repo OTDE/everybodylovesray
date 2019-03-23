@@ -1,5 +1,6 @@
 package com.shffl.assets;
 import org.joml.Vector3d;
+import org.joml.Vector4d;
 
 public class Ray {
 	
@@ -16,7 +17,9 @@ public class Ray {
 	}
 	
 	
-	public Vector3d positionAtTime(double t) {
+	/*
+	public Vector4d positionAtTime(double t) {
 		return origin.add(direction.mul(t));
 	}
+	*/
 }

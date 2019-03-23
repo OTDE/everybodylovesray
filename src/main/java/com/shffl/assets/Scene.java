@@ -4,11 +4,12 @@ import org.joml.Vector3d;
 /**
  * @author Ethan Wiederspan and Seth Chapman
  * 
- * Environment class. GSON parses into this,
+<<<<<<< HEAD
+ * Scene class. GSON parses into this,
  * which represents a 3D scene and everything
  * it contains within it.
  */
-public class Environment {
+public class Scene {
 
 	public int height;
 	public int width;
@@ -70,15 +71,12 @@ public class Environment {
 		return up;
 	}
 	
-	public boolean intersect(Ray r, Intersection inter) {
+	public Intersection intersect(Ray r, Intersection inter) {
 		
-		// Call intersect on every object in the environment
+		// Call intersect on every object in the scene
 		for(ObjModel obj: objects) {
-			if(obj.intersect(r, inter)) {
-				return true;
-			}
+			inter = obj.intersect(r, inter);
 		}
-		
-		return false;
+		return inter;
 	}	
 }

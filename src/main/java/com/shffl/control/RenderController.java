@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.shffl.assets.Environment;
+import com.shffl.assets.Scene;
 import com.shffl.assets.Ray;
 import com.shffl.util.Camera;
 import com.shffl.util.Film;
@@ -26,7 +26,8 @@ import com.shffl.util.Tags;
 public class RenderController {
 
 	private Film film;
-	private Environment enviro;
+
+	private Scene scene;
 	private Camera cam;
 	private Integrator integrator;
 	
@@ -40,22 +41,22 @@ public class RenderController {
 	/**
 	 * Constructor for the RenderController Class. Connects
 	 * this controller to the master controller and the 
-	 * Environment build off of the input JSON.
+	 * Scene build off of the input JSON.
 	 * 
 	 * @param mCon MasterController to connect to 
-	 * @param env Environment built from the input JSON
+	 * @param env Scene built from the input JSON
 	 */
-	public RenderController(MasterController mCon, Environment env) {
+	public RenderController(MasterController mCon, Scene env) {
 		
-		// Connect to MasterController and Environment
+		// Connect to MasterController and Scene
 		this.mastCon = mCon;
-		this.enviro = env;
+		this.scene = env;
 		
 		// Build new Film based on Environment's specs
-		film = new Film(enviro.width, enviro.height);
+		film = new Film(scene.width, scene.height);
 		
 		integrator = new Integrator(this);
-		cam = new Camera(enviro.getAt(), enviro.getEye(), enviro.getUp(), film);
+		cam = new Camera(scene.getEye(), scene.getAt(), scene.getUp(), film);
 	
 	}// RenderController
 
@@ -65,7 +66,7 @@ public class RenderController {
 	public void display() {
 		
 		// Build the Rendering GUI
-		rendView = new RenderView(this, enviro.width, enviro.height);
+		rendView = new RenderView(this, scene.width, scene.height);
 		
 		// Call the render loop
 		this.startDisplaying();
@@ -87,13 +88,13 @@ public class RenderController {
 				System.out.println("began render");
 				// Starts the Thread, calling its run method
 				
-				Sampler sampler = new Sampler(10);
+				Sampler sampler = new Sampler(1); // Increase number of Samples later in the process
 				SampleArray sampArr = null;
 				Ray ray = null;
 				
 				// Split pixels into squares
-				int n = enviro.width / 5;
-				int m = enviro.height / 5;
+				int n = scene.width / 5;
+				int m = scene.height / 5;
 				
 				int tileX, tileY, xStart, xEnd, yStart, yEnd;
 				for(int i = 0; i < 25; i++) {
@@ -105,7 +106,7 @@ public class RenderController {
 						xEnd = ((tileX+1)*n)-1;
 					} else {
 						xStart = tileX*n;
-						xEnd = ((tileX+1)*n) + enviro.width % 5;
+						xEnd = ((tileX+1)*n) + scene.width % 5;
 						xEnd -=1;
 					}
 					if(tileY != 4 ) {
@@ -113,7 +114,7 @@ public class RenderController {
 						yEnd = ((tileY+1)*m)-1;
 					} else {
 						yStart = tileY*m;
-						yEnd = ((tileY+1)*m) + enviro.height % 5;
+						yEnd = ((tileY+1)*m) + scene.height % 5;
 	 					yEnd -= 1;
 					}
 					
@@ -123,8 +124,10 @@ public class RenderController {
 							for(Sample s: sampArr.samples) {
 								
 								// For each sample, generate and cast ray
-								ray = cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelY());
+								ray = cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelY()); 
 								Color c = integrator.propagate(ray);
+								
+								
 								film.develop(s, sampArr.getPixelX(), sampArr.getPixelY(), c);				
 							}
 						}
@@ -155,11 +158,6 @@ public class RenderController {
 				while(running) {
 					
 					rendView.updateView(film.getRenderedImage());
-					
-					// Wait 2 seconds
-					try { displayThread.sleep(10); } catch (InterruptedException e) {
-						e.printStackTrace();
-					}
 				}
 			}//run
 		});//thread
@@ -197,8 +195,9 @@ public class RenderController {
 		running = true;
 	}// continueRendering
 	
-	public Environment getEnvironement() {
-		return this.enviro;
+
+	public Scene getScene() {
+		return this.scene;
 	}
 
 }

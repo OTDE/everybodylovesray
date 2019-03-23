@@ -1,6 +1,10 @@
 package com.shffl.util;
+import org.joml.Matrix3dc;
 import org.joml.Matrix4d;
+import org.joml.Matrix4dc;
+import org.joml.Quaterniondc;
 import org.joml.Vector3d;
+import org.joml.Vector4d;
 
 import com.shffl.assets.Ray;
 
@@ -20,11 +24,13 @@ public class Camera {
 	
 	public Camera(Vector3d pos, Vector3d at, Vector3d up, Film f) {
 
-		eye = pos;
+		eye = new Vector3d(pos);
 		
-		Vector3d n = eye.sub(at);
-		Vector3d u = up.cross(n);
-		Vector3d v = n.cross(u);
+		System.out.println("INPUT:\npos:"+pos + "\nat:" + at + "\nup:" + up);
+		
+		Vector3d n = (new Vector3d(pos)).sub(at);
+		Vector3d u = (new Vector3d(up)).cross(n);
+		Vector3d v = (new Vector3d(n)).cross(u);
   		n.normalize();
 		u.normalize();
 		v.normalize();
@@ -32,9 +38,12 @@ public class Camera {
 		
 		System.out.println("Made camera,");
 		System.out.println("pos:"+eye);
-		System.out.println("rotation:"+rotation);
+		System.out.println("u: "+u+", v: "+v+", n:"+n);
+		System.out.println("rotation:\n"+rotation);
+		System.out.println("ViewMatrix: \n"+this.viewMatrix());
 		this.film = f;
-	}
+		
+	}// Constructor
 
 	/**
 	 * Builds the camera's rotation matrix based on imput from JSON file
@@ -49,7 +58,7 @@ public class Camera {
 		rotation._m00(u.x); rotation._m01(u.y); rotation._m02(u.z);
 		rotation._m10(v.x); rotation._m11(v.y); rotation._m12(v.z);
 		rotation._m20(n.x); rotation._m21(n.y); rotation._m22(n.z);
-	}
+	}// setRotation
 	
 	/*
 	 * Returns the view matrix of this camera generated via
@@ -58,29 +67,44 @@ public class Camera {
 	 * @return Matrix4d containing the view matrix
 	 */
 	private Matrix4d viewMatrix() {
-
-		Matrix4d m = new Matrix4d();
-		m._m30(this.eye.x);
-		m._m30(this.eye.y);
-		m._m30(this.eye.z);
-		
-		this.rotation.mul(m,m);
-		
-		return m;
-	}
-	
-	public Ray generateRay( Sample samp, int pixelX, int pixelY) {
 				
-		double rayX = pixelX + samp.getOffsetX();
-		double rayY = pixelY + samp.getOffsetY();
-		double rayZ = 1.0;
-			
-		rayX -= (film.getWidth()/2);
-		rayY -= (film.getHeight()/2);
-			
-		Vector3d rayVector = new Vector3d(rayX, rayY, rayZ);
-		rayVector.normalize();
-			
-		return new Ray(new Vector3d(0,0,0), rayVector);
-	}	
+		Matrix4d view = new Matrix4d(this.rotation);
+		view.translate(this.eye);
+		
+		return view;
+	}// viewMatrix
+	
+	/**
+	 * Constructor for the RenderController Class. Connects
+	 * this controller to the master controller and the 
+	 * Scene build off of the input JSON.
+	 * 
+	 * @param samp Sample containing the subpixel location of the ray 
+	 * @param pixelX, pixelY, ints containing the ray directions x & y 
+	 *        coordinates in pixel space
+	 */
+	public Ray generateRay( Sample samp, int pixelX, int pixelY) {
+		
+		//double pX = pixelX + samp.getOffsetX();
+		//double pY = pixelY + samp.getOffsetX();
+		
+		double pX = pixelX + 0.5;
+		double pY = pixelY + 0.5;
+		
+		double aspectRatio = film.getWidth() / (double)film.getHeight();
+		double scale = Math.tan(Math.toRadians(60/2)); // convert fov to radians
+		
+		// Get camera coordinates of pixels
+		double camX = ((2 * pX / film.getWidth()) - 1) * scale * aspectRatio;
+		double camY = (1 - (2 * pY / film.getHeight())) * scale;
+
+		// Get direction and origin in world coordinates
+		Vector3d rayDirection = (new Vector3d(camX, camY, -1)).mulDirection(this.viewMatrix());
+		Vector3d rayOrigin = new Vector3d(this.eye);
+	
+		rayDirection.normalize();
+
+		return new Ray(rayOrigin, rayDirection);
+	}// generateRay
+
 }
