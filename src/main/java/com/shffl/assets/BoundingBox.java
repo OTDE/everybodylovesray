@@ -76,17 +76,17 @@ public class BoundingBox {
 		 	case 0:
 		 		return pMin;
 		 	case 1:
-		 		return new Vector3d(pMin.x, pMax.y, pMin.z);
-		 	case 2:
-		 		return new Vector3d(pMax.x, pMax.y, pMin.z);
-		 	case 3:
-		 		return new Vector3d(pMax.x, pMin.y, pMin.z);
-		 	case 4:
-		 		return new Vector3d(pMax.x, pMin.y, pMax.z);
-		 	case 5:
 		 		return new Vector3d(pMin.x, pMin.y, pMax.z);
-		 	case 6:
+		 	case 2:
+		 		return new Vector3d(pMin.x, pMax.y, pMin.z);
+		 	case 3:
 		 		return new Vector3d(pMin.x, pMax.y, pMax.z);
+		 	case 4:
+		 		return new Vector3d(pMax.x, pMin.y, pMin.z);
+		 	case 5:
+		 		return new Vector3d(pMax.x, pMin.y, pMax.z);
+		 	case 6:
+		 		return new Vector3d(pMax.x, pMax.y, pMin.z);
 		 	case 7:
 		 		return pMax;
 		 	default:
@@ -214,6 +214,18 @@ public class BoundingBox {
 		 else
 			 return 2;
 	 }
+	
+	public double getCenterX() {
+		return (this.pMin.x + this.pMax.x) / 2;
+	}
+	
+	public double getCenterY() {
+		return (this.pMin.y + this.pMax.y) / 2;
+	}
+	
+	public double getCenterZ() {
+		return (this.pMin.z + this.pMax.z) / 2;
+	}
 	 
 	 /**
 	 * Does linear interpolation on this box with a point.
