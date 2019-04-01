@@ -32,7 +32,7 @@ public class ObjModel {
 	 * the method is called.
 	 */
 	
-	private transient Build objData;
+	public transient Build objData;
 	private transient Vector4d objTranslate;
 	private transient Matrix4d objRotate;
 	
@@ -73,87 +73,5 @@ public class ObjModel {
 			System.out.println("File not found");
 		}
 	}// parse
-	
-	
-	/**
-	 * Checks a given ray against all the objects in a scene for intersections. 
-	 * Utilizes barycentric coordinates to make an intersection test against 
-	 * each triangle in each model contained in the scene. 
-	 * 
-	 * @param r Ray cast on the scene
-	 * @param inter Intsection to fill with information about the triangle hit 
-	 *        by the ray
-	 */
-	public Intersection intersect(Ray r, Intersection inter) {
-		
-		for(Face f: objData.faces) {
-			
-			// Determine if there is an intersection between the ray and face.
-			Vector3d s, edge1, edge2, v0, v1, v2, normal, rayDirection;
-			double denom, coefficient, barycentric1, barycentric2;
 
-			// Get edge vertices
-			v0 = new Vector3d(f.vertices.get(0).v);
-			v1 = new Vector3d(f.vertices.get(1).v);
-			v2 = new Vector3d(f.vertices.get(2).v);
-			
-			s = (new Vector3d(r.origin)).sub(v0); 
-			edge1 = (new Vector3d(v1)).sub(v0);   
-			edge2 = (new Vector3d(v2)).sub(v0);  
-			
-			rayDirection = new Vector3d(r.direction);
-			denom = (rayDirection.cross(edge2).dot(edge1));
-			coefficient = 1 / denom;
-			
-
-			// For calculating Point Normal later
-			normal = (new Vector3d(edge1)).cross(edge2);
-			
-			// Get intersection point
-			double d = (new Vector3d(normal)).dot(v0);
-			double t = ((new Vector3d(normal)).dot(r.origin) + d);
-			double nDotDirection = -1 * (new Vector3d(normal).dot(r.direction));
-			t = t / nDotDirection;
-			Vector3d P = (new Vector3d(r.direction).mul(t));
-			P = P.add(r.origin);
-			
-			// First check b1
-			rayDirection = new Vector3d(r.direction);
-			barycentric1 = coefficient * rayDirection.cross(edge2).dot(s);
-			
-			if (barycentric1 > 0 && barycentric1 < 1) {
-			    
-				// Next check b2 with the same parameters
-				rayDirection = new Vector3d(r.direction);
-				barycentric2 = coefficient * s.cross(edge1).dot(rayDirection);
-				
-				if(barycentric2 > 0 && barycentric2 < 1 && barycentric1 + barycentric2 <= 1) {
-							
-					//Vector3d norm = new Vector3d(barycentric1, barycentric2, 1 - barycentric1 - barycentric2);
-					//norm.normalize();
-					//inter.setNormal(norm);
-					
-					// TEMP, just for use with obj. models that don't include point normals
-					v0.normalize();
-					v1.normalize();
-					v2.normalize();
-					
-					v0.mul(1-barycentric1-barycentric2);
-					v1.mul(barycentric1);
-					v2.mul(barycentric2);
-					
-					Vector3d norm = new Vector3d(v0).add(v1).add(v2);
-					norm.normalize();
-					inter.setNormal(norm);
-					
-					
-				}else {
-					// Didn't hit
-				}
-			}else {
-				// Didn't hit
-			}
-		}
-		return inter;
-	}// intersect
 }

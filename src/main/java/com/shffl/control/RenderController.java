@@ -91,7 +91,7 @@ public class RenderController {
 			public void run() {
 				System.out.println("began render");
 				// Starts the Thread, calling its run method
-				
+				scene.initializeFaces();
 				Sampler sampler = new Sampler(10); // Increase number of Samples later in the process
 				SampleArray sampArr = null;
 				Ray ray = null;
