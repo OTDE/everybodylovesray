@@ -6,7 +6,11 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.joml.Vector2d;
+import org.joml.Vector3d;
+
 import com.shffl.assets.Scene;
+import com.shffl.assets.PixelColor;
 import com.shffl.assets.Ray;
 import com.shffl.util.Camera;
 import com.shffl.util.Film;
@@ -69,7 +73,7 @@ public class RenderController {
 		rendView = new RenderView(this, scene.width, scene.height);
 		
 		// Call the render loop
-		this.startDisplaying();
+		//this.startDisplaying();
 		this.startRendering();
 		
 	}// display
@@ -88,7 +92,7 @@ public class RenderController {
 				System.out.println("began render");
 				// Starts the Thread, calling its run method
 				
-				Sampler sampler = new Sampler(1); // Increase number of Samples later in the process
+				Sampler sampler = new Sampler(10); // Increase number of Samples later in the process
 				SampleArray sampArr = null;
 				Ray ray = null;
 				
@@ -121,22 +125,42 @@ public class RenderController {
 					for(int a = xStart; a <= xEnd; a++) {
 						for(int b = yStart; b <= yEnd; b++) {
 							sampArr = sampler.getPixelSamples(a, b);
+							PixelColor color = new PixelColor();
 							for(Sample s: sampArr.samples) {
 								
 								// For each sample, generate and cast ray
 								ray = cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelY()); 
-								Color c = integrator.propagate(ray);
+								Vector3d rgb = integrator.propagate(ray);
 								
-								
-								film.develop(s, sampArr.getPixelX(), sampArr.getPixelY(), c);				
+								double weight = getWeight(s, sampArr.getPixelX(), sampArr.getPixelY());
+								color.updateColor(rgb, weight);
 							}
+							
+							// develop film and update view
+							film.develop(a,b,color.getColor());
+							rendView.updateView(film.getRenderedImage());
 						}
 					}
 				}		
 			}//run		
-		});//thread	
+		});// renderThread	
 		renderThread.start();
 	}//startRendering
+
+	protected double getWeight(Sample s, int pX, int pY) {
+		
+		Vector2d middle = new Vector2d(pX+0.5, pY+0.5);
+		Vector2d point = new Vector2d(pX+s.getOffsetX(), pY+s.getOffsetY());
+		
+		double weight = point.distance(middle);
+				
+		if(weight < 0) {
+			weight = -weight;
+		}
+		weight = 1 - weight;
+	
+		return weight;
+	}
 
 	/**
 	 * The loop that retrieves the BufferedImage periodically 
@@ -182,7 +206,6 @@ public class RenderController {
 		    System.out.println("ERROR WHILE WRITING: " + e.getMessage());
 		}		
 		System.out.println("done writing!");
-		continueRendering();
 	}// exportImage
 	
 	/**

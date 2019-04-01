@@ -69,14 +69,13 @@ public class Film {
 		double pixelCenterX = 0.5 + pixelX;
 		double pixelCenterY = 0.5 + pixelY;
 						
-		if(renderedImage.getRGB(pixelX, pixelY) == Color.GRAY.getRGB() || renderedImage.getRGB(pixelX, pixelY) == 0 ) {
-			renderedImage.setRGB(pixelX,pixelY,c.getRGB());	
-		}else {
-			//System.out.println("color there");
-		}
+			
 	}// develop
-	
-	public Color blendColor(double weight, Color inFilm, Color fromRay) {
-		return null;
+
+	public void develop(int x, int y, Color color) {
+		renderedImage.setRGB(x,y,color.getRGB());
+		
 	}
+	
+
 }

@@ -1,5 +1,6 @@
 package com.shffl.util;
 import java.awt.Color;
+import java.util.Vector;
 
 import org.joml.Vector3d;
 
@@ -17,44 +18,64 @@ public class Integrator {
 		this.rendCon = rCon;
 	}
 	
-	public Color propagate(Ray r) {
+	public Vector3d propagate(Ray r) {
 				
-		Color rayColor = Color.GRAY;
+		Vector3d rayColor = new Vector3d(1, 1, 1);
 		
 		inter = new Intersection();
 		inter = rendCon.getScene().intersect(r, inter);
 		if(inter.hasNormal) {
 			
 			// If this returned true, we hit an object
-			rayColor = getColorFromIntersection(inter);
+			rayColor = getRGBFromIntersection(inter);
 			
 		}
 		
 		return rayColor;
 	}
 	
-	public Color getColorFromIntersection(Intersection inter) {
+	public Vector3d getRGBPhong(Intersection inter) {
+		
+		// WOP VERSRION --------------------
+		
+		Vector3d diffuse, specular;
+		
+		Vector3d lightPosition = new Vector3d();
+		Vector3d lightDirection = new Vector3d(lightPosition);
+		//lightDirection.sub(scene.camera.eye);
+		
+		double lDotN = lightDirection.dot(inter.getNormal());
+		if(lDotN < 0) {
+			lDotN = 0;
+		}else {
+			
+		}
+		
+		// Calculate diffuse 
+		// diffuse = new Vector3d(inter.material.diffuse).mul(lDotN);
+		
+		// Calculate specular
+		
+		return null;
+	}
+	
+	public Vector3d getRGBFromIntersection(Intersection inter) {
 		
 		Vector3d n = new Vector3d(inter.getNormal());
-		double[] normal = {n.x, n.y, n.z};
-		
-		for(int i = 0; i < 3; i++){
-			if(normal[i] < 0){
-				normal[i] = -normal[i];
+		n.normalize();
+				
+		for(int i = 0; i < 3; i++) {
+			n.setComponent(i, (n.get(i)+1)/2 );
+			/*
+			if(n.get(i) < 0) {
+				n.setComponent(i, -n.get(i));
+			}else {
+				
 			}
-			if(normal[i] > 1){
-				normal[i] = 1/normal[i];
-			} 
+			*/
 		}
-		
-		Color c = new Color(0,0,0);
-		try {
-			 c = new Color((float)normal[0], (float)normal[1], (float)normal[2]);
-		}catch(IllegalArgumentException e){
-			System.out.println("Bad Color: ("+normal[0]+","+normal[1]+","+normal[2]+")");
-		}
-		
-		return c;
+			
+		return n;
 		
 	}
 

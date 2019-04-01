@@ -89,7 +89,7 @@ public class ObjModel {
 		for(Face f: objData.faces) {
 			
 			// Determine if there is an intersection between the ray and face.
-			Vector3d s, edge1, edge2, v0, v1, v2, rayDirection;
+			Vector3d s, edge1, edge2, v0, v1, v2, normal, rayDirection;
 			double denom, coefficient, barycentric1, barycentric2;
 
 			// Get edge vertices
@@ -105,6 +105,18 @@ public class ObjModel {
 			denom = (rayDirection.cross(edge2).dot(edge1));
 			coefficient = 1 / denom;
 			
+
+			// For calculating Point Normal later
+			normal = (new Vector3d(edge1)).cross(edge2);
+			
+			// Get intersection point
+			double d = (new Vector3d(normal)).dot(v0);
+			double t = ((new Vector3d(normal)).dot(r.origin) + d);
+			double nDotDirection = -1 * (new Vector3d(normal).dot(r.direction));
+			t = t / nDotDirection;
+			Vector3d P = (new Vector3d(r.direction).mul(t));
+			P = P.add(r.origin);
+			
 			// First check b1
 			rayDirection = new Vector3d(r.direction);
 			barycentric1 = coefficient * rayDirection.cross(edge2).dot(s);
@@ -115,14 +127,26 @@ public class ObjModel {
 				rayDirection = new Vector3d(r.direction);
 				barycentric2 = coefficient * s.cross(edge1).dot(rayDirection);
 				
-				if(barycentric2 > 0 && barycentric1 + barycentric2 <= 1) {
+				if(barycentric2 > 0 && barycentric2 < 1 && barycentric1 + barycentric2 <= 1) {
+							
+					//Vector3d norm = new Vector3d(barycentric1, barycentric2, 1 - barycentric1 - barycentric2);
+					//norm.normalize();
+					//inter.setNormal(norm);
 					
-					// The ray intersected the face, update the intersection's data
-					f.calculateTriangleNormal();
-					inter.hasNormal = true;
-					f.faceNormal.normalize();
-					inter.setNormal(new Vector3d(f.faceNormal.x, f.faceNormal.y, f.faceNormal.z));
-					return inter;
+					// TEMP, just for use with obj. models that don't include point normals
+					v0.normalize();
+					v1.normalize();
+					v2.normalize();
+					
+					v0.mul(1-barycentric1-barycentric2);
+					v1.mul(barycentric1);
+					v2.mul(barycentric2);
+					
+					Vector3d norm = new Vector3d(v0).add(v1).add(v2);
+					norm.normalize();
+					inter.setNormal(norm);
+					
+					
 				}else {
 					// Didn't hit
 				}
