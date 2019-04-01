@@ -16,6 +16,7 @@ public class Intersection {
 	
 	public void setNormal(Vector3d n) {
 		this.normal = n;
+		this.hasNormal = true;
 	}
 	public Vector3d getNormal() {
 		return this.normal;
