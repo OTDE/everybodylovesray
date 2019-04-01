@@ -22,7 +22,6 @@ public class Integrator {
 		Color rayColor = Color.GRAY;
 		
 		inter = new Intersection();
-		rendCon.getScene().initializeFaces();
 		inter = rendCon.getScene().intersect(r, inter);
 		if(inter.hasNormal) {
 			

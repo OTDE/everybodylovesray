@@ -18,7 +18,6 @@ public class Ray {
 		this.inverse = new Vector3d(1/d.x, 1/d.y, 1/d.z);
 	}
 	
-	
 	/*
 	public Vector4d positionAtTime(double t) {
 		return origin.add(direction.mul(t));

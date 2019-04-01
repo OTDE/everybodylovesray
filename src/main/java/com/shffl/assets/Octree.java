@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.joml.Vector3d;
 
 import com.owens.oobjloader.builder.Face;
-import com.owens.oobjloader.builder.FaceVertex;
 
 /**
  * Octree data structure for optimizing Face processing.
@@ -14,11 +13,15 @@ import com.owens.oobjloader.builder.FaceVertex;
 public class Octree {
 	
 	private static final int ZERO = 0;
+	private static final int ONE = 1;
 	private static final int TWO = 2;
+	private static final int FOUR = 4;
 	private static final int EIGHT = 8;
-	protected static final int MAX_FACES = 10;
+	private static final int THIRTEEN = 13;
+	protected static final int MAX_FACES = 75;
 	public ArrayList<Face> faces;
 	private boolean hasSubdivided = false;
+	public boolean isEmpty = true;
 	private Octree[] children;
 	public BoundingBox bounds;
 	public int numObjects = 0;
@@ -28,9 +31,11 @@ public class Octree {
 	 * @param faces the set of faces to add to this Octree
 	 * @param bounds the global bounds.
 	 */
-	public Octree(Face[] faces, BoundingBox bounds) {
+	public Octree(ArrayList<Face> faces, BoundingBox bounds) {
 		this(bounds);
 		for(Face f : faces) {
+			if(faces.indexOf(f) % 100 == 0)
+				System.out.printf("%d faces loaded!\n", faces.indexOf(f));
 			insert(f);
 		}
 	}
@@ -52,30 +57,33 @@ public class Octree {
 	 * @return True for successful insertion at a given depth, false otherwise
 	 */
 	public boolean insert(Face face) {
-		if(!isInside(face, bounds))
+		if(!areOverlapping(face, bounds))
 			return false;
 		if(!hasSubdivided) {
-			if(faces.size() > MAX_FACES) {
-				this.subdivide();
+			if(faces.size() > MAX_FACES) {//if it's subdividing time
+				this.subdivide(); //do it
 				ArrayList<Face> facesCopy = new ArrayList<Face>(faces);
-				for(Face f : facesCopy) {
-					if(insert(f)) {
-						faces.remove(f);
+				for(Face f : facesCopy) { //make a copy of all the faces you have
+					if(insert(f)) {       //if inserted into the leaf
+						faces.remove(f);  //pop it out of this one
 					}
 				}
 			} else {
-				faces.add(face);
+				faces.add(face); //otherwise add to the leaf
+				isEmpty = false; //let 'em know it isn't empty
 			} 
-		} else {
+		} else { //octree has subdivided
+
 			boolean inLowerLevel = false;
-			for(Octree thisOctree : children) {
-				if(thisOctree.insert(face)) {
+			for(Octree thisOctreeChild : children) { //look at children
+				if(thisOctreeChild.insert(face)) { //successful insertion in lower level
 					inLowerLevel = true;
 				}
 			}
-			if(!inLowerLevel) {
-				faces.add(face);
-			}
+			if(!inLowerLevel) {  //if this intersects with none of the children:
+				faces.add(face); //this should never happen. a face will intersect
+			}					 //with one of the octants if it's in the bounding box for all 8
+			isEmpty = false;     //parent node always has leaves with children
 		}
 		return true;
 	}
@@ -99,7 +107,7 @@ public class Octree {
         BoundingBox maxBox = new BoundingBox(maxBoxMin, maxBoxMax);
  
         BoundingBox[] newBounds = new BoundingBox[EIGHT]; 
-        children = new Octree[8]; 
+        children = new Octree[EIGHT]; 
         
         for (int i = ZERO; i < EIGHT; i++) { 
             newBounds[i] = new BoundingBox(minBox.getCorner(i), maxBox.getCorner(i));
@@ -112,51 +120,164 @@ public class Octree {
      * @param range the BoundingBox to check for faces inside.
      * @return a list of all Faces within range of the input BoundingBox.
      */
-    public ArrayList<Face> getFacesWithinRange(BoundingBox range) { 
+    public ArrayList<Face> getFacesWithin(Ray r) { 
         ArrayList<Face> facesInRange = new ArrayList<Face>(); 
-        for(Face f : faces) { 
-            if (isInside(f, range)) { 
-                facesInRange.add(f); 
-            } 
-        } 
-        if(hasSubdivided) { 
-            for(Octree octree : children) { 
-                if (octree.bounds.isOverlappingWith(range)) { 
-                    facesInRange.addAll(octree.getFacesWithinRange(range)); 
-                } 
-            }  
-        } 
-        return facesInRange; 
+        if(this.intersectsWith(r)) {
+        	if(hasSubdivided) {
+        		for(Octree kids : children) {
+        			if(kids.intersectsWith(r))
+        				facesInRange.addAll(kids.getFacesWithin(r));
+        		}
+        	} else {
+        		return this.faces;
+        	}
+        }
+        return facesInRange;
     }
     
-    public ArrayList<Face> getFacesIntersectingWith(Ray r) {
-    	ArrayList<Face> facesIntersectingWithRay = new ArrayList<Face>();
-    	if(hasSubdivided) {
-    		for(Octree octree : children) {
-    			if(octree.intersectsWith(r)) {
-    				facesIntersectingWithRay.addAll(octree.getFacesIntersectingWith(r));
-    			}
-    		}
+    /*
+    public ArrayList<Face> getFacesIntersectingWith(Vector3d originInput, Vector3d direction, int layer) {
+    	if(!this.bounds.containsPoint(originInput)) {
+    		double tAtBounds = this.getIntersectPoint(origin, inverse)
     	}
-    	if(this.intersectsWith(r))
-    		facesIntersectingWithRay.addAll(faces);
-    	return facesIntersectingWithRay;
-    }
+    		
+    	if(this.isEmpty && this.children == null) {
+    		System.out.println("nope");
+    		return null;
+    	} // swing and a miss, no intersection
+    	Vector3d originCopy = new Vector3d(originInput); // copy origin
+    	if(!this.faces.isEmpty()) {
+			System.out.println("we hit something"); // if we're at a leaf, get all its faces
+    		return this.faces;
+    	}
+    	//make bounding box planes thru center of box
+    	Plane xP = new Plane(new Vector3d(1.0, 0.0, 0.0), this.bounds.getCenterX()); 
+    	Plane yP = new Plane(new Vector3d(0.0, 1.0, 0.0), this.bounds.getCenterY());
+    	Plane zP = new Plane(new Vector3d(0.0, 0.0, 1.0), this.bounds.getCenterZ());
+    	
+    	//determine side of each plane origin is on (true if on or in front of plane, false if behind)
+    	boolean sideX = xP.pointDistance(originCopy) >= ZERO;
+    	boolean sideY = yP.pointDistance(originCopy) >= ZERO;
+    	boolean sideZ = zP.pointDistance(originCopy) >= ZERO;
+    	
+    	double xDist, yDist, zDist;                               //for each axis
+    	if(sideX == (direction.x < 0)) {                          //if the direction points toward the plane
+    		xDist = xP.intersectsWith(originCopy, direction);
+    		System.out.println(xDist);
+    	} //get the point where it intersects
+    	else													  //otherwise
+    		xDist = Double.POSITIVE_INFINITY;					  //set to positive infinity
+    	if(sideY == (direction.y < 0)) {
+    		yDist = yP.intersectsWith(originCopy, direction);
+    	}
+    	else
+    		yDist = Double.POSITIVE_INFINITY;
+    	if(sideZ == (direction.z < 0)) {
+    		zDist = zP.intersectsWith(originCopy, direction);
+    	}
+    	else
+    		zDist = Double.POSITIVE_INFINITY;
+    	//set octant id values
+    	int oidX, oidY, oidZ;
+
+    	for(int i = ZERO; i < FOUR; i++) {
+        	oidX = ZERO;
+        	oidY = ZERO;
+        	oidZ = ZERO;
+        	if(sideX)
+        		oidX = FOUR;
+        	if(sideY)
+        		oidY = TWO;
+        	if(sideZ)
+        		oidZ = ONE;
+    		int idx = oidX + oidY + oidZ; //pick the octant you're looking at
+    		System.out.printf("We're in octant %d, layer %d\n", idx, layer);
+    		printChildStatus();
+    		ArrayList<Face> result = this.children[idx].getFacesIntersectingWith(originCopy, direction, layer + 1); //get faces
+    		if(result != null) // if it's an actual result, return it
+    			return result;
+    		double minDist = Math.min(Math.min(xDist, yDist), zDist); //find shortest distance for origin to any three planes
+    		if(minDist == Double.POSITIVE_INFINITY) {
+    			System.out.println("Is pointing away");//if none intersect return null
+    			return null;
+    		}
+    		Vector3d adjustedOrigin = new Vector3d();
+    		direction.mul(minDist, adjustedOrigin);
+    		adjustedOrigin.add(originInput);
+    		originCopy = adjustedOrigin;
+    		if(!this.bounds.containsPoint(originCopy)) {
+    			System.out.println("new origin isn't in this node");
+    			return null;
+    		}
+    		if(minDist == xDist) {
+    			sideX = !sideX;
+    			xDist = Double.POSITIVE_INFINITY;
+    		} else if(minDist == yDist) {
+    			sideY = !sideY;
+    			yDist = Double.POSITIVE_INFINITY;
+    		} else if(minDist == zDist) {
+    			sideZ = !sideZ;
+    			zDist = Double.POSITIVE_INFINITY;
+    		}   		
+    	}//end for
+    	System.out.println("oh no we got here");
+    	return null;
+    } */
+    
 	
 	/**
 	 * Method for checking if a face is completely inside a bounding box.
 	 * Checks if all of the face's vertices are inside the bounding box.
 	 * @param face the Face to check against.
 	 * @param bounds the BoundingBox to check that the face is inside of.
-	 * @return if the Face is completely inside the BoundingBox.
+	 * @return if the Face intersects with the bounding box.
 	 */
-	public boolean isInside(Face face, BoundingBox bounds) {
-		 for(FaceVertex vertex: face.vertices) {
-			 if(!bounds.containsPoint(vertex.v)) {
-				 return false;
-			 }
-		 }
-		 return true;
+	public boolean areOverlapping(Face f, BoundingBox bounds) {
+		Vector3d tv0, tv1, tv2; // Triangle vertices
+		tv0 = f.vertices.get(ZERO).v;
+		tv1 = f.vertices.get(ONE).v;
+		tv2 = f.vertices.get(TWO).v;
+		
+		Vector3d ev0 = new Vector3d(); //Triangle edge vectors
+		Vector3d ev1 = new Vector3d();
+		Vector3d ev2 = new Vector3d(); 
+		tv1.sub(tv0, ev0);
+		tv2.sub(tv1, ev1);
+		tv0.sub(tv2, ev2);
+		
+		Vector3d bn0 = new Vector3d(1.0, 0.0, 0.0); //Bounding box normals
+		Vector3d bn1 = new Vector3d(0.0, 1.0, 0.0);
+		Vector3d bn2 = new Vector3d(0.0, 0.0, 1.0);
+		
+		Vector3d tn = new Vector3d(); //Triangle normal
+		ev0.cross(ev1, tn);
+		
+		Vector3d c0 = new Vector3d(); //Cross products of edge vectors and normals
+		bn0.cross(ev0, c0);
+		Vector3d c1 = new Vector3d();
+		bn0.cross(ev1, c1);
+		Vector3d c2 = new Vector3d();
+		bn0.cross(ev2, c2);
+		Vector3d c3 = new Vector3d();
+		bn1.cross(ev0, c3);
+		Vector3d c4 = new Vector3d();
+		bn1.cross(ev1, c4);
+		Vector3d c5 = new Vector3d();
+		bn1.cross(ev2, c5);
+		Vector3d c6 = new Vector3d();
+		bn2.cross(ev0, c6);
+		Vector3d c7 = new Vector3d();
+		bn2.cross(ev1, c7);
+		Vector3d c8 = new Vector3d();
+		bn2.cross(ev2, c8);
+		
+		Vector3d[] axesToTest = new Vector3d[] {ev0, ev1, ev2, bn0, bn1, bn2, tn,
+				c0, c1, c2, c3, c4, c5, c6, c7, c8};
+		for(int i = ZERO; i < THIRTEEN; i++) {
+			if(!this.overlapsOnAxis(bounds, f, axesToTest[i]))
+				return false;
+		}
+		return true;
 	}
 	
 	public boolean intersectsWith(Ray r) {
@@ -178,6 +299,85 @@ public class Octree {
 		t1 = (this.bounds.pMin.z - r.origin.z) * r.inverse.z;
 		t2 = (this.bounds.pMax.z - r.origin.z) * r.inverse.z;
 		
+		tMin = Math.max(tMin, Math.min(t1, t2));
+		tMax = Math.min(tMax, Math.max(t1, t2));
+		
 		return tMax > Math.max(tMin, 0.0);
+	}
+	
+	private double getIntersectPoint(Vector3d origin, Vector3d inverse) {
+		double tMin = Double.NEGATIVE_INFINITY;
+		double tMax = Double.POSITIVE_INFINITY;
+		
+		double t1 = (this.bounds.pMin.x - origin.x) * inverse.x;
+		double t2 = (this.bounds.pMax.x - origin.x) * inverse.x;
+		
+		tMin = Math.max(tMin, Math.min(t1, t2));
+		tMax = Math.min(tMax, Math.max(t1, t2));
+		
+		t1 = (this.bounds.pMin.y - origin.y) * inverse.y;
+		t2 = (this.bounds.pMax.y - origin.y) * inverse.y;
+
+		tMin = Math.max(tMin, Math.min(t1, t2));
+		tMax = Math.min(tMax, Math.max(t1, t2));
+
+		t1 = (this.bounds.pMin.z - origin.z) * inverse.z;
+		t2 = (this.bounds.pMax.z - origin.z) * inverse.z;
+		
+		tMin = Math.max(tMin, Math.min(t1, t2));
+		tMax = Math.min(tMax, Math.max(t1, t2));
+		
+		if(!(tMax > Math.max(tMin, 0.0)))
+			return -1;
+		if(tMax < 0.0)
+			return -1;
+		if(tMin < 0.0)
+			return tMax;
+		return tMin;
+	}
+	
+	private Interval getInterval(Face f, Vector3d axis) {
+		Vector3d firstVertex = f.vertices.get(ZERO).v;
+		double firstMinAndMaxValue = firstVertex.dot(axis);
+		Interval result = new Interval(firstMinAndMaxValue);
+		int numVertices = f.vertices.size();
+		
+		for(int i = ONE; i < numVertices; i++) {
+			Vector3d vertex = f.vertices.get(i).v;
+			double projection = vertex.dot(axis);
+			result.min = Math.min(result.min, projection);
+			result.max = Math.max(result.max, projection);
+		}	
+		return result;
+	}
+	
+	private Interval getInterval(BoundingBox bounds, Vector3d axis) {
+		Vector3d firstVertex = bounds.getCorner(ZERO);
+		double firstMinAndMaxValue = firstVertex.dot(axis);
+		Interval result = new Interval(firstMinAndMaxValue);
+		
+		for(int i = ONE; i < EIGHT; i++) {
+			Vector3d vertex = bounds.getCorner(i);
+			double projection = vertex.dot(axis);
+			result.min = Math.min(result.min, projection);
+			result.max = Math.max(result.max, projection);
+		}
+		return result;
+	}
+	
+	private boolean overlapsOnAxis(BoundingBox bounds, Face f, Vector3d axis) {
+		Interval a = this.getInterval(bounds, axis);
+		Interval b = this.getInterval(f, axis);
+		return ((b.min <= a.max) && (a.min <= b.max));
+	}
+	
+	private void printChildStatus() {
+		for(Octree kids: children) {
+			if(kids.isEmpty)
+				System.out.print("N ");
+			else
+				System.out.print("Y ");
+		}
+		System.out.println();
 	}
 }
