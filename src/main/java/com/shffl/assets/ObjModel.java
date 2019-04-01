@@ -73,7 +73,5 @@ public class ObjModel {
 			System.out.println("File not found");
 		}
 	}// parse
-	
-	
 
 }

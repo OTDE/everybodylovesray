@@ -83,7 +83,9 @@ public class Camera {
 	 * @param pixelX, pixelY, ints containing the ray directions x & y 
 	 *        coordinates in pixel space
 	 */
+
 	public Ray generateRay(Sample samp, int pixelX, int pixelY) {
+
 		
 		//double pX = pixelX + samp.getOffsetX();
 		//double pY = pixelY + samp.getOffsetX();
@@ -93,9 +95,11 @@ public class Camera {
 		
 		double aspectRatio = film.getWidth() / (double)film.getHeight();
 		double scale = Math.tan(Math.toRadians(60 / 2)); // convert fov to radians
+
 		
 		// Get camera coordinates of pixels
-		double camX = ((2 * pX / film.getWidth()) - 1)  * scale * aspectRatio;
+
+		double camX = ((2 * pX / film.getWidth()) - 1) * scale * aspectRatio;
 		double camY = (1 - (2 * pY / film.getHeight())) * scale;
 
 		// Get direction and origin in world coordinates
