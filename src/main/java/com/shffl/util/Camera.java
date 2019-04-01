@@ -32,7 +32,7 @@ public class Camera {
 		Vector3d u = (new Vector3d(up)).cross(n);
 		Vector3d v = (new Vector3d(n)).cross(u);
   		n.normalize();
-		//u.normalize();
+		u.normalize();
 		v.normalize();
 		this.setRotation(u, v, n);
 		
@@ -83,7 +83,7 @@ public class Camera {
 	 * @param pixelX, pixelY, ints containing the ray directions x & y 
 	 *        coordinates in pixel space
 	 */
-	public Ray generateRay( Sample samp, int pixelX, int pixelY) {
+	public Ray generateRay(Sample samp, int pixelX, int pixelY) {
 		
 		//double pX = pixelX + samp.getOffsetX();
 		//double pY = pixelY + samp.getOffsetX();
@@ -92,11 +92,11 @@ public class Camera {
 		double pY = pixelY + 0.5;
 		
 		double aspectRatio = film.getWidth() / (double)film.getHeight();
-		double scale = Math.tan(0.78); // convert fov to radians
+		double scale = Math.tan(Math.toRadians(60 / 2)); // convert fov to radians
 		
 		// Get camera coordinates of pixels
-		double camX = ((2 * pX / film.getWidth()) - 1);//  * scale * aspectRatio;
-		double camY = (1 - (2 * pY / film.getHeight()));// * scale;
+		double camX = ((2 * pX / film.getWidth()) - 1)  * scale * aspectRatio;
+		double camY = (1 - (2 * pY / film.getHeight())) * scale;
 
 		// Get direction and origin in world coordinates
 		Vector3d rayDirection = (new Vector3d(camX, camY, -1)).mulDirection(this.viewMatrix());
