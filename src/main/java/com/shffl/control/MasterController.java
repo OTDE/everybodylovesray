@@ -13,10 +13,11 @@ import java.util.Map;
 import com.google.gson.*;
 import com.shffl.assets.SceneShell;
 import com.shffl.assets.Scene;
+import com.shffl.assets.Light;
+import com.shffl.assets.LightShell;
 import com.shffl.assets.ObjModel;
 import com.shffl.assets.ObjShell;
-import com.shffl.assets.ProcessedMaterial;
-import com.shffl.assets.ProcessedMaterialShell;
+
 
 /**
  * @author Seth Chapman and Ethan Wiederspan 
@@ -106,6 +107,17 @@ public class MasterController {
 			    }
 			    enviro.objects = objArray;
 			    
+			    // Load the light sources into the Light wrapper class
+			    sceneElement = fileParser.next();
+			    LightShell lShell = gson.fromJson(sceneElement, LightShell.class);
+			    
+			    for(Light l: lShell.lights)
+			    	l.convert();
+			    
+			    // Make Light array from wrapper
+			    enviro.lightSources = lShell.lights;
+			    
+			   
 			    // Start rendering and displaying the Scene
 			    this.beginRender();
 			    
