@@ -45,12 +45,12 @@ public class BoundingBox {
 	 /**
 	  * Picks a corner from the cube like so:
 	  * 
-	  *  6                      pMax (7)
+	  *  3                      pMax (7)
 	  *  v                       v
 	  *  @ + + + + + + + + + + + @
 	  *  +\                      +\
 	  *  + \                     + \
-	  *  +  \ 1                  +  \ 2
+	  *  +  \ 2                  +  \ 6
 	  *  +   \v                  +   \v
 	  *  +    @ + + + + + + + + +++ + @
 	  *  +    +                  +    +
@@ -61,12 +61,12 @@ public class BoundingBox {
 	  *  +    +                  +    +
 	  *  @ + +++ + + + + + + + + @    +
 	  *  ^\   +                  ^\   +
-	  *  5 \  +                  4 \  +
+	  *  1 \  +                  5 \  +
 	  *     \ +                     \ +
 	  *      \+                      \+
 	  *       @ + + + + + + + + + + + @
 	  * 	  ^                       ^
-	  * 	pMin (0)                  3    
+	  * 	pMin (0)                  4    
 	  * 
 	  * @param index the corner of the cube to be returned.
 	  * @return the point representation of the corner requested.
