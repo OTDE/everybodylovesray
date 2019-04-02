@@ -89,9 +89,9 @@ public class RenderView extends javax.swing.JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				System.out.println("Pressed a button: " + e.getActionCommand());
-				
 				if(e.getActionCommand().equals("Export")) {
 					System.out.println("exporting image");
+					rendCon.stopRendering();
 					rendCon.exportImage();
 				}
 				
