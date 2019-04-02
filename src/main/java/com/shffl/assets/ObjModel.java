@@ -1,5 +1,6 @@
 package com.shffl.assets;
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
@@ -33,6 +34,7 @@ public class ObjModel {
 	 */
 	
 	public transient Build objData;
+	public transient HashMap<String, Material> objMaterials;
 	private transient Vector4d objTranslate;
 	private transient Matrix4d objRotate;
 	
@@ -59,7 +61,7 @@ public class ObjModel {
 		} catch(IndexOutOfBoundsException e) {
 			System.out.println("Rotation Input matrix is incorrectly sized");
 		}
-		
+		this.objMaterials = objData.materialLib;
 		objData.setTranslation(this.objRotate);
 		System.out.println("obj rotate: \n"+objRotate);
 	}// build

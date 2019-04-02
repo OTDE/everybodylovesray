@@ -15,6 +15,8 @@ import com.shffl.assets.SceneShell;
 import com.shffl.assets.Scene;
 import com.shffl.assets.ObjModel;
 import com.shffl.assets.ObjShell;
+import com.shffl.assets.ProcessedMaterial;
+import com.shffl.assets.ProcessedMaterialShell;
 
 /**
  * @author Seth Chapman and Ethan Wiederspan 
@@ -98,14 +100,11 @@ public class MasterController {
 			    objArray = oShell.objects;
 			    
 			    // Build each object
-			    for(int i = 0; i < objArray.length; i++) {
-			    	objArray[i].build();
-			    	objArray[i].parse();
-			    	//objArray[i].translatePoints();
+			    for(ObjModel model : objArray) {
+			    	model.build();
+			    	model.parse();
 			    }
 			    enviro.objects = objArray;
-			    
-			    
 			    
 			    // Start rendering and displaying the Scene
 			    this.beginRender();
