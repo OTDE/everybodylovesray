@@ -28,6 +28,7 @@ public class Scene {
 	public transient Vector3d eye;
 	public transient Vector3d at;
 	public transient Vector3d up;
+	public transient Light[] lightSources;
 	
 	/**
 	 * Converts the eyeInput array into a vector if it hasn't already. Returns eye otherwise.
@@ -161,6 +162,16 @@ public class Scene {
 		}
 		return inter;
 	}// intersect
+	
+	private Vector3d getCartesianPoint(Vector3d barycentric, Face f) {
+		Vector3d x = new Vector3d();
+		Vector3d y = new Vector3d();
+		Vector3d z = new Vector3d();
+		f.vertices.get(0).v.mul(barycentric.x, x);
+		f.vertices.get(1).v.mul(barycentric.y, y);
+		f.vertices.get(2).v.mul(barycentric.z, z);
+		return x.add(y.add(z));
+	}
 	
 	public void initializeFaces() {
 		allFaces = new ArrayList<Face>();
