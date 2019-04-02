@@ -234,42 +234,42 @@ public class Octree {
 	 */
 	public boolean areOverlapping(Face f, BoundingBox bounds) {
 		Vector3d tv0, tv1, tv2; // Triangle vertices
-		tv0 = f.vertices.get(ZERO).v;
-		tv1 = f.vertices.get(ONE).v;
-		tv2 = f.vertices.get(TWO).v;
+		tv0 = new Vector3d(f.vertices.get(ZERO).v);
+		tv1 = new Vector3d(f.vertices.get(ONE).v);
+		tv2 = new Vector3d(f.vertices.get(TWO).v);
 		
-		Vector3d ev0 = new Vector3d(); //Triangle edge vectors
-		Vector3d ev1 = new Vector3d();
-		Vector3d ev2 = new Vector3d(); 
-		tv1.sub(tv0, ev0);
-		tv2.sub(tv1, ev1);
-		tv0.sub(tv2, ev2);
+		Vector3d ev0 = new Vector3d(tv1); //Triangle edge vectors
+		Vector3d ev1 = new Vector3d(tv2);
+		Vector3d ev2 = new Vector3d(tv0); 
+		ev0.sub(tv0, ev0);
+		ev1.sub(tv1, ev1);
+		ev2.sub(tv2, ev2);
 		
 		Vector3d bn0 = new Vector3d(1.0, 0.0, 0.0); //Bounding box normals
 		Vector3d bn1 = new Vector3d(0.0, 1.0, 0.0);
 		Vector3d bn2 = new Vector3d(0.0, 0.0, 1.0);
 		
-		Vector3d tn = new Vector3d(); //Triangle normal
-		ev0.cross(ev1, tn);
+		Vector3d tn = new Vector3d(ev0); //Triangle normal
+		tn.cross(ev1);
 		
-		Vector3d c0 = new Vector3d(); //Cross products of edge vectors and normals
-		bn0.cross(ev0, c0);
-		Vector3d c1 = new Vector3d();
-		bn0.cross(ev1, c1);
-		Vector3d c2 = new Vector3d();
-		bn0.cross(ev2, c2);
-		Vector3d c3 = new Vector3d();
-		bn1.cross(ev0, c3);
-		Vector3d c4 = new Vector3d();
-		bn1.cross(ev1, c4);
-		Vector3d c5 = new Vector3d();
-		bn1.cross(ev2, c5);
-		Vector3d c6 = new Vector3d();
-		bn2.cross(ev0, c6);
-		Vector3d c7 = new Vector3d();
-		bn2.cross(ev1, c7);
-		Vector3d c8 = new Vector3d();
-		bn2.cross(ev2, c8);
+		Vector3d c0 = new Vector3d(bn0); //Cross products of edge vectors and normals
+		c0.cross(ev0);
+		Vector3d c1 = new Vector3d(bn0);
+		c1.cross(ev1);
+		Vector3d c2 = new Vector3d(bn0);
+		c2.cross(ev2);
+		Vector3d c3 = new Vector3d(bn1);
+		c3.cross(ev0);
+		Vector3d c4 = new Vector3d(bn1);
+		c4.cross(ev1);
+		Vector3d c5 = new Vector3d(bn1);
+		c5.cross(ev2);
+		Vector3d c6 = new Vector3d(bn2);
+		c6.cross(ev0);
+		Vector3d c7 = new Vector3d(bn2);
+		c7.cross(ev1);
+		Vector3d c8 = new Vector3d(bn2);
+		c8.cross(ev2);
 		
 		Vector3d[] axesToTest = new Vector3d[] {ev0, ev1, ev2, bn0, bn1, bn2, tn,
 				c0, c1, c2, c3, c4, c5, c6, c7, c8};
@@ -337,13 +337,13 @@ public class Octree {
 	}
 	
 	private Interval getInterval(Face f, Vector3d axis) {
-		Vector3d firstVertex = f.vertices.get(ZERO).v;
+		Vector3d firstVertex = new Vector3d(f.vertices.get(ZERO).v);
 		double firstMinAndMaxValue = firstVertex.dot(axis);
 		Interval result = new Interval(firstMinAndMaxValue);
 		int numVertices = f.vertices.size();
 		
 		for(int i = ONE; i < numVertices; i++) {
-			Vector3d vertex = f.vertices.get(i).v;
+			Vector3d vertex = new Vector3d(f.vertices.get(i).v);
 			double projection = vertex.dot(axis);
 			result.min = Math.min(result.min, projection);
 			result.max = Math.max(result.max, projection);
@@ -352,12 +352,12 @@ public class Octree {
 	}
 	
 	private Interval getInterval(BoundingBox bounds, Vector3d axis) {
-		Vector3d firstVertex = bounds.getCorner(ZERO);
+		Vector3d firstVertex = new Vector3d(bounds.getCorner(ZERO));
 		double firstMinAndMaxValue = firstVertex.dot(axis);
 		Interval result = new Interval(firstMinAndMaxValue);
 		
 		for(int i = ONE; i < EIGHT; i++) {
-			Vector3d vertex = bounds.getCorner(i);
+			Vector3d vertex = new Vector3d(bounds.getCorner(i));
 			double projection = vertex.dot(axis);
 			result.min = Math.min(result.min, projection);
 			result.max = Math.max(result.max, projection);
