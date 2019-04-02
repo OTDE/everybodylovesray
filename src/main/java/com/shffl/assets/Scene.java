@@ -20,6 +20,7 @@ public class Scene {
 	public double[] eyeInput;
 	public double[] atInput;
 	public double[] upInput;
+	public double[] globalLight;
 	
 	public ObjModel[] objects;
 	
