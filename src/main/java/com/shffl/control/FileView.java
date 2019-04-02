@@ -66,15 +66,6 @@ public class FileView extends Application {
 	                }//handle
 	            });
 		
-		//Label for "export as"
-		Text exportLabel = new Text();
-		exportLabel.setText("Export as");
-		
-		
-		//Drop-down menu for selecting file type for export
-		ChoiceBox<String> fileTypesView = new ChoiceBox<String>(); 
-	    fileTypesView.getItems().addAll(Tags.PNG, Tags.HDR);
-		
 		//Export button
 		Button exportButton = new Button("Export");
 		
@@ -98,9 +89,7 @@ public class FileView extends Application {
 		//Popping the nodes into the grid, reading order
 		fileCanvas.add(fileName, 0, 0);
 		fileCanvas.add(importButton, 1, 0);
-		fileCanvas.add(exportLabel, 0, 1);
-		fileCanvas.add(fileTypesView, 1, 1);
-		fileCanvas.add(exportButton, 2, 1);
+		fileCanvas.add(exportButton, 2, 0);
 				
 		//Adding the grid into the scene
 		Scene window = new Scene(fileCanvas);
