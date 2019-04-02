@@ -41,6 +41,7 @@ public class RenderController {
 	private MasterController mastCon;
 	private RenderView rendView;
 	private boolean running = false;
+	private boolean rendering = false;
 
 	/**
 	 * Constructor for the RenderController Class. Connects
@@ -90,6 +91,7 @@ public class RenderController {
 			@Override
 			public void run() {
 				System.out.println("began render");
+				rendering = true;
 				// Starts the Thread, calling its run method
 				scene.initializeFaces();
 				Sampler sampler = new Sampler(10); // Increase number of Samples later in the process
@@ -123,7 +125,8 @@ public class RenderController {
 					}
 					
 					for(int a = xStart; a <= xEnd; a++) {
-						for(int b = yStart; b <= yEnd; b++) {
+						int b = yStart;
+						while(b <= yEnd && rendering) {
 							sampArr = sampler.getPixelSamples(a, b);
 							PixelColor color = new PixelColor();
 							for(Sample s: sampArr.samples) {
@@ -139,6 +142,7 @@ public class RenderController {
 							// develop film and update view
 							film.develop(a,b,color.getColor());
 							rendView.updateView(film.getRenderedImage());
+							b++;
 						}
 					}
 				}		
@@ -196,7 +200,7 @@ public class RenderController {
 	 */
 	public void exportImage() {
 		
-		stopRendering();		
+		stopDisplaying();		
 		System.out.println("making file");
 		try {
 		    BufferedImage finalImage = film.getRenderedImage(); 
@@ -209,15 +213,17 @@ public class RenderController {
 	}// exportImage
 	
 	/**
-	 * Sets running to false to end the loop in the Render Thread.
+	 * Sets running to false to end the loop in the Display Thread.
 	 */
-	public void stopRendering() {
+	public void stopDisplaying() {
 		running = false;
 	}// stopRendering
-	public void continueRendering() {
+	public void continueDisplaying() {
 		running = true;
 	}// continueRendering
-	
+	public void stopRendering() {
+		rendering = false;
+	}
 
 	public Scene getScene() {
 		return this.scene;
