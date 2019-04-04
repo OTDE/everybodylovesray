@@ -35,7 +35,7 @@ public class MasterController {
 		private String filename;
 		
 
-		public Scene enviro;
+		public Scene scene;
 		public ObjModel[] objArray;
 		/**
 		 * Constructor for MasterController Class. Connects 
@@ -54,7 +54,7 @@ public class MasterController {
 		public void beginRender() {
 			
 			// Make RenderController
-			rendCon = new RenderController(this, enviro);	
+			rendCon = new RenderController(this, scene);	
 			
 			// start display loop
 			rendCon.display();
@@ -91,7 +91,7 @@ public class MasterController {
 			    
 
 			    // Make Scene from wrapper
-			    enviro = shell.scene;
+			    scene = shell.scene;
 			    
 			    // Load the models into the ObjModel Wrapper Class
 			    sceneElement = fileParser.next();
@@ -105,17 +105,19 @@ public class MasterController {
 			    	model.build();
 			    	model.parse();
 			    }
-			    enviro.objects = objArray;
+			    scene.objects = objArray;
 			    
 			    // Load the light sources into the Light wrapper class
 			    sceneElement = fileParser.next();
 			    LightShell lShell = gson.fromJson(sceneElement, LightShell.class);
 			    
-			    for(Light l: lShell.lights)
+			    for(Light l: lShell.lights) {
 			    	l.convert();
+			    }
+			    	
 			    
 			    // Make Light array from wrapper
-			    enviro.lightSources = lShell.lights;
+			    scene.lightSources = lShell.lights;
 			    
 			   
 			    // Start rendering and displaying the Scene
