@@ -165,9 +165,9 @@ public class Scene {
 						inter.setPosition(r.positionAtTMax());
 
 						// Get materials of triangle
-						Vector3d diffuse = objects[0].objMaterials.get("material_0").kd.getRGB();
-						Vector3d specular = objects[0].objMaterials.get("material_0").ks.getRGB();
-						double shiny = objects[0].objMaterials.get("material_0").nsExponent;
+						Vector3d diffuse = f.material.kd.getRGB();
+						Vector3d specular = f.material.ks.getRGB();
+						double shiny = f.material.nsExponent;
 
 						inter.setMaterialAttributes(diffuse,specular,shiny);
 					}
@@ -178,7 +178,7 @@ public class Scene {
 				// Didn't hit
 			}
 		}// for
-		
+
 		return inter;
 	}// intersect
 
