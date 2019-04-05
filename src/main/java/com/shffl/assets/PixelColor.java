@@ -30,8 +30,7 @@ public class PixelColor {
 		float r = (float) (this.color.x / weight);
 		float g = (float) (this.color.y / weight);
 		float b = (float) (this.color.z / weight);
-		
-		
+			
 		return new Color(r, g, b);
 	}
 	

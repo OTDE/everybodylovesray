@@ -21,16 +21,17 @@ public class Scene {
 	public double[] atInput;
 	public double[] upInput;
 	public double[] globalLight;
-	
+
 	public ObjModel[] objects;
-	
+
 	private transient Octree faceStorage;
 	public transient ArrayList<Face> allFaces;
 	public transient Vector3d eye;
 	public transient Vector3d at;
 	public transient Vector3d up;
+	public transient Vector3d ambient;
 	public transient Light[] lightSources;
-	
+
 	/**
 	 * Converts the eyeInput array into a vector if it hasn't already. Returns eye otherwise.
 	 * Returns the zero vector if both the eye array and the eye vector aren't initialized.
@@ -46,7 +47,7 @@ public class Scene {
 		}
 		return eye;
 	}
-	
+
 	/**
 	 * Converts the atInput array into a vector if it hasn't already. Returns at otherwise.
 	 * Returns the zero vector if both the at array and the at vector aren't initialized.
@@ -66,7 +67,7 @@ public class Scene {
 	/**
 	 * Converts the upInput array into a vector if it hasn't already. Returns up otherwise.
 	 * Returns zero vector if both the up array and the up vector aren't initialized.
-	 * @return a 3D vector indicating upwards in the scene
+	 * @return Vectro3d indicating upwards in the scene
 	 */
 	public Vector3d getUp() {
 		if(up == null) {
@@ -78,7 +79,23 @@ public class Scene {
 		}
 		return up;
 	}
-	
+
+	/**
+	 * Converts the globalLight array into a Vector3d if it hasn't already. Returns ambient otherwise.
+	 * Returns zero vector if both the globalLight array and the vector aren't initialized.
+	 * @return Vectro3d indicating RGB values of the ambient light of the scene
+	 */
+	public Vector3d getAmbient() {
+		if(ambient == null) {
+			if(globalLight != null) {
+				ambient = new Vector3d(globalLight[0], globalLight[1], globalLight[2]);
+				return ambient;
+			}
+			return new Vector3d(0, 0, 0);
+		}
+		return ambient;
+	}
+
 	/**
 	 * Checks a given ray against all the objects in a scene for intersections. 
 	 * Utilizes barycentric coordinates to make an intersection test against 
@@ -89,98 +106,89 @@ public class Scene {
 	 *        by the ray
 	 */
 	public Intersection intersect(Ray r, Intersection inter) {
-		//ArrayList<Face> currentFaces = faceStorage.getFacesWithin(r);	
-		//if(currentFaces != null) {
-			//System.out.println(currentFaces.size());
-			for(Face f: allFaces) {
-				System.out.println(f.material.ks.getRGB());
-			    // Determine if there is an intersection between the ray and face.
-			    Vector3d s, edge1, edge2, v0, v1, v2, normal, rayDirection;
-			    double denom, coefficient, barycentric1, barycentric2;
 
-			    // Get edge vertices
-			    v0 = new Vector3d(f.vertices.get(0).v);
-			    v1 = new Vector3d(f.vertices.get(1).v);
-			    v2 = new Vector3d(f.vertices.get(2).v);
-			
-			    s = (new Vector3d(r.origin)).sub(v0); 
-			    edge1 = (new Vector3d(v1)).sub(v0);   
-			    edge2 = (new Vector3d(v2)).sub(v0);  
-			
-			    rayDirection = new Vector3d(r.direction);
-			    denom = (rayDirection.cross(edge2).dot(edge1));
-			    coefficient = 1 / denom;
-			
 
-			    // For calculating Point Normal later
-			    normal = (new Vector3d(edge1)).cross(edge2);
-			
-			    // Get intersection point
-			    double d = (new Vector3d(normal)).dot(v0);
-			    double t = ((new Vector3d(normal)).dot(r.origin) + d);
-			    double nDotDirection = -1 * (new Vector3d(normal).dot(r.direction));
-			    t = t / nDotDirection;
-			    Vector3d P = (new Vector3d(r.direction).mul(t));
-			    P = P.add(r.origin);
-			
-			    // First check b1
-			    rayDirection = new Vector3d(r.direction);
-			    barycentric1 = coefficient * rayDirection.cross(edge2).dot(s);
-			
-			    if (barycentric1 > 0 && barycentric1 < 1) {
-			    
-				    // Next check b2 with the same parameters
-				    rayDirection = new Vector3d(r.direction);
-				    barycentric2 = coefficient * s.cross(edge1).dot(rayDirection);
-				
-				    if(barycentric2 > 0 && barycentric2 < 1 && barycentric1 + barycentric2 <= 1) {
-							
-					    //Vector3d norm = new Vector3d(barycentric1, barycentric2, 1 - barycentric1 - barycentric2);
-					    //norm.normalize();
-					    //inter.setNormal(norm);
-					
-					    // TEMP, just for use with obj. models that don't include point normals
-					    v0.normalize();
-					    v1.normalize();
-					    v2.normalize();
-					
-					    v0.mul(1-barycentric1-barycentric2);
-					    v1.mul(barycentric1);
-					    v2.mul(barycentric2);
-					
-					    Vector3d norm = new Vector3d(v0).add(v1).add(v2);
-					    norm.normalize();
-					    inter.setNormal(norm);
-					
-					
+		for(Face f: objects[0].objData.faces) {
+
+			// Determine if there is an intersection between the ray and face.
+			Vector3d s, edge1, edge2, v0, v1, v2, rayDirection;
+			double denom, coefficient, b1, b2, t;
+
+			// Get edge vertices
+			v0 = new Vector3d(f.vertices.get(0).v);
+			v1 = new Vector3d(f.vertices.get(1).v);
+			v2 = new Vector3d(f.vertices.get(2).v);
+
+			s = (new Vector3d(r.origin)).sub(v0); 
+			edge1 = (new Vector3d(v1)).sub(v0);   
+			edge2 = (new Vector3d(v2)).sub(v0);  
+
+			rayDirection = new Vector3d(r.direction);
+			denom = (rayDirection.cross(edge2).dot(edge1));
+			coefficient = 1 / denom;
+
+			// First check b1
+			rayDirection = new Vector3d(r.direction);
+			b1 = coefficient * rayDirection.cross(edge2).dot(s);
+
+			if (b1 > 0 && b1 < 1) {
+
+				// Next check b2 with the same parameters
+				rayDirection = new Vector3d(r.direction);
+				b2 = coefficient * new Vector3d(s).cross(edge1).dot(rayDirection);
+
+				if(b2 > 0 && b2 < 1 && b1 + b2 <= 1) {
+
+					// Next check t against tMax
+					t = coefficient * s.cross(edge1).dot(edge2);
+
+					// Only calculate intersection data if it is the closest intersection point
+					if(r.tMax == -1 || t < r.tMax) {
+
+						r.tMax = t;
+
+						// Fill in intersection with normal of intersection 
+						// TEMP, just for use with obj. models that don't include point normals
+						v0.normalize();
+						v1.normalize();
+						v2.normalize();
+
+						v0.mul(1-b1-b2);
+						v1.mul(b1);
+						v2.mul(b2);
+
+						Vector3d norm = new Vector3d(v0).add(v1).add(v2);
+						norm.normalize();
+						inter.setNormal(norm);
+
+						// Get position of intersection
+						inter.setPosition(r.positionAtTMax());
+
+						// Get materials of triangle
+						Vector3d diffuse = f.material.kd.getRGB();
+						Vector3d specular = f.material.ks.getRGB();
+						double shiny = f.material.nsExponent;
+
+						inter.setMaterialAttributes(diffuse,specular,shiny);
+						}
 				    } else {
 					    // Didn't hit
 				    }
-			    }else {
+			    } else {
 			    	// Didn't hit
-			    }
-			}
-		//}
+			    }// for
+		}
 		return inter;
 	}// intersect
-	
-	private Vector3d getCartesianPoint(Vector3d barycentric, Face f) {
-		Vector3d x = new Vector3d();
-		Vector3d y = new Vector3d();
-		Vector3d z = new Vector3d();
-		f.vertices.get(0).v.mul(barycentric.x, x);
-		f.vertices.get(1).v.mul(barycentric.y, y);
-		f.vertices.get(2).v.mul(barycentric.z, z);
-		return x.add(y.add(z));
-	}
-	
+
+
 	public void initializeFaces() {
 		allFaces = new ArrayList<Face>();
 		for(ObjModel obj : objects) {
 			allFaces.addAll(obj.objData.faces);
 		}
-		Vector3d min = new Vector3d(-0.5, -0.5, -0.5);
-		Vector3d max = new Vector3d(0.5, 0.5, 0.5);
+		Vector3d min = new Vector3d(-1.0, -1.0, -1.0);
+		Vector3d max = new Vector3d(1.0, 1.0, 1.0);
 		faceStorage = new Octree(allFaces, new BoundingBox(min, max));
 	}
 }
