@@ -16,11 +16,18 @@ public class Ray {
 		this.origin = o;
 		this.direction = d;
 		this.inverse = new Vector3d(1/d.x, 1/d.y, 1/d.z);
+		this.tMax = -1;
 	}
 	
-	/*
-	public Vector4d positionAtTime(double t) {
-		return origin.add(direction.mul(t));
+	
+	/**
+	 * Calculates and returns the position of the ray at time tMax
+	 * 
+	 * @return Vector3d holding the position as an xyz coordinate
+	 */
+	public Vector3d positionAtTMax() {
+		Vector3d distance = new Vector3d(direction).mul(this.tMax);
+		return new Vector3d(origin).add(distance);
 	}
-	*/
+
 }

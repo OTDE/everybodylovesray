@@ -32,7 +32,7 @@ public class RenderController {
 	private Film film;
 
 	private Scene scene;
-	private Camera cam;
+	public Camera cam;
 	private Integrator integrator;
 	
 	Thread displayThread;
@@ -51,11 +51,11 @@ public class RenderController {
 	 * @param mCon MasterController to connect to 
 	 * @param env Scene built from the input JSON
 	 */
-	public RenderController(MasterController mCon, Scene env) {
+	public RenderController(MasterController mCon, Scene sce) {
 		
 		// Connect to MasterController and Scene
 		this.mastCon = mCon;
-		this.scene = env;
+		this.scene = sce;
 		
 		// Build new Film based on Environment's specs
 		film = new Film(scene.width, scene.height);
@@ -94,7 +94,7 @@ public class RenderController {
 				rendering = true;
 				// Starts the Thread, calling its run method
 				scene.initializeFaces();
-				Sampler sampler = new Sampler(10); // Increase number of Samples later in the process
+				Sampler sampler = new Sampler(1); // Increase number of Samples later in the process
 				SampleArray sampArr = null;
 				Ray ray = null;
 				
@@ -136,7 +136,8 @@ public class RenderController {
 								Vector3d rgb = integrator.propagate(ray);
 								
 								double weight = getWeight(s, sampArr.getPixelX(), sampArr.getPixelY());
-								color.updateColor(rgb, weight);
+								//color.updateColor(rgb, weight); // ONLY COMMENT OUT WHEN USING 1 SAMPLE
+								color.updateColor(rgb, 1.0);
 							}
 							
 							// develop film and update view
@@ -151,14 +152,21 @@ public class RenderController {
 		renderThread.start();
 	}//startRendering
 
+	/**
+	 * Determines the weight of how much a sample location should ehfect a pixel
+	 * 
+	 * @param s Sample holding the sub pixel location
+	 * @param pX int X coordinate of sample
+	 * @param pY int Y coordinate of sample
+	 * @return
+	 */
 	protected double getWeight(Sample s, int pX, int pY) {
 		
 		Vector2d middle = new Vector2d(pX+0.5, pY+0.5);
 		Vector2d point = new Vector2d(pX+s.getOffsetX(), pY+s.getOffsetY());
 		
 		double weight = point.distance(middle);
-				
-		if(weight < 0) {
+		if(weight < 0){
 			weight = -weight;
 		}
 		weight = 1 - weight;
@@ -167,40 +175,12 @@ public class RenderController {
 	}
 
 	/**
-	 * The loop that retrieves the BufferedImage periodically 
-	 * as it is being developed.  Makes a separate Thread so
-	 * film can continue to develop on another.
-	 */
-	public void startDisplaying() {
-
-		// Makes the Thread for rendering and defines its run function
-		displayThread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				System.out.println("started running");
-				
-				running = true;
-				
-				// Updates the image displaying to the GUI after a certain increment of time
-				while(running) {
-					
-					rendView.updateView(film.getRenderedImage());
-				}
-			}//run
-		});//thread
-		displayThread.start();
-	}//startDisplaying
-
-	
-
-	/**
 	 * Takes image in Film class and exports it to a png with
 	 * the name of the input file
 	 */
 	public void exportImage() {
 		
-		stopDisplaying();		
+		stopRendering();		
 		System.out.println("making file");
 		try {
 		    BufferedImage finalImage = film.getRenderedImage(); 
@@ -212,15 +192,7 @@ public class RenderController {
 		System.out.println("done writing!");
 	}// exportImage
 	
-	/**
-	 * Sets running to false to end the loop in the Display Thread.
-	 */
-	public void stopDisplaying() {
-		running = false;
-	}// stopRendering
-	public void continueDisplaying() {
-		running = true;
-	}// continueRendering
+
 	public void stopRendering() {
 		rendering = false;
 	}
