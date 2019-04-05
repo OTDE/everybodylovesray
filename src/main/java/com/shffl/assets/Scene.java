@@ -107,8 +107,8 @@ public class Scene {
 	 */
 	public Intersection intersect(Ray r, Intersection inter) {
 
-
-		for(Face f: objects[0].objData.faces) {
+		ArrayList<Face> faceGroup = faceStorage.getFacesWithin(r);
+		for(Face f: faceGroup) {
 
 			// Determine if there is an intersection between the ray and face.
 			Vector3d s, edge1, edge2, v0, v1, v2, rayDirection;
@@ -190,5 +190,6 @@ public class Scene {
 		Vector3d min = new Vector3d(-1.0, -1.0, -1.0);
 		Vector3d max = new Vector3d(1.0, 1.0, 1.0);
 		faceStorage = new Octree(allFaces, new BoundingBox(min, max));
+		faceStorage.testNodes();
 	}
 }

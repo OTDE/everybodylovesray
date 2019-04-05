@@ -2,6 +2,8 @@ package com.shffl.assets;
 
 import org.joml.Vector3d;
 
+import com.shffl.util.Tags;
+
 /**
  * Bounds class for rendering optimization.
  * @author Ethan Wiederspan and Seth Chapman
@@ -253,32 +255,50 @@ public class BoundingBox {
 		double tMin = 0.0;
 		double tMax = r.tMax;
 		
-		double tNear = (this.pMin.x - r.origin.x) * r.inverse.x;
-		double tFar = (this.pMax.x - r.origin.x) * r.inverse.x;
+		double invRayDir = 1 / r.origin.x;
+		double tNear = (this.pMin.x - r.origin.x) * invRayDir;
+		double tFar = (this.pMax.x - r.origin.x) * invRayDir;
 		
-		tMin = Math.max(tMin, Math.min(tNear, tFar));
-		tMax = Math.min(tMax, Math.max(tNear, tFar));
-		
-		if(tMin > tMax)
-			return false;
-		
-		tNear = (this.pMin.y - r.origin.y) * r.inverse.y;
-		tFar = (this.pMax.y - r.origin.y) * r.inverse.y;
-
-		tMin = Math.max(tMin, Math.min(tNear, tFar));
-		tMax = Math.min(tMax, Math.max(tNear, tFar));
+		if(tNear > tFar)
+			this.swap(tNear, tNear = tFar);
+		tFar *= 1 + 2 * gamma(3);
+		tNear = Math.min(tNear, tMin);
+		tMax = Math.max(tFar, tMax);
 		
 		if(tMin > tMax)
 			return false;
+		
+		invRayDir = 1 / r.origin.y;
+		tNear = (this.pMin.y - r.origin.y) * invRayDir;
+		tFar = (this.pMax.y - r.origin.y) * invRayDir;
 
-		tNear = (this.pMin.z - r.origin.z) * r.inverse.z;
-		tFar = (this.pMax.z - r.origin.z) * r.inverse.z;
+		if(tNear > tFar)
+			this.swap(tNear, tNear = tFar);
+		tFar *= 1 + 2 * gamma(3);
+		tNear = Math.min(tNear, tMin);
+		tMax = Math.max(tFar, tMax);
 		
-		tMin = Math.max(tMin, Math.min(tNear, tFar));
-		tMax = Math.min(tMax, Math.max(tNear, tFar));
+		if(tMin > tMax)
+			return false;
+
+		invRayDir = 1 / r.origin.z;
+		tNear = (this.pMin.z - r.origin.z) * invRayDir;
+		tFar = (this.pMax.z - r.origin.z) * invRayDir;
 		
-		return tMin < tMax;
+		if(tNear > tFar)
+			this.swap(tNear, tNear = tFar);
+		tFar *= 1 + 2 * gamma(3);
+		tNear = Math.min(tNear, tMin);
+		tMax = Math.max(tFar, tMax);
+		
+		if(tMin > tMax)
+			return false;
+		return true;
 	}
 	
+	 private double swap(double a, double b) { return a; }
 	 
+	 private static double gamma(int n) {
+		 return (n * Tags.MACHINE_EPSILON) / (1 - n * Tags.MACHINE_EPSILON);
+	 }
 }

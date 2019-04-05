@@ -34,8 +34,8 @@ public class Octree {
 	public Octree(ArrayList<Face> faces, BoundingBox bounds) {
 		this(bounds);
 		for(Face f : faces) {
-			if(faces.indexOf(f) % 100 == 0)
-				System.out.printf("%d faces loaded!\n", faces.indexOf(f));
+			//if(faces.indexOf(f) % 100 == 0)
+				//System.out.printf("%d faces loaded!\n", faces.indexOf(f));
 			insert(f);
 		}
 	}
@@ -125,7 +125,7 @@ public class Octree {
         if(this.bounds.intersectsWith(r)) {
         	if(hasSubdivided) {
         		for(Octree kids : children) {
-        			if(this.bounds.intersectsWith(r))
+        			if(kids.getBounds().intersectsWith(r))
         				facesInRange.addAll(kids.getFacesWithin(r));
         		}
         	} else {
@@ -356,5 +356,18 @@ public class Octree {
 				System.out.print("Y ");
 		}
 		System.out.println();
+	}
+	
+	public BoundingBox getBounds() {
+		return this.bounds;
+	}
+	
+	public void testNodes() {
+		if(!hasSubdivided)
+			System.out.println(this.faces.size());
+		else {
+			for(Octree kids: children)
+				kids.testNodes();
+		}
 	}
 }
