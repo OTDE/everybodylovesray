@@ -262,8 +262,8 @@ public class BoundingBox {
 		if(tNear > tFar)
 			this.swap(tNear, tNear = tFar);
 		tFar *= 1 + 2 * gamma(3);
-		tNear = Math.min(tNear, tMin);
-		tMax = Math.max(tFar, tMax);
+		tNear = Math.max(tNear, tMin);
+		tMax = Math.min(tFar, tMax);
 		
 		if(tMin > tMax)
 			return false;
@@ -275,8 +275,8 @@ public class BoundingBox {
 		if(tNear > tFar)
 			this.swap(tNear, tNear = tFar);
 		tFar *= 1 + 2 * gamma(3);
-		tNear = Math.min(tNear, tMin);
-		tMax = Math.max(tFar, tMax);
+		tNear = Math.max(tNear, tMin);
+		tMax = Math.min(tFar, tMax);
 		
 		if(tMin > tMax)
 			return false;
@@ -288,8 +288,8 @@ public class BoundingBox {
 		if(tNear > tFar)
 			this.swap(tNear, tNear = tFar);
 		tFar *= 1 + 2 * gamma(3);
-		tNear = Math.min(tNear, tMin);
-		tMax = Math.max(tFar, tMax);
+		tNear = Math.max(tNear, tMin);
+		tMax = Math.min(tFar, tMax);
 		
 		if(tMin > tMax)
 			return false;
