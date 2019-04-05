@@ -248,5 +248,37 @@ public class BoundingBox {
 	private double lerp(double t, double p0, double p1) {
 		 return (1 - t) * p0 + t * p1;
 	 }
+	
+	public boolean intersectsWith(Ray r) {	
+		double tMin = 0.0;
+		double tMax = r.tMax;
+		
+		double tNear = (this.pMin.x - r.origin.x) * r.inverse.x;
+		double tFar = (this.pMax.x - r.origin.x) * r.inverse.x;
+		
+		tMin = Math.max(tMin, Math.min(tNear, tFar));
+		tMax = Math.min(tMax, Math.max(tNear, tFar));
+		
+		if(tMin > tMax)
+			return false;
+		
+		tNear = (this.pMin.y - r.origin.y) * r.inverse.y;
+		tFar = (this.pMax.y - r.origin.y) * r.inverse.y;
+
+		tMin = Math.max(tMin, Math.min(tNear, tFar));
+		tMax = Math.min(tMax, Math.max(tNear, tFar));
+		
+		if(tMin > tMax)
+			return false;
+
+		tNear = (this.pMin.z - r.origin.z) * r.inverse.z;
+		tFar = (this.pMax.z - r.origin.z) * r.inverse.z;
+		
+		tMin = Math.max(tMin, Math.min(tNear, tFar));
+		tMax = Math.min(tMax, Math.max(tNear, tFar));
+		
+		return tMin < tMax;
+	}
+	
 	 
 }

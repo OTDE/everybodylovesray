@@ -8,7 +8,7 @@ public class Ray {
 	public Vector3d direction;
 	public Vector3d inverse;
 	
-	public double tMax = 0.0;
+	public double tMax = Double.POSITIVE_INFINITY;
 	public double time = 0.0;
 	public double radiance = 1.0;
 	

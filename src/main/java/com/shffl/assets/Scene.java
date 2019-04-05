@@ -89,11 +89,11 @@ public class Scene {
 	 *        by the ray
 	 */
 	public Intersection intersect(Ray r, Intersection inter) {
-
-		ArrayList<Face> currentFaces = faceStorage.getFacesWithin(r);	
-		if(currentFaces != null) {
-			System.out.println(currentFaces.size());
-			for(Face f: currentFaces) {
+		//ArrayList<Face> currentFaces = faceStorage.getFacesWithin(r);	
+		//if(currentFaces != null) {
+			//System.out.println(currentFaces.size());
+			for(Face f: allFaces) {
+				System.out.println(f.material.ks.getRGB());
 			    // Determine if there is an intersection between the ray and face.
 			    Vector3d s, edge1, edge2, v0, v1, v2, normal, rayDirection;
 			    double denom, coefficient, barycentric1, barycentric2;
@@ -153,14 +153,14 @@ public class Scene {
 					    inter.setNormal(norm);
 					
 					
-				    }else {
+				    } else {
 					    // Didn't hit
 				    }
 			    }else {
 			    	// Didn't hit
 			    }
 			}
-		}
+		//}
 		return inter;
 	}// intersect
 	

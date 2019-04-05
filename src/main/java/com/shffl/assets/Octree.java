@@ -122,10 +122,10 @@ public class Octree {
      */
     public ArrayList<Face> getFacesWithin(Ray r) { 
         ArrayList<Face> facesInRange = new ArrayList<Face>(); 
-        if(this.intersectsWith(r)) {
+        if(this.bounds.intersectsWith(r)) {
         	if(hasSubdivided) {
         		for(Octree kids : children) {
-        			if(kids.intersectsWith(r))
+        			if(this.bounds.intersectsWith(r))
         				facesInRange.addAll(kids.getFacesWithin(r));
         		}
         	} else {
@@ -280,30 +280,7 @@ public class Octree {
 		return true;
 	}
 	
-	public boolean intersectsWith(Ray r) {
-		double tMin = Double.NEGATIVE_INFINITY;
-		double tMax = Double.POSITIVE_INFINITY;
-		
-		double t1 = (this.bounds.pMin.x - r.origin.x) * r.inverse.x;
-		double t2 = (this.bounds.pMax.x - r.origin.x) * r.inverse.x;
-		
-		tMin = Math.max(tMin, Math.min(t1, t2));
-		tMax = Math.min(tMax, Math.max(t1, t2));
-		
-		t1 = (this.bounds.pMin.y - r.origin.y) * r.inverse.y;
-		t2 = (this.bounds.pMax.y - r.origin.y) * r.inverse.y;
 
-		tMin = Math.max(tMin, Math.min(t1, t2));
-		tMax = Math.min(tMax, Math.max(t1, t2));
-
-		t1 = (this.bounds.pMin.z - r.origin.z) * r.inverse.z;
-		t2 = (this.bounds.pMax.z - r.origin.z) * r.inverse.z;
-		
-		tMin = Math.max(tMin, Math.min(t1, t2));
-		tMax = Math.min(tMax, Math.max(t1, t2));
-		
-		return tMax > Math.max(tMin, 0.0);
-	}
 	
 	private double getIntersectPoint(Vector3d origin, Vector3d inverse) {
 		double tMin = Double.NEGATIVE_INFINITY;
