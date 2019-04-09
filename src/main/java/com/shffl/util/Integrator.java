@@ -1,61 +1,126 @@
 package com.shffl.util;
 import java.awt.Color;
+import java.util.Vector;
 
 import org.joml.Vector3d;
 
 import com.shffl.assets.Intersection;
+import com.shffl.assets.Light;
 import com.shffl.assets.Ray;
 import com.shffl.control.RenderController;
 
 public class Integrator {
-	
+
 	private RenderController rendCon;
 	private Intersection inter;
-	
+
 	public Integrator(RenderController rCon) {
-		
+
 		this.rendCon = rCon;
 	}
-	
-	public Color propagate(Ray r) {
-				
-		Color rayColor = Color.GRAY;
-		
+
+	/**
+	 * Takes in ray and propagates it across the input scene to check if it 
+	 * intercepts any objects.
+	 * 
+	 * @param r the Ray to propagate
+	 * @return Vector3d containing the rgb values to be displayed on the pixel
+	 */
+	public Vector3d propagate(Ray r) {
+
+		Vector3d rayColor = new Vector3d(1, 1, 1);
+
 		inter = new Intersection();
 		inter = rendCon.getScene().intersect(r, inter);
+		
+		// If this returned true, we hit an object
 		if(inter.hasNormal) {
+
+			// Get a color from the Integrator method
 			
-			// If this returned true, we hit an object
-			rayColor = getColorFromIntersection(inter);
-			
+			//rayColor = getRGBNormal(inter); // NORMAL INTEGRATOR
+			rayColor = getRGBPhong(inter); // PHONG MODEL INTEGRATOR
+
 		}
-		
+
 		return rayColor;
-	}
-	
-	public Color getColorFromIntersection(Intersection inter) {
+	}// propagate
+
+	/**
+	 * Calculates the RGB values to display to the pixel. Uses the Phong 
+	 * reflection model to determine how lights in the scene effect the 
+	 * visible light coming off of the material of the object. 
+	 * 
+	 * @param inter the Intersection holding the data of the Ray-Triangle intersection point
+	 * @return Vector3d containing the rgb values to be displayed on the pixel
+	 */
+	public Vector3d getRGBPhong(Intersection inter) {
 		
-		Vector3d n = new Vector3d(inter.getNormal());
-		double[] normal = {n.x, n.y, n.z};
+		Vector3d diffuse, specular, rgb = new Vector3d(0,0,0);
 		
-		for(int i = 0; i < 3; i++){
-			if(normal[i] < 0){
-				normal[i] = -normal[i];
+		for(Light light: rendCon.getScene().lightSources) {
+			
+			// Calculate diffuse 
+			Vector3d lightPosition = new Vector3d(light.pos);//.mulPosition(rendCon.cam.viewMatrix());			
+			Vector3d lightDirection = new Vector3d(lightPosition).sub(inter.getPosition());
+			lightDirection.normalize();
+			
+			double lDotN =  Math.max(lightDirection.dot(inter.getNormal()), 0.0);
+			diffuse = new Vector3d(inter.material.diffuse).mul(lDotN);
+			
+			// Calculate specular
+			if( lDotN > 0.0 ) {
+				Vector3d cameraDirection = new Vector3d(rendCon.getScene().eye).sub(inter.getPosition());
+				cameraDirection.normalize();
+				Vector3d halfway = cameraDirection.add(lightDirection);
+				halfway.normalize();
+				double hDotN = Math.max(halfway.dot(inter.getNormal()), 0.0);
+				double shine = Math.pow(hDotN, inter.material.shiny);
+				specular = new Vector3d(inter.material.specular).mul(shine);
+			}else {
+				specular = new Vector3d(0,0,0);
 			}
-			if(normal[i] > 1){
-				normal[i] = 1/normal[i];
-			} 
+			
+			
+			// Get final color
+			Vector3d reflection = diffuse.add(specular);
+			Vector3d lightIntensity = new Vector3d(light.i);
+			lightIntensity.mul(reflection);
+			rgb = rgb.add(lightIntensity);
 		}
 		
-		Color c = new Color(0,0,0);
-		try {
-			 c = new Color((float)normal[0], (float)normal[1], (float)normal[2]);
-		}catch(IllegalArgumentException e){
-			System.out.println("Bad Color: ("+normal[0]+","+normal[1]+","+normal[2]+")");
+		// After all light sources are factored, add ambient light of scene
+		rgb.add(rendCon.getScene().getAmbient());
+		
+		// Check for values that are OOB for Color Object
+		for(int i = 0; i < 3; i++) {
+			if(rgb.get(i) > 1) {
+				rgb.setComponent(i, 1.0);
+			}
 		}
-		
-		return c;
-		
-	}
+	
+		return rgb;
+	}// getRGBPhong
+
+	/**
+	 * Calculates the RGB values to display to the pixel. Determines color 
+	 * based only on the point normal of intersection point of the ray.
+	 * 
+	 * @param inter 
+	 * @return Vector3d containing the rgb values to be displayed on the pixel
+	 */
+	public Vector3d getRGBNormal(Intersection inter) {
+
+		Vector3d n = new Vector3d(inter.getNormal());
+		n.normalize();
+
+		// Translate the value to fit Color Object specifications
+		for(int i = 0; i < 3; i++) {
+			n.setComponent(i, (n.get(i)+1)/2 );
+
+		}
+
+		return n;
+	}// getRGBNormal
 
 }

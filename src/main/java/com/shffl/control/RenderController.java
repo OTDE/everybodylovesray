@@ -6,7 +6,11 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.joml.Vector2d;
+import org.joml.Vector3d;
+
 import com.shffl.assets.Scene;
+import com.shffl.assets.PixelColor;
 import com.shffl.assets.Ray;
 import com.shffl.util.Camera;
 import com.shffl.util.Film;
@@ -28,7 +32,7 @@ public class RenderController {
 	private Film film;
 
 	private Scene scene;
-	private Camera cam;
+	public Camera cam;
 	private Integrator integrator;
 	
 	Thread displayThread;
@@ -37,6 +41,7 @@ public class RenderController {
 	private MasterController mastCon;
 	private RenderView rendView;
 	private boolean running = false;
+	private boolean rendering = false;
 
 	/**
 	 * Constructor for the RenderController Class. Connects
@@ -46,11 +51,11 @@ public class RenderController {
 	 * @param mCon MasterController to connect to 
 	 * @param env Scene built from the input JSON
 	 */
-	public RenderController(MasterController mCon, Scene env) {
+	public RenderController(MasterController mCon, Scene sce) {
 		
 		// Connect to MasterController and Scene
 		this.mastCon = mCon;
-		this.scene = env;
+		this.scene = sce;
 		
 		// Build new Film based on Environment's specs
 		film = new Film(scene.width, scene.height);
@@ -69,7 +74,7 @@ public class RenderController {
 		rendView = new RenderView(this, scene.width, scene.height);
 		
 		// Call the render loop
-		this.startDisplaying();
+		//this.startDisplaying();
 		this.startRendering();
 		
 	}// display
@@ -86,8 +91,9 @@ public class RenderController {
 			@Override
 			public void run() {
 				System.out.println("began render");
+				rendering = true;
 				// Starts the Thread, calling its run method
-				
+				scene.initializeFaces();
 				Sampler sampler = new Sampler(1); // Increase number of Samples later in the process
 				SampleArray sampArr = null;
 				Ray ray = null;
@@ -119,52 +125,54 @@ public class RenderController {
 					}
 					
 					for(int a = xStart; a <= xEnd; a++) {
-						for(int b = yStart; b <= yEnd; b++) {
+						int b = yStart;
+						while(b <= yEnd && rendering) {
 							sampArr = sampler.getPixelSamples(a, b);
+							PixelColor color = new PixelColor();
 							for(Sample s: sampArr.samples) {
 								
 								// For each sample, generate and cast ray
 								ray = cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelY()); 
-								Color c = integrator.propagate(ray);
+								Vector3d rgb = integrator.propagate(ray);
 								
-								
-								film.develop(s, sampArr.getPixelX(), sampArr.getPixelY(), c);				
+								double weight = getWeight(s, sampArr.getPixelX(), sampArr.getPixelY());
+								//color.updateColor(rgb, weight); // ONLY COMMENT OUT WHEN USING 1 SAMPLE
+								color.updateColor(rgb, 1.0);
 							}
+							
+							// develop film and update view
+							film.develop(a,b,color.getColor());
+							rendView.updateView(film.getRenderedImage());
+							b++;
 						}
 					}
 				}		
 			}//run		
-		});//thread	
+		});// renderThread	
 		renderThread.start();
 	}//startRendering
 
 	/**
-	 * The loop that retrieves the BufferedImage periodically 
-	 * as it is being developed.  Makes a separate Thread so
-	 * film can continue to develop on another.
+	 * Determines the weight of how much a sample location should ehfect a pixel
+	 * 
+	 * @param s Sample holding the sub pixel location
+	 * @param pX int X coordinate of sample
+	 * @param pY int Y coordinate of sample
+	 * @return
 	 */
-	public void startDisplaying() {
-
-		// Makes the Thread for rendering and defines its run function
-		displayThread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				System.out.println("started running");
-				
-				running = true;
-				
-				// Updates the image displaying to the GUI after a certain increment of time
-				while(running) {
-					
-					rendView.updateView(film.getRenderedImage());
-				}
-			}//run
-		});//thread
-		displayThread.start();
-	}//startDisplaying
-
+	protected double getWeight(Sample s, int pX, int pY) {
+		
+		Vector2d middle = new Vector2d(pX+0.5, pY+0.5);
+		Vector2d point = new Vector2d(pX+s.getOffsetX(), pY+s.getOffsetY());
+		
+		double weight = point.distance(middle);
+		if(weight < 0){
+			weight = -weight;
+		}
+		weight = 1 - weight;
 	
+		return weight;
+	}
 
 	/**
 	 * Takes image in Film class and exports it to a png with
@@ -182,19 +190,12 @@ public class RenderController {
 		    System.out.println("ERROR WHILE WRITING: " + e.getMessage());
 		}		
 		System.out.println("done writing!");
-		continueRendering();
 	}// exportImage
 	
-	/**
-	 * Sets running to false to end the loop in the Render Thread.
-	 */
+
 	public void stopRendering() {
-		running = false;
-	}// stopRendering
-	public void continueRendering() {
-		running = true;
-	}// continueRendering
-	
+		rendering = false;
+	}
 
 	public Scene getScene() {
 		return this.scene;

@@ -13,8 +13,11 @@ import java.util.Map;
 import com.google.gson.*;
 import com.shffl.assets.SceneShell;
 import com.shffl.assets.Scene;
+import com.shffl.assets.Light;
+import com.shffl.assets.LightShell;
 import com.shffl.assets.ObjModel;
 import com.shffl.assets.ObjShell;
+
 
 /**
  * @author Seth Chapman and Ethan Wiederspan 
@@ -32,7 +35,7 @@ public class MasterController {
 		private String filename;
 		
 
-		public Scene enviro;
+		public Scene scene;
 		public ObjModel[] objArray;
 		/**
 		 * Constructor for MasterController Class. Connects 
@@ -51,7 +54,7 @@ public class MasterController {
 		public void beginRender() {
 			
 			// Make RenderController
-			rendCon = new RenderController(this, enviro);	
+			rendCon = new RenderController(this, scene);	
 			
 			// start display loop
 			rendCon.display();
@@ -88,7 +91,7 @@ public class MasterController {
 			    
 
 			    // Make Scene from wrapper
-			    enviro = shell.scene;
+			    scene = shell.scene;
 			    
 			    // Load the models into the ObjModel Wrapper Class
 			    sceneElement = fileParser.next();
@@ -98,15 +101,25 @@ public class MasterController {
 			    objArray = oShell.objects;
 			    
 			    // Build each object
-			    for(int i = 0; i < objArray.length; i++) {
-			    	objArray[i].build();
-			    	objArray[i].parse();
-			    	//objArray[i].translatePoints();
+			    for(ObjModel model : objArray) {
+			    	model.build();
+			    	model.parse();
 			    }
-			    enviro.objects = objArray;
+			    scene.objects = objArray;
 			    
+			    // Load the light sources into the Light wrapper class
+			    sceneElement = fileParser.next();
+			    LightShell lShell = gson.fromJson(sceneElement, LightShell.class);
 			    
+			    for(Light l: lShell.lights) {
+			    	l.convert();
+			    }
+			    	
 			    
+			    // Make Light array from wrapper
+			    scene.lightSources = lShell.lights;
+			    
+			   
 			    // Start rendering and displaying the Scene
 			    this.beginRender();
 			    

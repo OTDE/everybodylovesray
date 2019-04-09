@@ -66,10 +66,10 @@ public class Camera {
 	 * 
 	 * @return Matrix4d containing the view matrix
 	 */
-	private Matrix4d viewMatrix() {
+	public Matrix4d viewMatrix() {
 				
 		Matrix4d view = new Matrix4d(this.rotation);
-		view.translate(this.eye);
+		view.translate(new Vector3d(this.eye));
 		
 		return view;
 	}// viewMatrix
@@ -83,18 +83,22 @@ public class Camera {
 	 * @param pixelX, pixelY, ints containing the ray directions x & y 
 	 *        coordinates in pixel space
 	 */
-	public Ray generateRay( Sample samp, int pixelX, int pixelY) {
-		
+	public Ray generateRay(Sample samp, int pixelX, int pixelY) {
+
+		// When using multiple samples
 		//double pX = pixelX + samp.getOffsetX();
 		//double pY = pixelY + samp.getOffsetX();
 		
+		// When using 1 sample (testing)
 		double pX = pixelX + 0.5;
 		double pY = pixelY + 0.5;
 		
 		double aspectRatio = film.getWidth() / (double)film.getHeight();
-		double scale = Math.tan(Math.toRadians(60/2)); // convert fov to radians
+		double scale = Math.tan(Math.toRadians(60 / 2)); // convert fov to radians
+
 		
 		// Get camera coordinates of pixels
+
 		double camX = ((2 * pX / film.getWidth()) - 1) * scale * aspectRatio;
 		double camY = (1 - (2 * pY / film.getHeight())) * scale;
 

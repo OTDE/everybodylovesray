@@ -10,6 +10,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 /**
  * @author Ethan Wiederspan and Seth Chapman
@@ -88,7 +89,6 @@ public class RenderView extends javax.swing.JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				System.out.println("Pressed a button: " + e.getActionCommand());
-				
 				if(e.getActionCommand().equals("Export")) {
 					System.out.println("exporting image");
 					rendCon.exportImage();
@@ -108,9 +108,15 @@ public class RenderView extends javax.swing.JFrame {
 	 */
 	public void updateView(BufferedImage newImage) {
 		
-		displayImage = new ImageIcon(newImage);
-		imageLabel.setIcon(displayImage);
-		panelMid.add(imageLabel);
+		// Ensure the Swing GUI Updates in its own thread.
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				displayImage = new ImageIcon(newImage);
+				imageLabel.setIcon(displayImage);
+				panelMid.add(imageLabel);
+			}
+		});
+		
 	}// updateView
 
 }

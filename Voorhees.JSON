@@ -8,8 +8,8 @@
 	}
 }
 
-{		
-	"objects": 
+{
+	"objects":
 			[
 					{
 						"filepath": "C:\\Users\\Seth\\cube.obj",
@@ -17,5 +17,14 @@
 						"rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
 					}
 			]
-	
+
+}
+{
+	"lights":
+		[
+				{
+					"intensity": [0.7,0.7,0.7],
+					"position" : [15,15,15]
+				}
+		]
 }
