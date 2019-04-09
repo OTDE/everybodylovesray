@@ -34,8 +34,8 @@ public class Octree {
 	public Octree(ArrayList<Face> faces, BoundingBox bounds) {
 		this(bounds);
 		for(Face f : faces) {
-			//if(faces.indexOf(f) % 100 == 0)
-				//System.out.printf("%d faces loaded!\n", faces.indexOf(f));
+			if(faces.indexOf(f) % 100 == 0)
+				System.out.printf("%d faces loaded!\n", faces.indexOf(f));
 			insert(f);
 		}
 	}
@@ -56,7 +56,7 @@ public class Octree {
 	 * @param face the Face to be inserted.
 	 * @return True for successful insertion at a given depth, false otherwise
 	 */
-	public boolean insert(Face face) {
+	public boolean insert(Face face) { //(probably not the problem)
 		if(!areOverlapping(face, bounds))
 			return false;
 		if(!hasSubdivided) {
@@ -91,26 +91,20 @@ public class Octree {
     /**
      * Divides a leaf node into 8 leaves, with the original node as the root.
      */
-    private void subdivide() { 
+    private void subdivide() { //this is not the problem.
         if (hasSubdivided) { 
             System.err.println("We have already subdivided this."); 
             System.exit(1); 
         } 
         hasSubdivided = true; 
- 
-        Vector3d minBoxMin = new Vector3d(bounds.pMin);
-        Vector3d minBoxMax = new Vector3d(bounds.pMax.x / TWO, bounds.pMax.y / TWO, bounds.pMax.z / TWO); 
-        Vector3d maxBoxMin = new Vector3d(minBoxMax);
-        Vector3d maxBoxMax = new Vector3d(bounds.pMax);
-        
-        BoundingBox minBox = new BoundingBox(minBoxMin, minBoxMax);
-        BoundingBox maxBox = new BoundingBox(maxBoxMin, maxBoxMax);
+
+        Vector3d center = new Vector3d(bounds.pMax.x / TWO, bounds.pMax.y / TWO, bounds.pMax.z / TWO); 
  
         BoundingBox[] newBounds = new BoundingBox[EIGHT]; 
         children = new Octree[EIGHT]; 
         
         for (int i = ZERO; i < EIGHT; i++) { 
-            newBounds[i] = new BoundingBox(minBox.getCorner(i), maxBox.getCorner(i));
+            newBounds[i] = new BoundingBox(this.bounds.getCorner(i), center);
             children[i] = new Octree(newBounds[i]);  
         } 
     } 

@@ -16,7 +16,6 @@ public class Ray {
 		this.origin = o;
 		this.direction = d;
 		this.inverse = new Vector3d(1/d.x, 1/d.y, 1/d.z);
-		this.tMax = -1;
 	}
 	
 	

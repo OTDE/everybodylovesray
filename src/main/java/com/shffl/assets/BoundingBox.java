@@ -76,7 +76,7 @@ public class BoundingBox {
 	public Vector3d getCorner(int index) {
 		 switch(index) {
 		 	case 0:
-		 		return pMin;
+		 		return new Vector3d(pMin);
 		 	case 1:
 		 		return new Vector3d(pMin.x, pMin.y, pMax.z);
 		 	case 2:
@@ -90,7 +90,7 @@ public class BoundingBox {
 		 	case 6:
 		 		return new Vector3d(pMax.x, pMax.y, pMin.z);
 		 	case 7:
-		 		return pMax;
+		 		return new Vector3d(pMax);
 		 	default:
 		 		return null;
 		 }	 
