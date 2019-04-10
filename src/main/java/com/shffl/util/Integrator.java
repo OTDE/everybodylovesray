@@ -45,6 +45,10 @@ public class Integrator {
 
 		return rayColor;
 	}// propagate
+	
+	public boolean inHardShadow(Ray r) {
+		return false;
+	}
 
 	/**
 	 * Calculates the RGB values to display to the pixel. Uses the Phong 
@@ -70,13 +74,24 @@ public class Integrator {
 			
 			// Calculate specular
 			if( lDotN > 0.0 ) {
-				Vector3d cameraDirection = new Vector3d(rendCon.getScene().eye).sub(inter.getPosition());
-				cameraDirection.normalize();
-				Vector3d halfway = cameraDirection.add(lightDirection);
-				halfway.normalize();
-				double hDotN = Math.max(halfway.dot(inter.getNormal()), 0.0);
-				double shine = Math.pow(hDotN, inter.material.shiny);
-				specular = new Vector3d(inter.material.specular).mul(shine);
+				// There is light cast in this direction, check for hard shadow
+				Ray shadowRay = new Ray(inter.getPosition(), lightDirection);
+				if (!inHardShadow(shadowRay)) {
+					
+					// Not in shadow, calculate reflectivity
+					Vector3d cameraDirection = new Vector3d(rendCon.getScene().eye).sub(inter.getPosition());
+					cameraDirection.normalize();
+					Vector3d halfway = cameraDirection.add(lightDirection);
+					halfway.normalize();
+					double hDotN = Math.max(halfway.dot(inter.getNormal()), 0.0);
+					double shine = Math.pow(hDotN, inter.material.shiny);
+					specular = new Vector3d(inter.material.specular).mul(shine);
+					
+				}else{
+					// In shadow, only ambient light
+					specular = new Vector3d(0,0,0);
+				}
+				
 			}else {
 				specular = new Vector3d(0,0,0);
 			}

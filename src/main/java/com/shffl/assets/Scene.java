@@ -107,77 +107,78 @@ public class Scene {
 	 */
 	public Intersection intersect(Ray r, Intersection inter) {
 
+		for(ObjModel obj: objects) {
+			for(Face f: obj.objData.faces) {
 
-		for(Face f: objects[0].objData.faces) {
+				// Determine if there is an intersection between the ray and face.
+				Vector3d s, edge1, edge2, v0, v1, v2, rayDirection;
+				double denom, coefficient, b1, b2, t;
 
-			// Determine if there is an intersection between the ray and face.
-			Vector3d s, edge1, edge2, v0, v1, v2, rayDirection;
-			double denom, coefficient, b1, b2, t;
+				// Get edge vertices
+				v0 = new Vector3d(f.vertices.get(0).v);
+				v1 = new Vector3d(f.vertices.get(1).v);
+				v2 = new Vector3d(f.vertices.get(2).v);
 
-			// Get edge vertices
-			v0 = new Vector3d(f.vertices.get(0).v);
-			v1 = new Vector3d(f.vertices.get(1).v);
-			v2 = new Vector3d(f.vertices.get(2).v);
+				s = (new Vector3d(r.origin)).sub(v0); 
+				edge1 = (new Vector3d(v1)).sub(v0);   
+				edge2 = (new Vector3d(v2)).sub(v0);  
 
-			s = (new Vector3d(r.origin)).sub(v0); 
-			edge1 = (new Vector3d(v1)).sub(v0);   
-			edge2 = (new Vector3d(v2)).sub(v0);  
-
-			rayDirection = new Vector3d(r.direction);
-			denom = (rayDirection.cross(edge2).dot(edge1));
-			coefficient = 1 / denom;
-
-			// First check b1
-			rayDirection = new Vector3d(r.direction);
-			b1 = coefficient * rayDirection.cross(edge2).dot(s);
-
-			if (b1 > 0 && b1 < 1) {
-
-				// Next check b2 with the same parameters
 				rayDirection = new Vector3d(r.direction);
-				b2 = coefficient * new Vector3d(s).cross(edge1).dot(rayDirection);
+				denom = (rayDirection.cross(edge2).dot(edge1));
+				coefficient = 1 / denom;
 
-				if(b2 > 0 && b2 < 1 && b1 + b2 <= 1) {
+				// First check b1
+				rayDirection = new Vector3d(r.direction);
+				b1 = coefficient * rayDirection.cross(edge2).dot(s);
 
-					// Next check t against tMax
-					t = coefficient * s.cross(edge1).dot(edge2);
+				if (b1 > 0 && b1 < 1) {
 
-					// Only calculate intersection data if it is the closest intersection point
-					if(r.tMax == -1 || t < r.tMax) {
+					// Next check b2 with the same parameters
+					rayDirection = new Vector3d(r.direction);
+					b2 = coefficient * new Vector3d(s).cross(edge1).dot(rayDirection);
 
-						r.tMax = t;
+					if(b2 > 0 && b2 < 1 && b1 + b2 <= 1) {
 
-						// Fill in intersection with normal of intersection 
-						// TEMP, just for use with obj. models that don't include point normals
-						v0.normalize();
-						v1.normalize();
-						v2.normalize();
+						// Next check t against tMax
+						t = coefficient * s.cross(edge1).dot(edge2);
 
-						v0.mul(1-b1-b2);
-						v1.mul(b1);
-						v2.mul(b2);
+						// Only calculate intersection data if it is the closest intersection point
+						if(r.tMax == -1 || t < r.tMax) {
 
-						Vector3d norm = new Vector3d(v0).add(v1).add(v2);
-						norm.normalize();
-						inter.setNormal(norm);
+							r.tMax = t;
 
-						// Get position of intersection
-						inter.setPosition(r.positionAtTMax());
+							// Fill in intersection with normal of intersection 
+							v0 = new Vector3d(f.vertices.get(0).n);
+							v1 = new Vector3d(f.vertices.get(1).n);
+							v2 = new Vector3d(f.vertices.get(2).n);
 
-						// Get materials of triangle
-						Vector3d diffuse = objects[0].objMaterials.get("material_0").kd.getRGB();
-						Vector3d specular = objects[0].objMaterials.get("material_0").ks.getRGB();
-						double shiny = objects[0].objMaterials.get("material_0").nsExponent;
+							v0.mul(1-b1-b2);
+							v1.mul(b1);
+							v2.mul(b2);
 
-						inter.setMaterialAttributes(diffuse,specular,shiny);
+							Vector3d norm = new Vector3d(v0).add(v1).add(v2);
+							norm.normalize();
+							inter.setNormal(norm);
+
+							// Get position of intersection
+							inter.setPosition(r.positionAtTMax());
+
+							// Get materials of triangle
+							Vector3d diffuse = f.material.kd.getRGB();
+							Vector3d specular = f.material.ks.getRGB();
+							double shiny = f.material.nsExponent;
+
+							inter.setMaterialAttributes(diffuse,specular,shiny);
+						}
+					}else {
+						// Didn't hit
 					}
 				}else {
 					// Didn't hit
 				}
-			}else {
-				// Didn't hit
-			}
-		}// for
+			}// for faces
+		}// for objects
+		
 		
 		return inter;
 	}// intersect
