@@ -29,5 +29,11 @@ public class Ray {
 		Vector3d distance = new Vector3d(direction).mul(this.tMax);
 		return new Vector3d(origin).add(distance);
 	}
+	
+	public void nudgeOrigin() {
+		Vector3d nudge = new Vector3d(this.direction);
+		nudge.mul(0.1);
+		this.origin = this.origin.add(nudge);
+	}
 
 }

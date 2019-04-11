@@ -47,7 +47,8 @@ public class Integrator {
 	}// propagate
 	
 	public boolean inHardShadow(Ray r) {
-		return false;
+		
+		return rendCon.getScene().shadowIntersect(r);
 	}
 
 	/**
@@ -60,7 +61,7 @@ public class Integrator {
 	 */
 	public Vector3d getRGBPhong(Intersection inter) {
 		
-		Vector3d diffuse, specular, rgb = new Vector3d(0,0,0);
+		Vector3d diffuse, specular, rgb = new Vector3d(0,0,0), lightIntensity = new Vector3d(0,0,0);
 		
 		for(Light light: rendCon.getScene().lightSources) {
 			
@@ -74,9 +75,19 @@ public class Integrator {
 			
 			// Calculate specular
 			if( lDotN > 0.0 ) {
+				
 				// There is light cast in this direction, check for hard shadow
-				Ray shadowRay = new Ray(inter.getPosition(), lightDirection);
+				
+				// optimize?
+				Vector3d sOrigin = new Vector3d(inter.getPosition());
+				Vector3d sDir = new Vector3d(lightDirection);
+				
+				Ray shadowRay = new Ray(sOrigin, sDir);
+				shadowRay.nudgeOrigin();
+				Vector3d d =new Vector3d(shadowRay.origin).add(shadowRay.direction);
+				//System.out.println("SR with origin: "+shadowRay.origin+"and dir: "+d);
 				if (!inHardShadow(shadowRay)) {
+					
 					
 					// Not in shadow, calculate reflectivity
 					Vector3d cameraDirection = new Vector3d(rendCon.getScene().eye).sub(inter.getPosition());
@@ -87,20 +98,21 @@ public class Integrator {
 					double shine = Math.pow(hDotN, inter.material.shiny);
 					specular = new Vector3d(inter.material.specular).mul(shine);
 					
+					// Get final color
+					Vector3d reflection = diffuse.add(specular);
+					lightIntensity = new Vector3d(light.i);
+					lightIntensity.mul(reflection);
+					
 				}else{
 					// In shadow, only ambient light
-					specular = new Vector3d(0,0,0);
-				}
+				}// Shadow Check
 				
 			}else {
-				specular = new Vector3d(0,0,0);
-			}
+				lightIntensity = diffuse;
+			} // lDotN check
 			
 			
-			// Get final color
-			Vector3d reflection = diffuse.add(specular);
-			Vector3d lightIntensity = new Vector3d(light.i);
-			lightIntensity.mul(reflection);
+			
 			rgb = rgb.add(lightIntensity);
 		}
 		

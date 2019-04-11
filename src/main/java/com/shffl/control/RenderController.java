@@ -94,7 +94,7 @@ public class RenderController {
 				rendering = true;
 				// Starts the Thread, calling its run method
 				scene.initializeFaces();
-				Sampler sampler = new Sampler(1); // Increase number of Samples later in the process
+				Sampler sampler = new Sampler(10); // Increase number of Samples later in the process
 				SampleArray sampArr = null;
 				Ray ray = null;
 				
@@ -136,8 +136,8 @@ public class RenderController {
 								Vector3d rgb = integrator.propagate(ray);
 								
 								double weight = getWeight(s, sampArr.getPixelX(), sampArr.getPixelY());
-								//color.updateColor(rgb, weight); // ONLY COMMENT OUT WHEN USING 1 SAMPLE
-								color.updateColor(rgb, 1.0);
+								color.updateColor(rgb, weight); // ONLY COMMENT OUT WHEN USING 1 SAMPLE
+								//color.updateColor(rgb, 1.0);
 							}
 							
 							// develop film and update view

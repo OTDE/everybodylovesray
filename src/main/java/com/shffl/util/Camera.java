@@ -86,12 +86,12 @@ public class Camera {
 	public Ray generateRay(Sample samp, int pixelX, int pixelY) {
 
 		// When using multiple samples
-		//double pX = pixelX + samp.getOffsetX();
-		//double pY = pixelY + samp.getOffsetX();
+		double pX = pixelX + samp.getOffsetX();
+		double pY = pixelY + samp.getOffsetX();
 		
 		// When using 1 sample (testing)
-		double pX = pixelX + 0.5;
-		double pY = pixelY + 0.5;
+		//double pX = pixelX + 0.5;
+		//double pY = pixelY + 0.5;
 		
 		double aspectRatio = film.getWidth() / (double)film.getHeight();
 		double scale = Math.tan(Math.toRadians(60 / 2)); // convert fov to radians

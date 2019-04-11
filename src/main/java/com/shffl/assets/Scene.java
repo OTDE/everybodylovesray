@@ -191,6 +191,67 @@ public class Scene {
 		}
 		Vector3d min = new Vector3d(-1.0, -1.0, -1.0);
 		Vector3d max = new Vector3d(1.0, 1.0, 1.0);
-		faceStorage = new Octree(allFaces, new BoundingBox(min, max));
+		//faceStorage = new Octree(allFaces, new BoundingBox(min, max));
+	}
+
+	public boolean shadowIntersect(Ray r) {
+
+		for(ObjModel obj: objects) {
+			for(Face f: obj.objData.faces) {
+
+				// Determine if there is an intersection between the ray and face.
+				Vector3d s, edge1, edge2, v0, v1, v2, rayDirection;
+				double denom, coefficient, b1, b2;
+
+				// Get edge vertices
+				v0 = new Vector3d(f.vertices.get(0).v);
+				v1 = new Vector3d(f.vertices.get(1).v);
+				v2 = new Vector3d(f.vertices.get(2).v);
+
+				s = (new Vector3d(r.origin)).sub(v0); 
+				edge1 = (new Vector3d(v1)).sub(v0);   
+				edge2 = (new Vector3d(v2)).sub(v0);  
+
+				rayDirection = new Vector3d(r.direction);
+				denom = (rayDirection.cross(edge2).dot(edge1));
+				coefficient = 1 / denom;
+
+				// First check b1
+				rayDirection = new Vector3d(r.direction);
+				b1 = coefficient * rayDirection.cross(edge2).dot(s);
+
+				if (b1 > 0 && b1 < 1) {
+
+					// Next check b2 with the same parameters
+					rayDirection = new Vector3d(r.direction);
+					b2 = coefficient * new Vector3d(s).cross(edge1).dot(rayDirection);
+
+					if(b2 > 0 && b2 < 1 && b1 + b2 <= 1) {
+
+						double t = coefficient * s.cross(edge1).dot(edge2);
+						if(t > 0) {
+							
+							r.tMax = t;
+							//System.out.println("shadow hit!");
+							
+							//System.out.println("hit point: "+r.positionAtTMax());
+							
+							// It hit something, its in a shadow
+							return true;
+						}
+						
+						
+					}else {
+						// Didn't hit
+					}
+				}else {
+					// Didn't hit
+				}
+			}// for faces
+			//System.out.println("F");
+		}// for objects
+		// Didn't hit anything
+		//System.out.println("O");
+		return false;
 	}
 }
