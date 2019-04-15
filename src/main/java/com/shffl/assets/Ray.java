@@ -30,9 +30,14 @@ public class Ray {
 		return new Vector3d(origin).add(distance);
 	}
 	
+	
+	/**
+	 * Nudges the origin of this ray towards the ray's direction. 
+	 * Aids in preventing a ray colliding with the face it was cast from
+	 */
 	public void nudgeOrigin() {
 		Vector3d nudge = new Vector3d(this.direction);
-		nudge.mul(0.1);
+		nudge.mul(0.001);
 		this.origin = this.origin.add(nudge);
 	}
 

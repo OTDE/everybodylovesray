@@ -158,17 +158,21 @@ public class Scene {
 
 							Vector3d norm = new Vector3d(v0).add(v1).add(v2);
 							norm.normalize();
+							
 							inter.setNormal(norm);
 
 							// Get position of intersection
 							inter.setPosition(r.positionAtTMax());
 
 							// Get materials of triangle
+							
+							Vector3d ambient = f.material.ka.getRGB();
 							Vector3d diffuse = f.material.kd.getRGB();
 							Vector3d specular = f.material.ks.getRGB();
 							double shiny = f.material.nsExponent;
 
-							inter.setMaterialAttributes(diffuse,specular,shiny);
+							inter.setMaterialAttributes(ambient,diffuse,specular,shiny);
+							
 						}
 					}else {
 						// Didn't hit
@@ -178,7 +182,6 @@ public class Scene {
 				}
 			}// for faces
 		}// for objects
-		
 		
 		return inter;
 	}// intersect
@@ -193,7 +196,14 @@ public class Scene {
 		Vector3d max = new Vector3d(1.0, 1.0, 1.0);
 		//faceStorage = new Octree(allFaces, new BoundingBox(min, max));
 	}
-
+	
+	/**
+	 * Determines if ray intersects any object in the direction of a light 
+	 * sources, used to determine if a shadow is being cast onto a point.
+	 * 
+	 * @param r Ray with a direction towards a light source.
+	 * @return boolean describing whether the point is within a shadow.
+	 */
 	public boolean shadowIntersect(Ray r) {
 
 		for(ObjModel obj: objects) {
@@ -227,20 +237,14 @@ public class Scene {
 					b2 = coefficient * new Vector3d(s).cross(edge1).dot(rayDirection);
 
 					if(b2 > 0 && b2 < 1 && b1 + b2 <= 1) {
-
+						
+						// Make sure collision is in front of the object
 						double t = coefficient * s.cross(edge1).dot(edge2);
 						if(t > 0) {
-							
-							r.tMax = t;
-							//System.out.println("shadow hit!");
-							
-							//System.out.println("hit point: "+r.positionAtTMax());
-							
+							r.tMax = t;							
 							// It hit something, its in a shadow
 							return true;
 						}
-						
-						
 					}else {
 						// Didn't hit
 					}
@@ -248,10 +252,8 @@ public class Scene {
 					// Didn't hit
 				}
 			}// for faces
-			//System.out.println("F");
 		}// for objects
 		// Didn't hit anything
-		//System.out.println("O");
 		return false;
 	}
 }
