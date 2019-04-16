@@ -78,17 +78,17 @@ public class BoundingBox {
 		 	case 0:
 		 		return new Vector3d(pMin);
 		 	case 1:
-		 		return new Vector3d(pMin.x, pMin.y, pMax.z);
+		 		return new Vector3d(pMin.x(), pMin.y(), pMax.z());
 		 	case 2:
-		 		return new Vector3d(pMin.x, pMax.y, pMin.z);
+		 		return new Vector3d(pMin.x(), pMax.y(), pMin.z());
 		 	case 3:
-		 		return new Vector3d(pMin.x, pMax.y, pMax.z);
+		 		return new Vector3d(pMin.x(), pMax.y(), pMax.z());
 		 	case 4:
-		 		return new Vector3d(pMax.x, pMin.y, pMin.z);
+		 		return new Vector3d(pMax.x(), pMin.y(), pMin.z());
 		 	case 5:
-		 		return new Vector3d(pMax.x, pMin.y, pMax.z);
+		 		return new Vector3d(pMax.x(), pMin.y(), pMax.z());
 		 	case 6:
-		 		return new Vector3d(pMax.x, pMax.y, pMin.z);
+		 		return new Vector3d(pMax.x(), pMax.y(), pMin.z());
 		 	case 7:
 		 		return new Vector3d(pMax);
 		 	default:
@@ -250,55 +250,17 @@ public class BoundingBox {
 	private double lerp(double t, double p0, double p1) {
 		 return (1 - t) * p0 + t * p1;
 	 }
-	
-	public boolean intersectsWith(Ray r) {	
-		double tMin = 0.0;
-		double tMax = r.tMax;
 		
-		double invRayDir = 1 / r.origin.x;
-		double tNear = (this.pMin.x - r.origin.x) * invRayDir;
-		double tFar = (this.pMax.x - r.origin.x) * invRayDir;
+	public boolean intersectsWith(Ray r) {
+		double t1 = (this.pMin.x() - r.origin.x()) / r.direction.x();
+		double t2 = (this.pMax.x() - r.origin.x()) / r.direction.x();
+		double t3 = (this.pMin.y() - r.origin.y()) / r.direction.y();
+		double t4 = (this.pMax.y() - r.origin.y()) / r.direction.y();
+		double t5 = (this.pMin.z() - r.origin.z()) / r.direction.z();
+		double t6 = (this.pMax.z() - r.origin.z()) / r.direction.z();
 		
-		if(tNear > tFar)
-			this.swap(tNear, tNear = tFar);
-		tFar *= 1 + 2 * gamma(3);
-		tNear = Math.max(tNear, tMin);
-		tMax = Math.min(tFar, tMax);
-		
-		if(tMin > tMax)
-			return false;
-		
-		invRayDir = 1 / r.origin.y;
-		tNear = (this.pMin.y - r.origin.y) * invRayDir;
-		tFar = (this.pMax.y - r.origin.y) * invRayDir;
-
-		if(tNear > tFar)
-			this.swap(tNear, tNear = tFar);
-		tFar *= 1 + 2 * gamma(3);
-		tNear = Math.max(tNear, tMin);
-		tMax = Math.min(tFar, tMax);
-		
-		if(tMin > tMax)
-			return false;
-
-		invRayDir = 1 / r.origin.z;
-		tNear = (this.pMin.z - r.origin.z) * invRayDir;
-		tFar = (this.pMax.z - r.origin.z) * invRayDir;
-		
-		if(tNear > tFar)
-			this.swap(tNear, tNear = tFar);
-		tFar *= 1 + 2 * gamma(3);
-		tNear = Math.max(tNear, tMin);
-		tMax = Math.min(tFar, tMax);
-		
-		if(tMin > tMax)
-			return false;
-		return true;
+		double tMin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)), Math.min(t5, t6));
+		double tMax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
+		return tMin < tMax && tMax > 0;
 	}
-	
-	 private double swap(double a, double b) { return a; }
-	 
-	 private static double gamma(int n) {
-		 return (n * Tags.MACHINE_EPSILON) / (1 - n * Tags.MACHINE_EPSILON);
-	 }
 }

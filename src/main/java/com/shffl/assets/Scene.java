@@ -187,9 +187,10 @@ public class Scene {
 		for(ObjModel obj : objects) {
 			allFaces.addAll(obj.objData.faces);
 		}
-		Vector3d min = new Vector3d(-1.0, -1.0, -1.0);
-		Vector3d max = new Vector3d(1.0, 1.0, 1.0);
+		Vector3d min = new Vector3d(-2.0, -2.0, -2.0);
+		Vector3d max = new Vector3d(2.0, 2.0, 2.0);
 		faceStorage = new Octree(allFaces, new BoundingBox(min, max));
+		//faceStorage.build(0);
 		faceStorage.testNodes();
 	}
 }
