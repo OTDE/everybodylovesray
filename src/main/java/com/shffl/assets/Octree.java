@@ -253,6 +253,7 @@ public class Octree {
 		double x2 = f.vertices.get(ONE).v.x();
 		double x3 = f.vertices.get(TWO).v.x();
 		
+
 		double y1 = f.vertices.get(ZERO).v.y();
 		double y2 = f.vertices.get(ONE).v.y();
 		double y3 = f.vertices.get(TWO).v.y();
@@ -263,7 +264,7 @@ public class Octree {
 		
 		double xMin = Math.min(x1, Math.min(x2, x3));
 		double xMax = Math.max(x1, Math.max(x2, x3));
-		
+
 		double yMin = Math.min(y1, Math.min(y2, y3));
 		double yMax = Math.max(y1, Math.max(y2, y3));
 		
