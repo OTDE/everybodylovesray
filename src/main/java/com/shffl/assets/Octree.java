@@ -35,11 +35,14 @@ public class Octree {
 	 */
 	public Octree(ArrayList<Face> faces, BoundingBox bounds) {
 		this(bounds);
+		this.faces = faces;
+		/*
 		for(Face f: faces) {
 			insert(f);
 			if(faces.indexOf(f) % 100 == 0)
 				System.out.printf("%d faces loaded!\n", faces.indexOf(f));
 		}
+		*/
 	}
 	
 	/**
@@ -121,7 +124,7 @@ public class Octree {
         } 
         hasSubdivided = true; 
 
-        Vector3d center = new Vector3d(bounds.pMax.x() / TWO, bounds.pMax.y() / TWO, bounds.pMax.z() / TWO); 
+        Vector3d center = new Vector3d(bounds.getCenterX() / TWO, bounds.getCenterY() / TWO, bounds.getCenterZ() / TWO); 
  
         BoundingBox[] newBounds = new BoundingBox[EIGHT]; 
         children = new Octree[EIGHT]; 
