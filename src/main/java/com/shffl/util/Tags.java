@@ -18,4 +18,6 @@ public class Tags {
 											  {0,1}, {0,0}, {1,0}, {2,0}, {3,0},
 											  {4,0}, {4,1}, {4,2}, {4,3}, {4,4}};
 	
+	public static final double MACHINE_EPSILON = Double.longBitsToDouble(971l << 52);
+	
 }

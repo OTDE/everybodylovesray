@@ -31,7 +31,7 @@ public class Plane {
 	// gives point at which ray intersects with plane
 	public double distanceAtTime(Vector3d origin, Vector3d direction, double t) {
 		Vector3d tv = new Vector3d(direction);
-		direction.mul(t, tv);
+		tv.mul(t);
 		Vector3d result = new Vector3d(origin);
 		result.add(tv);
 		return result.length();

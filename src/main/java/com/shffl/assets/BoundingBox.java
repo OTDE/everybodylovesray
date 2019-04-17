@@ -2,6 +2,8 @@ package com.shffl.assets;
 
 import org.joml.Vector3d;
 
+import com.shffl.util.Tags;
+
 /**
  * Bounds class for rendering optimization.
  * @author Ethan Wiederspan and Seth Chapman
@@ -45,12 +47,12 @@ public class BoundingBox {
 	 /**
 	  * Picks a corner from the cube like so:
 	  * 
-	  *  6                      pMax (7)
+	  *  3                      pMax (7)
 	  *  v                       v
 	  *  @ + + + + + + + + + + + @
 	  *  +\                      +\
 	  *  + \                     + \
-	  *  +  \ 1                  +  \ 2
+	  *  +  \ 2                  +  \ 6
 	  *  +   \v                  +   \v
 	  *  +    @ + + + + + + + + +++ + @
 	  *  +    +                  +    +
@@ -61,12 +63,12 @@ public class BoundingBox {
 	  *  +    +                  +    +
 	  *  @ + +++ + + + + + + + + @    +
 	  *  ^\   +                  ^\   +
-	  *  5 \  +                  4 \  +
+	  *  1 \  +                  5 \  +
 	  *     \ +                     \ +
 	  *      \+                      \+
 	  *       @ + + + + + + + + + + + @
 	  * 	  ^                       ^
-	  * 	pMin (0)                  3    
+	  * 	pMin (0)                  4    
 	  * 
 	  * @param index the corner of the cube to be returned.
 	  * @return the point representation of the corner requested.
@@ -74,21 +76,21 @@ public class BoundingBox {
 	public Vector3d getCorner(int index) {
 		 switch(index) {
 		 	case 0:
-		 		return pMin;
+		 		return new Vector3d(pMin);
 		 	case 1:
-		 		return new Vector3d(pMin.x, pMin.y, pMax.z);
+		 		return new Vector3d(pMin.x(), pMin.y(), pMax.z());
 		 	case 2:
-		 		return new Vector3d(pMin.x, pMax.y, pMin.z);
+		 		return new Vector3d(pMin.x(), pMax.y(), pMin.z());
 		 	case 3:
-		 		return new Vector3d(pMin.x, pMax.y, pMax.z);
+		 		return new Vector3d(pMin.x(), pMax.y(), pMax.z());
 		 	case 4:
-		 		return new Vector3d(pMax.x, pMin.y, pMin.z);
+		 		return new Vector3d(pMax.x(), pMin.y(), pMin.z());
 		 	case 5:
-		 		return new Vector3d(pMax.x, pMin.y, pMax.z);
+		 		return new Vector3d(pMax.x(), pMin.y(), pMax.z());
 		 	case 6:
-		 		return new Vector3d(pMax.x, pMax.y, pMin.z);
+		 		return new Vector3d(pMax.x(), pMax.y(), pMin.z());
 		 	case 7:
-		 		return pMax;
+		 		return new Vector3d(pMax);
 		 	default:
 		 		return null;
 		 }	 
@@ -248,5 +250,17 @@ public class BoundingBox {
 	private double lerp(double t, double p0, double p1) {
 		 return (1 - t) * p0 + t * p1;
 	 }
-	 
+		
+	public boolean intersectsWith(Ray r) {
+		double t1 = (this.pMin.x() - r.origin.x()) / r.direction.x();
+		double t2 = (this.pMax.x() - r.origin.x()) / r.direction.x();
+		double t3 = (this.pMin.y() - r.origin.y()) / r.direction.y();
+		double t4 = (this.pMax.y() - r.origin.y()) / r.direction.y();
+		double t5 = (this.pMin.z() - r.origin.z()) / r.direction.z();
+		double t6 = (this.pMax.z() - r.origin.z()) / r.direction.z();
+		
+		double tMin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)), Math.min(t5, t6));
+		double tMax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
+		return tMin < tMax && tMax > 0;
+	}
 }

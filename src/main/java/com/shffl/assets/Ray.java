@@ -8,7 +8,7 @@ public class Ray {
 	public Vector3d direction;
 	public Vector3d inverse;
 	
-	public double tMax = 0.0;
+	public double tMax = Double.POSITIVE_INFINITY;
 	public double time = 0.0;
 	public double radiance = 1.0;
 	
@@ -16,7 +16,6 @@ public class Ray {
 		this.origin = o;
 		this.direction = d;
 		this.inverse = new Vector3d(1/d.x, 1/d.y, 1/d.z);
-		this.tMax = -1;
 	}
 	
 	
@@ -28,6 +27,17 @@ public class Ray {
 	public Vector3d positionAtTMax() {
 		Vector3d distance = new Vector3d(direction).mul(this.tMax);
 		return new Vector3d(origin).add(distance);
+	}
+	
+	
+	/**
+	 * Nudges the origin of this ray towards the ray's direction. 
+	 * Aids in preventing a ray colliding with the face it was cast from
+	 */
+	public void nudgeOrigin() {
+		Vector3d nudge = new Vector3d(this.direction);
+		nudge.mul(0.001);
+		this.origin = this.origin.add(nudge);
 	}
 
 }

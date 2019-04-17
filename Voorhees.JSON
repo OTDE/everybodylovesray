@@ -1,10 +1,11 @@
 {
 	"scene": {
-			"height": 420,
-			"width": 690,
-			"eyeInput": [20, 20, 20],
+			"height": 300,
+			"width": 300,
+			"eyeInput": [2, 2, 2],
 			"atInput": [0, 0, 0],
-			"upInput": [0, 1, 0]
+			"upInput": [0, 1, 0],
+			"globalLight": [0.2,0.0,0.2]
 	}
 }
 
@@ -12,7 +13,7 @@
 	"objects":
 			[
 					{
-						"filepath": "C:\\Users\\Seth\\cube.obj",
+						"filepath": "C:\\Users\\Seth\\sphere.obj",
 						"translation": [0,0,0],
 						"rotation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
 					}
@@ -23,7 +24,7 @@
 	"lights":
 		[
 				{
-					"intensity": [0.7,0.7,0.7],
+					"intensity": [0.3,0.3,0.3],
 					"position" : [15,15,15]
 				}
 		]

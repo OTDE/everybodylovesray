@@ -46,9 +46,17 @@ public class Integrator {
 		return rayColor;
 	}// propagate
 	
+	
+	/**
+	 * Determines if a ray intersects any objects in the direction of a light 
+	 * sources, used to determine if a shadow is being cast onto a point.
+	 * 
+	 * @param r Ray with a direction towards a light source.
+	 * @return boolean describing whether the point is within a shadow.
+	 */
 	public boolean inHardShadow(Ray r) {
-		return false;
-	}
+		return rendCon.getScene().shadowIntersect(r);
+	}// inHardShadow
 
 	/**
 	 * Calculates the RGB values to display to the pixel. Uses the Phong 
@@ -60,25 +68,31 @@ public class Integrator {
 	 */
 	public Vector3d getRGBPhong(Intersection inter) {
 		
-		Vector3d diffuse, specular, rgb = new Vector3d(0,0,0);
+		Vector3d ambient, diffuse, specular, rgb = new Vector3d(0,0,0), lightIntensity;
+		
+		// Apply ambient no matter what
+		ambient = new Vector3d(inter.material.ambient);
 		
 		for(Light light: rendCon.getScene().lightSources) {
+		
+			lightIntensity = new Vector3d(0,0,0);
 			
-			// Calculate diffuse 
+			// Check if the light is hitting the surface
 			Vector3d lightPosition = new Vector3d(light.pos);//.mulPosition(rendCon.cam.viewMatrix());			
 			Vector3d lightDirection = new Vector3d(lightPosition).sub(inter.getPosition());
 			lightDirection.normalize();
-			
 			double lDotN =  Math.max(lightDirection.dot(inter.getNormal()), 0.0);
-			diffuse = new Vector3d(inter.material.diffuse).mul(lDotN);
 			
-			// Calculate specular
 			if( lDotN > 0.0 ) {
+				
 				// There is light cast in this direction, check for hard shadow
 				Ray shadowRay = new Ray(inter.getPosition(), lightDirection);
+				shadowRay.nudgeOrigin();
 				if (!inHardShadow(shadowRay)) {
 					
-					// Not in shadow, calculate reflectivity
+					// Not in shadow, calculate reflectivity 
+					diffuse = new Vector3d(inter.material.diffuse).mul(lDotN);
+					
 					Vector3d cameraDirection = new Vector3d(rendCon.getScene().eye).sub(inter.getPosition());
 					cameraDirection.normalize();
 					Vector3d halfway = cameraDirection.add(lightDirection);
@@ -87,25 +101,23 @@ public class Integrator {
 					double shine = Math.pow(hDotN, inter.material.shiny);
 					specular = new Vector3d(inter.material.specular).mul(shine);
 					
+					// Get final color
+					Vector3d reflection = diffuse.add(specular);
+					lightIntensity = new Vector3d(light.i);
+					lightIntensity.mul(reflection);
+					
 				}else{
-					// In shadow, only ambient light
-					specular = new Vector3d(0,0,0);
-				}
-				
-			}else {
-				specular = new Vector3d(0,0,0);
-			}
-			
-			
-			// Get final color
-			Vector3d reflection = diffuse.add(specular);
-			Vector3d lightIntensity = new Vector3d(light.i);
-			lightIntensity.mul(reflection);
+					// In shadow
+				}// Shadow Check
+			}else { 
+				// Not in light's path
+			} // lDotN check
 			rgb = rgb.add(lightIntensity);
 		}
 		
-		// After all light sources are factored, add ambient light of scene
+		// After all light sources are factored, add ambient light of scene and material
 		rgb.add(rendCon.getScene().getAmbient());
+		rgb.add(ambient);
 		
 		// Check for values that are OOB for Color Object
 		for(int i = 0; i < 3; i++) {
