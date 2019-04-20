@@ -170,9 +170,11 @@ public class Scene {
 						Vector3d diffuse = f.material.kd.getRGB();
 						Vector3d specular = f.material.ks.getRGB();
 						double shiny = f.material.nsExponent;
+						double mirror = f.material.mirror;
+						double index = f.material.refracIndex;
+						double opacity = f.material.opacity;
 
-						inter.setMaterialAttributes(ambient,diffuse,specular,shiny);
-
+						inter.setMaterialAttributes(ambient,diffuse,specular,shiny,mirror,index,opacity);
 					}
 				}else {
 					// Didn't hit

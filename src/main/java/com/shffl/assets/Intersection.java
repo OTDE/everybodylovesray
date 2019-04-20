@@ -27,6 +27,23 @@ public class Intersection {
 		this.material.shiny = shin;
 	}
 	
+	/**
+	 * Initializes the material of the point of Ray-Triangle intersection
+	 * 
+	 * @param diff Vector3d the RGB data diffuse reflection of the material
+	 * @param spec Vector3d the RGB data specular reflection of the material
+	 * @param shin double the shininess coefficient of the material
+	 */
+	public void setMaterialAttributes(Vector3d amb, Vector3d diff, Vector3d spec, double shin, double mir, double op, double ind) {
+		this.material.ambient = new Vector3d(amb);
+		this.material.diffuse = new Vector3d(diff);
+		this.material.specular = new Vector3d(spec);
+		this.material.shiny = shin;
+		this.material.mirror = mir;
+		this.material.opacity = op;
+		this.material.indexOfRefraction = ind;
+	}
+	
 	public void setPosition(Vector3d p) {
 		this.position = new Vector3d(p);
 	}
@@ -43,6 +60,9 @@ public class Intersection {
 		public Vector3d diffuse;
 		public Vector3d specular;
 		public double shiny;
+		public double mirror = 0.0;
+		public double opacity = 0.0;
+		public double indexOfRefraction = 1.0;
 	}
 }
 

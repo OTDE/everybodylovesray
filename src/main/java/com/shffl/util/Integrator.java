@@ -26,7 +26,11 @@ public class Integrator {
 	 * @param r the Ray to propagate
 	 * @return Vector3d containing the rgb values to be displayed on the pixel
 	 */
-	public Vector3d propagate(Ray r) {
+	public Vector3d propagate(Ray r, int depth) {
+		
+		// Check for max depth
+		if(depth == 6)
+			return new Vector3d(0,0,0);
 
 		Vector3d rayColor = new Vector3d(1, 1, 1);
 
@@ -35,12 +39,26 @@ public class Integrator {
 		
 		// If this returned true, we hit an object
 		if(inter.hasNormal) {
-
-			// Get a color from the Integrator method
 			
 			//rayColor = getRGBNormal(inter); // NORMAL INTEGRATOR
 			rayColor = getRGBPhong(inter); // PHONG MODEL INTEGRATOR
-
+			
+			/*
+			if(inter.material.mirror > 0) {
+				// Get reflection ray
+				Vector3d reflectDirection = new Vector3d(r.direction);
+				Vector3d nPlusD = new Vector3d(inter.getNormal()).add(r.direction);
+				double angle = reflectDirection.dot(inter.getNormal());
+				
+				reflectDirection = nPlusD.mul(angle).mul(-2.0);
+				reflectDirection.normalize();
+				
+				Ray reflection = new Ray(inter.getPosition(), reflectDirection);
+				rayColor = rayColor.add(propagate(reflection, depth+1).mul(inter.material.mirror));
+			}
+			*/
+			
+			//  --------- REFRACTION CHECK HERE ------
 		}
 
 		return rayColor;
