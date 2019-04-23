@@ -28,39 +28,60 @@ public class Integrator {
 	 */
 	public Vector3d propagate(Ray r, int depth) {
 		
-		// Check for max depth
-		if(depth == 6)
-			return new Vector3d(0,0,0);
-
+		
 		Vector3d rayColor = new Vector3d(1, 1, 1);
-
+		
+		// Check for max depth
+		if(depth >= 5) {
+			return rayColor;
+		}
+		
 		inter = new Intersection();
 		inter = rendCon.getScene().intersect(r, inter);
 		
 		// If this returned true, we hit an object
 		if(inter.hasNormal) {
-			
+		
 			//rayColor = getRGBNormal(inter); // NORMAL INTEGRATOR
 			rayColor = getRGBPhong(inter); // PHONG MODEL INTEGRATOR
 			
-			/*
-			if(inter.material.mirror > 0) {
+			if(inter.material.mirror != 0) {
+				
+				double mirror = inter.material.mirror;
+				
 				// Get reflection ray
-				Vector3d reflectDirection = new Vector3d(r.direction);
-				Vector3d nPlusD = new Vector3d(inter.getNormal()).add(r.direction);
-				double angle = reflectDirection.dot(inter.getNormal());
 				
-				reflectDirection = nPlusD.mul(angle).mul(-2.0);
-				reflectDirection.normalize();
-				
+				double rDotN = r.direction.dot(inter.getNormal());
+				Vector3d delta = new Vector3d(inter.getNormal()).mul(2.0);
+				delta = delta.mul(rDotN);
+				Vector3d reflectDirection = new Vector3d(r.direction).sub(delta);
+				reflectDirection = reflectDirection.normalize();
 				Ray reflection = new Ray(inter.getPosition(), reflectDirection);
-				rayColor = rayColor.add(propagate(reflection, depth+1).mul(inter.material.mirror));
+				reflection.nudgeOrigin(.01);
+				
+				
+				Vector3d reflectColor = new Vector3d(propagate(reflection,depth+1));
+				
+				
+				reflectColor = reflectColor.mul(mirror);
+				mirror = 1 - mirror;
+				rayColor = rayColor.mul(mirror);
+				rayColor = rayColor.add(reflectColor);
+				
+				//Rr = Ri - 2 N (Ri . N)
 			}
-			*/
 			
-			//  --------- REFRACTION CHECK HERE ------
 		}
 
+		// Check for values that are OOB for Color Object
+		for(int i = 0; i < 3; i++) {
+			if(rayColor.get(i) > 1) {
+				rayColor.setComponent(i, 1.0);
+			}
+		}
+		
+		//System.out.println("final Color: "+rayColor);
+		//System.out.println("END OF DEPTH "+depth+" ------------");
 		return rayColor;
 	}// propagate
 	
@@ -105,7 +126,7 @@ public class Integrator {
 				
 				// There is light cast in this direction, check for hard shadow
 				Ray shadowRay = new Ray(inter.getPosition(), lightDirection);
-				shadowRay.nudgeOrigin();
+				shadowRay.nudgeOrigin(0.001);
 				if (!inHardShadow(shadowRay)) {
 					
 					// Not in shadow, calculate reflectivity 

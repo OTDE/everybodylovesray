@@ -19,7 +19,7 @@ public class Octree {
 	private static final int EIGHT = 8;
 	private static final int THIRTEEN = 13;
 	private static final int MAX_DEPTH = 30;
-	protected static final int MAX_FACES = 75;
+	protected static final int MAX_FACES = 500;
 	public ArrayList<Face> faces;
 	private boolean hasSubdivided = false;
 	public boolean isEmpty = true;
@@ -76,6 +76,7 @@ public class Octree {
 			System.out.printf("This node contains extra stuff at level %d\n", depth);
 			
 		}
+		
 	}
 	/**
 	 * Recursively inserts Face into Octree.

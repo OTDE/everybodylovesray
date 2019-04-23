@@ -143,7 +143,7 @@ public class Scene {
 					t = coefficient * s.cross(edge1).dot(edge2);
 
 					// Only calculate intersection data if it is the closest intersection point
-					if(r.tMax == -1 || t < r.tMax) {
+					if(r.tMax == -1 || (t < r.tMax && t > .001)) {
 
 						r.tMax = t;
 
@@ -164,8 +164,7 @@ public class Scene {
 						// Get position of intersection
 						inter.setPosition(r.positionAtTMax());
 
-						// Get materials of triangle
-
+						// Get materials of triangles
 						Vector3d ambient = f.material.ka.getRGB();
 						Vector3d diffuse = f.material.kd.getRGB();
 						Vector3d specular = f.material.ks.getRGB();
@@ -189,6 +188,7 @@ public class Scene {
 
 
 	public void initializeFaces() {
+		System.out.println("started initialization");
 		allFaces = new ArrayList<Face>();
 		for(ObjModel obj : objects) {
 			allFaces.addAll(obj.objData.faces);
@@ -197,6 +197,7 @@ public class Scene {
 		Vector3d max = new Vector3d(20, 20, 20);
 		faceStorage = new Octree(allFaces, new BoundingBox(min, max));
 		faceStorage.build(0);
+		System.out.println("done initializing");
 		//faceStorage.testNodes();
 	}
 

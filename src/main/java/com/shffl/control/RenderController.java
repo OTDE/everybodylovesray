@@ -86,6 +86,8 @@ public class RenderController {
 	 */
 	private void startRendering() {
 		
+		scene.initializeFaces();
+		
 		Thread renderThread = new Thread(new Runnable() {
 
 			@Override
@@ -94,8 +96,7 @@ public class RenderController {
 				rendering = true;
 				
 				// Starts the Thread, calling its run method
-				scene.initializeFaces();
-				Sampler sampler = new Sampler(1); // Increase number of Samples later in the process
+				Sampler sampler = new Sampler(15); // Increase number of Samples later in the process
 
 				SampleArray sampArr = null;
 				Ray ray = null;
@@ -135,11 +136,11 @@ public class RenderController {
 								
 								// For each sample, generate and cast ray
 								ray = cam.generateRay(s, sampArr.getPixelX(), sampArr.getPixelY()); 
-								Vector3d rgb = integrator.propagate(ray);
+								Vector3d rgb = integrator.propagate(ray, 1);
 								
 								double weight = getWeight(s, sampArr.getPixelX(), sampArr.getPixelY());
-								//color.updateColor(rgb, weight); // ONLY COMMENT OUT WHEN USING 1 SAMPLE
-								color.updateColor(rgb, 1.0);
+								color.updateColor(rgb, weight); // ONLY COMMENT OUT WHEN USING 1 SAMPLE
+								//color.updateColor(rgb, 1.0);
 
 							}
 							
@@ -149,7 +150,11 @@ public class RenderController {
 							b++;
 						}
 					}
-				}		
+				}	
+				
+				// Done rendering, write image
+				exportImage();
+				
 			}//run		
 		});// renderThread	
 		renderThread.start();
