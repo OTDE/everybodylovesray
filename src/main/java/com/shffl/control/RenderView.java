@@ -1,6 +1,10 @@
 package com.shffl.control;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 /**
@@ -32,6 +37,10 @@ public class RenderView extends javax.swing.JFrame {
 	private JButton returnButton;
 	
 	private JLabel imageLabel;
+	JScrollPane imagePane;
+	
+	int width;
+	int height;
 	
 	/**
 	 * Constructor for RenderView, set default values 
@@ -41,18 +50,36 @@ public class RenderView extends javax.swing.JFrame {
 	 * @param width 
 	 * @param renderController
 	 */
-	public RenderView(RenderController rCon, int width, int height) {
+	public RenderView(RenderController rCon, int w, int h) {
 
 		this.rendCon = rCon;
+		this.width = w;
+		this.height = h;
 		
 		buildView();
 		initActionListeners();
 		
 		setTitle("Ray Tracing");
-		setSize(width,(height+60));
+		
+		int frameWidth = width;
+		int frameHeight = height;
+		if(frameWidth < 300) {
+			frameWidth = 300;
+		}else if(frameWidth > 1200) {
+			frameWidth = 1200;
+		}
+		if (frameHeight < 300) {
+			frameHeight = 300;
+		}else if(frameHeight > 700) {
+			frameHeight = 700;
+		}
+		
+		setSize(frameWidth+10,frameHeight+65);
+		
+		
 		setLocationRelativeTo(null);
-		setResizable(false);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setResizable(true);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 		setVisible(true);
 	}// RenderView
@@ -70,9 +97,24 @@ public class RenderView extends javax.swing.JFrame {
 		
 		displayImage = new ImageIcon();
 		imageLabel = new JLabel(displayImage);
-		panelMid.add(imageLabel);
+		imagePane = new JScrollPane(imageLabel);
 		
-		returnButton = new JButton("Render Another Image");
+		int frameWidth = width;
+		int frameHeight = height;
+		if(frameWidth < 300) {
+			frameWidth = 300;
+		}else if(frameWidth > 1200) {
+			frameWidth = 1200;
+		}
+		if (frameHeight < 300) {
+			frameHeight = 300;
+		}else if(frameHeight > 700) {
+			frameHeight = 700;
+		}
+		imagePane.setPreferredSize(new Dimension(frameWidth, frameHeight));
+		panelMid.add(imagePane);
+		
+		returnButton = new JButton("Return");
 		exportButton = new JButton("Export");
 		
 		panelSouth.add(returnButton);
@@ -83,21 +125,30 @@ public class RenderView extends javax.swing.JFrame {
 	 * Sets up the action listeners for the buttons
 	 */
 	private void initActionListeners() {
-		ActionListener buttonListener = new ActionListener() {
+		
+		exportButton.addActionListener(new ActionListener() {
 			
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				System.out.println("Pressed a button: " + e.getActionCommand());
-				if(e.getActionCommand().equals("Export")) {
-					System.out.println("exporting image");
-					rendCon.exportImage();
-				}
-				
-				
+			public void actionPerformed(ActionEvent e) {				
+				rendCon.exportImage();
 			}
-		};
-		exportButton.addActionListener(buttonListener);
+		});
+		
+		returnButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				exitProcedure();
+			}
+		});
+		
+		this.addWindowListener(new WindowAdapter() {
+
+			public void windowClosing(WindowEvent e) {
+				exitProcedure();
+			}
+		});
+
 	}// initActionListeners
 	
 	/** 
@@ -113,10 +164,15 @@ public class RenderView extends javax.swing.JFrame {
 			public void run() {
 				displayImage = new ImageIcon(newImage);
 				imageLabel.setIcon(displayImage);
-				panelMid.add(imageLabel);
+				panelMid.add(imagePane);
 			}
 		});
 		
 	}// updateView
+	
+	private void exitProcedure() {
+		rendCon.stopRendering();
+		this.dispose();
+	}
 
 }

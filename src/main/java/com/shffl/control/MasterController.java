@@ -43,8 +43,8 @@ public class MasterController {
 		 * 
 		 * @param fv the FileView to connect to this MasterController
 		 */
-		public MasterController(FileView fv) {
-			fView = fv;
+		public MasterController() {
+			fView = new FileView(this);
 		}
 		
 		/**
@@ -68,10 +68,10 @@ public class MasterController {
 		 * 
 		 * @param path String of path to to JSON file
 		 */
-		public void parseFile(String path) {
+		public void parseFile(File input, String filename) {
 			
 			// Build file from path
-			File input = new File(path);
+			//File input = new File(path);
 			
 			// Store file name for exporting
 			setFilename(input.getName());

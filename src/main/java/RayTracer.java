@@ -1,4 +1,6 @@
 import com.shffl.control.FileView;
+import com.shffl.control.MasterController;
+
 import javafx.application.Application;
 /**
  * @author Ethan Wiederspan and Seth Chapman
@@ -7,6 +9,6 @@ import javafx.application.Application;
 public class RayTracer {	
     public static void main(String[] args) {  
     	
-        Application.launch(FileView.class);     
+        MasterController mv = new MasterController();   
     }   
 }
