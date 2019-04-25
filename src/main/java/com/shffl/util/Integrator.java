@@ -29,7 +29,7 @@ public class Integrator {
 	public Vector3d propagate(Ray r, int depth) {
 		
 		
-		Vector3d rayColor = new Vector3d(1, 1, 1);
+		Vector3d rayColor = new Vector3d(0, 0, 0);
 		
 		// Check for max depth
 		if(depth >= 5) {
@@ -126,6 +126,9 @@ public class Integrator {
 				
 				// There is light cast in this direction, check for hard shadow
 				Ray shadowRay = new Ray(inter.getPosition(), lightDirection);
+				shadowRay.tMax = inter.getPosition().distance(lightPosition);
+				
+				
 				shadowRay.nudgeOrigin(0.001);
 				if (!inHardShadow(shadowRay)) {
 					

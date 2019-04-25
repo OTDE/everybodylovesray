@@ -34,9 +34,9 @@ public class MasterController {
 		private RenderController rendCon;
 		private String filename;
 		
-
 		public Scene scene;
 		public ObjModel[] objArray;
+		
 		/**
 		 * Constructor for MasterController Class. Connects 
 		 * this to the FileView.
@@ -74,7 +74,7 @@ public class MasterController {
 			//File input = new File(path);
 			
 			// Store file name for exporting
-			setFilename(input.getName());
+			setFilename(filename);
 			System.out.println("setting filename: " + filename);
 			
 			try {
@@ -136,7 +136,12 @@ public class MasterController {
 		public void setFilename(String name) {
 			
 			// clip off the extension
+			
 			int extStart = name.lastIndexOf('.');
-			filename = name.substring(0, extStart);
+			if(extStart > 0) {
+				filename = name.substring(0, extStart);
+			}else {
+				filename = name;
+			}
 		}//setFilename
 }

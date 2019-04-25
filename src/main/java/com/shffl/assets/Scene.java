@@ -244,8 +244,8 @@ public class Scene {
 
 						// Make sure collision is in front of the object
 						double t = coefficient * s.cross(edge1).dot(edge2);
-						if(t > 0) {
-							r.tMax = t;							
+						if(t > 0 && t < r.tMax) {
+							// r.tMax = t;							
 							// It hit something, its in a shadow
 							return true;
 						}
