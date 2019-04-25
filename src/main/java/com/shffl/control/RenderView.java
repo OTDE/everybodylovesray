@@ -74,7 +74,7 @@ public class RenderView extends javax.swing.JFrame {
 			frameHeight = 700;
 		}
 		
-		setSize(frameWidth+10,frameHeight+65);
+		setSize(frameWidth+15,frameHeight+65);
 		
 		
 		setLocationRelativeTo(null);
@@ -111,7 +111,7 @@ public class RenderView extends javax.swing.JFrame {
 		}else if(frameHeight > 700) {
 			frameHeight = 700;
 		}
-		imagePane.setPreferredSize(new Dimension(frameWidth, frameHeight));
+		imagePane.setPreferredSize(new Dimension(frameWidth+10, frameHeight+10));
 		panelMid.add(imagePane);
 		
 		returnButton = new JButton("Return");
