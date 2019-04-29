@@ -11,10 +11,11 @@ public class Ray {
 	public double tMax = Double.POSITIVE_INFINITY;
 	public double time = 0.0;
 	public double radiance = 1.0;
+	public boolean inside = false;
 	
 	public Ray(Vector3d o, Vector3d d) {
-		this.origin = o;
-		this.direction = d;
+		this.origin = new Vector3d(o);
+		this.direction = new Vector3d(d);
 		this.inverse = new Vector3d(1/d.x, 1/d.y, 1/d.z);
 	}
 	

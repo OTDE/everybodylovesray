@@ -19,7 +19,7 @@ public class Octree {
 	private static final int EIGHT = 8;
 	private static final int THIRTEEN = 13;
 	private static final int MAX_DEPTH = 30;
-	protected static final int MAX_FACES = 500;
+	protected static final int MAX_FACES = 900;
 	public ArrayList<Face> faces;
 	private boolean hasSubdivided = false;
 	public boolean isEmpty = true;

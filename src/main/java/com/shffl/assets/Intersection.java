@@ -11,6 +11,11 @@ public class Intersection {
 	
 	public Intersection() {
 		material = new Material();
+		this.material.ambient = new Vector3d(0,0,0);
+		this.material.diffuse = new Vector3d(0,0,0);
+		this.material.specular = new Vector3d(0,0,0);
+		this.material.shiny = 0.0;
+		
 	}
 	
 	/**
@@ -61,7 +66,7 @@ public class Intersection {
 		public Vector3d specular;
 		public double shiny;
 		public double mirror = 0.0;
-		public double opacity = 0.0;
+		public double opacity = 1.0;
 		public double indexOfRefraction = 1.0;
 	}
 }

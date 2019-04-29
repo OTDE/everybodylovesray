@@ -27,14 +27,14 @@ public class Integrator {
 	 */
 	public Vector3d propagate(Ray r, int depth) {
 		
-		System.out.println("Start of depth "+depth);
+		//System.out.println("Start of depth "+depth);
 		
 		Vector3d rayColor = new Vector3d(0, 0, 0);
 		Vector3d reflectColor = new Vector3d(0, 0, 0);
 		Vector3d refractColor = new Vector3d(0, 0, 0);
 		
 		// Check for max depth
-		if(depth >= 5) {
+		if(depth >= 10) {
 			return rayColor;
 		}
 		
@@ -53,31 +53,42 @@ public class Integrator {
 			opacity = inter.material.opacity;
 			
 			if(mirror != 0) {// Reflection propagation
+				//System.out.println("has mirror");
 				
 				// Get reflection ray
 				
 				double rDotN = r.direction.dot(inter.getNormal());
+				double nDotI = inter.getNormal().dot(r.direction);
 				
 				// Inside-Outside Check
-				if (rDotN < 0) {
+				if (nDotI < 0) {
+					//System.out.println("outside surface");
 					// We are hitting the outside of an object
-					Vector3d delta = new Vector3d(inter.getNormal()).mul(2.0);
+					Vector3d delta = (new Vector3d(inter.getNormal())).mul(2.0);
 					delta = delta.mul(rDotN);
-					Vector3d reflectDirection = new Vector3d(r.direction).sub(delta);
+					Vector3d reflectDirection = (new Vector3d(r.direction)).sub(delta);
 					reflectDirection = reflectDirection.normalize();
 					Ray reflection = new Ray(inter.getPosition(), reflectDirection);
 					reflection.nudgeOrigin(.01);
 					
+					//System.out.println("starting reflect ray, normals is: "+inter.getNormal());
+
 					reflectColor = new Vector3d(propagate(reflection,depth+1));
+					//System.out.println("recieved reflect color: "+reflectColor);
+					//System.out.println("recieved reflect color, normal is:  "+inter.getNormal());
+
 					reflectColor = reflectColor.mul(mirror);
-					System.out.println("reflect coefficient: " + mirror);
+				}else {
+					//System.out.println("inside surface");
 				}
+				
 				 // Otherwise its traveling inside of an object (Refraction)	
 				//Rr = Ri - 2 N (Ri . N)
 			}
 			
-			System.out.println("op: "+ opacity);
+			//System.out.println("op: "+ opacity);
 			if(opacity < 1.0) {// Refraction propagation
+				//System.out.println("has clearness");
 				double outsideIOR = 1;
 				double insideIOR = inter.material.indexOfRefraction;
 				Vector3d incidence = new Vector3d(r.direction);
@@ -92,10 +103,11 @@ public class Integrator {
 					nDotI = 1.0;
 				
 				if(nDotI < 0) {//Outside surface
-					System.out.println("outside Surface ");
+					//System.out.println("outside Surface ");
 					nDotI = -nDotI;
 				} else {//Inside surface
-					System.out.println("inside Surface ");
+					//System.out.println("inside Surface ");
+					opacity = 0.0;
 					normal.mul(-1.0);
 					double temp = outsideIOR;
 					outsideIOR = insideIOR;
@@ -106,6 +118,7 @@ public class Integrator {
 				double k = 1 - eta * eta * (1 - nDotI * nDotI);
 				//System.out.println("k: "+k);
 				if(k < 0) {
+					//System.out.println("K?");
 					return rayColor;
 				}
 				
@@ -124,25 +137,22 @@ public class Integrator {
 				
 				Ray refraction = new Ray(inter.getPosition(), refractionDir);
 				refraction.nudgeOrigin(0.001);
-				
+				//System.out.println("starting refract ray, normals is: "+inter.getNormal());
+				if(nDotI > 0)
+					refraction.inside = true;
 				refractColor = new Vector3d(propagate(refraction, depth + 1));
 
 				refractColor = refractColor.mul((1 - opacity) * (1 - mirror));
-				System.out.println("refract coefficient: " + (1 - opacity) * (1 - mirror));
-				/*
-				Vector3d rayColorCopy = new Vector3d(rayColor);
-				rayColorCopy.mul(kr);
-				refractColor.mul(1 - kr);
-				rayColorCopy.add(refractColor);
-				rayColor = new Vector3d(rayColorCopy);
-				*/
+				//System.out.println("recieved refract Color: "+refractColor);
+				//System.out.println("recieved refract Color, normal is: "+inter.getNormal());
+
 			}
 		}else{
-			System.out.println("didnt hit anything, returning 0,0,0");
-			return new Vector3d(0,0,0);
+			//System.out.println("didnt hit anything");
+			//return new Vector3d(0,0,0);
 		}
 		rayColor = rayColor.mul((1 - mirror) * opacity);
-		System.out.println("everything else: " + (1 - mirror) * opacity);
+		//System.out.println("everything else Color: "+rayColor);
 		rayColor = rayColor.add(reflectColor);
 		rayColor = rayColor.add(refractColor);
 		
@@ -154,14 +164,14 @@ public class Integrator {
 		}
 		
 		if(depth == 1) {
-			System.out.println("FINAL COLORS:");
-			System.out.println("reflect: "+reflectColor);
-			System.out.println("refract: "+refractColor);
-			System.out.println("final Color: "+rayColor);
+			//System.out.println("FINAL COLORS:");
+			//System.out.println("reflect: "+reflectColor);
+			//System.out.println("refract: "+refractColor);
+			//System.out.println("final Color: "+rayColor);
 		}
 		
 		
-		System.out.println("END OF DEPTH "+depth+" ------------");
+		//System.out.println("END OF DEPTH "+depth+" ------------");
 		return rayColor;
 	}// propagate
 	
