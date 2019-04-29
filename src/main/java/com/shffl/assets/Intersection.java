@@ -34,7 +34,7 @@ public class Intersection {
 	 * @param spec Vector3d the RGB data specular reflection of the material
 	 * @param shin double the shininess coefficient of the material
 	 */
-	public void setMaterialAttributes(Vector3d amb, Vector3d diff, Vector3d spec, double shin, double mir, double op, double ind) {
+	public void setMaterialAttributes(Vector3d amb, Vector3d diff, Vector3d spec, double shin, double mir, double ind, double op) {
 		this.material.ambient = new Vector3d(amb);
 		this.material.diffuse = new Vector3d(diff);
 		this.material.specular = new Vector3d(spec);

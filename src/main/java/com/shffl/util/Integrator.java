@@ -12,7 +12,6 @@ import com.shffl.control.RenderController;
 public class Integrator {
 
 	private RenderController rendCon;
-	private Intersection inter;
 
 	public Integrator(RenderController rCon) {
 
@@ -28,51 +27,125 @@ public class Integrator {
 	 */
 	public Vector3d propagate(Ray r, int depth) {
 		
+		System.out.println("Start of depth "+depth);
 		
 		Vector3d rayColor = new Vector3d(0, 0, 0);
+		Vector3d reflectColor = new Vector3d(0, 0, 0);
+		Vector3d refractColor = new Vector3d(0, 0, 0);
 		
 		// Check for max depth
 		if(depth >= 5) {
 			return rayColor;
 		}
 		
-		inter = new Intersection();
+		Intersection inter = new Intersection();
 		inter = rendCon.getScene().intersect(r, inter);
+		
+		double mirror = 0.0;
+		double opacity = 1.0;
 		
 		// If this returned true, we hit an object
 		if(inter.hasNormal) {
 		
 			//rayColor = getRGBNormal(inter); // NORMAL INTEGRATOR
 			rayColor = getRGBPhong(inter); // PHONG MODEL INTEGRATOR
+			mirror = inter.material.mirror;
+			opacity = inter.material.opacity;
 			
-			if(inter.material.mirror != 0) {
-				
-				double mirror = inter.material.mirror;
+			if(mirror != 0) {// Reflection propagation
 				
 				// Get reflection ray
 				
 				double rDotN = r.direction.dot(inter.getNormal());
-				Vector3d delta = new Vector3d(inter.getNormal()).mul(2.0);
-				delta = delta.mul(rDotN);
-				Vector3d reflectDirection = new Vector3d(r.direction).sub(delta);
-				reflectDirection = reflectDirection.normalize();
-				Ray reflection = new Ray(inter.getPosition(), reflectDirection);
-				reflection.nudgeOrigin(.01);
 				
-				
-				Vector3d reflectColor = new Vector3d(propagate(reflection,depth+1));
-				
-				
-				reflectColor = reflectColor.mul(mirror);
-				mirror = 1 - mirror;
-				rayColor = rayColor.mul(mirror);
-				rayColor = rayColor.add(reflectColor);
-				
+				// Inside-Outside Check
+				if (rDotN < 0) {
+					// We are hitting the outside of an object
+					Vector3d delta = new Vector3d(inter.getNormal()).mul(2.0);
+					delta = delta.mul(rDotN);
+					Vector3d reflectDirection = new Vector3d(r.direction).sub(delta);
+					reflectDirection = reflectDirection.normalize();
+					Ray reflection = new Ray(inter.getPosition(), reflectDirection);
+					reflection.nudgeOrigin(.01);
+					
+					reflectColor = new Vector3d(propagate(reflection,depth+1));
+					reflectColor = reflectColor.mul(mirror);
+					System.out.println("reflect coefficient: " + mirror);
+				}
+				 // Otherwise its traveling inside of an object (Refraction)	
 				//Rr = Ri - 2 N (Ri . N)
 			}
 			
-		}
+			System.out.println("op: "+ opacity);
+			if(opacity < 1.0) {// Refraction propagation
+				double outsideIOR = 1;
+				double insideIOR = inter.material.indexOfRefraction;
+				Vector3d incidence = new Vector3d(r.direction);
+				Vector3d normal = new Vector3d(inter.getNormal());
+				
+				double nDotI = normal.dot(incidence);
+				
+				//Clamp nDotI's value between -1 and 1
+				if(nDotI < -1.0)
+					nDotI = -1.0;
+				if(nDotI > 1.0)
+					nDotI = 1.0;
+				
+				if(nDotI < 0) {//Outside surface
+					System.out.println("outside Surface ");
+					nDotI = -nDotI;
+				} else {//Inside surface
+					System.out.println("inside Surface ");
+					normal.mul(-1.0);
+					double temp = outsideIOR;
+					outsideIOR = insideIOR;
+					insideIOR = temp;
+				}
+				
+				double eta = outsideIOR / insideIOR;
+				double k = 1 - eta * eta * (1 - nDotI * nDotI);
+				//System.out.println("k: "+k);
+				if(k < 0) {
+					return rayColor;
+				}
+				
+				// double kr = this.fresnel(nDotI, outsideIOR, insideIOR);
+				
+				//Should be: eta * I + (eta + nDotI - sqrt(k)) * N
+				Vector3d refractionDir = new Vector3d(normal);
+				Vector3d incidenceCopy = new Vector3d(incidence);
+				incidenceCopy.mul(eta);
+				double normScalar = eta * nDotI - Math.sqrt(k);
+				refractionDir = refractionDir.mul(normScalar);
+				refractionDir = refractionDir.add(incidenceCopy);
+				refractionDir = refractionDir.normalize();
+				
+				
+				
+				Ray refraction = new Ray(inter.getPosition(), refractionDir);
+				refraction.nudgeOrigin(0.001);
+				
+				refractColor = new Vector3d(propagate(refraction, depth + 1));
 
+				refractColor = refractColor.mul((1 - opacity) * (1 - mirror));
+				System.out.println("refract coefficient: " + (1 - opacity) * (1 - mirror));
+				/*
+				Vector3d rayColorCopy = new Vector3d(rayColor);
+				rayColorCopy.mul(kr);
+				refractColor.mul(1 - kr);
+				rayColorCopy.add(refractColor);
+				rayColor = new Vector3d(rayColorCopy);
+				*/
+			}
+		}else{
+			System.out.println("didnt hit anything, returning 0,0,0");
+			return new Vector3d(0,0,0);
+		}
+		rayColor = rayColor.mul((1 - mirror) * opacity);
+		System.out.println("everything else: " + (1 - mirror) * opacity);
+		rayColor = rayColor.add(reflectColor);
+		rayColor = rayColor.add(refractColor);
+		
 		// Check for values that are OOB for Color Object
 		for(int i = 0; i < 3; i++) {
 			if(rayColor.get(i) > 1) {
@@ -80,8 +153,15 @@ public class Integrator {
 			}
 		}
 		
-		//System.out.println("final Color: "+rayColor);
-		//System.out.println("END OF DEPTH "+depth+" ------------");
+		if(depth == 1) {
+			System.out.println("FINAL COLORS:");
+			System.out.println("reflect: "+reflectColor);
+			System.out.println("refract: "+refractColor);
+			System.out.println("final Color: "+rayColor);
+		}
+		
+		
+		System.out.println("END OF DEPTH "+depth+" ------------");
 		return rayColor;
 	}// propagate
 	
@@ -191,5 +271,17 @@ public class Integrator {
 
 		return n;
 	}// getRGBNormal
-
+	
+	public double fresnel(double cosi, double outsideIndex, double insideIndex) {
+		double sint = outsideIndex / insideIndex * Math.sqrt(Math.max(0.0, 1 - cosi * cosi));
+		if(sint >= 1) {
+			return 1;
+		} else {
+			double cost = Math.sqrt(Math.max(0.0, 1 - sint * sint));
+			cosi = Math.abs(cosi);
+			double Rs = ((insideIndex * cosi) - (outsideIndex * cost)) / ((insideIndex * cosi) + (outsideIndex * cost));
+			double Rp = ((outsideIndex * cosi) - (insideIndex * cost)) / ((outsideIndex * cosi) + (insideIndex * cost));
+			return (Rs * Rs + Rp * Rp) / 2;
+		}
+	}
 }
