@@ -138,8 +138,7 @@ public class Integrator {
 				Ray refraction = new Ray(inter.getPosition(), refractionDir);
 				refraction.nudgeOrigin(0.001);
 				//System.out.println("starting refract ray, normals is: "+inter.getNormal());
-				if(nDotI > 0)
-					refraction.inside = true;
+
 				refractColor = new Vector3d(propagate(refraction, depth + 1));
 
 				refractColor = refractColor.mul((1 - opacity) * (1 - mirror));
