@@ -1,6 +1,4 @@
 package com.shffl.util;
-import java.awt.Color;
-import java.util.Vector;
 
 import org.joml.Vector3d;
 
@@ -9,14 +7,22 @@ import com.shffl.assets.Light;
 import com.shffl.assets.Ray;
 import com.shffl.control.RenderController;
 
+/**
+ * @author Ethan Wiederspan and Seth Chapman
+ * Integrator class. Used for calculating the color of a pixel on intersection.
+ * Accounts for reflections and refractions.
+ */
 public class Integrator {
 
 	private RenderController rendCon;
 
+	/**
+	 * Initializes Integrator and gives it access to Scene data
+	 * @param rCon the RenderController containing scene data.
+	 */
 	public Integrator(RenderController rCon) {
-
 		this.rendCon = rCon;
-	}
+	}//constructor
 
 	/**
 	 * Takes in ray and propagates it across the input scene to check if it 
@@ -27,9 +33,9 @@ public class Integrator {
 	 */
 	public Vector3d propagate(Ray r, int depth) {
 		
-		//System.out.println("Start of depth "+depth);
-		
-		Vector3d rayColor = new Vector3d(1, 1, 1);
+
+		//Set default values
+		Vector3d rayColor = new Vector3d(0, 0, 0);
 		Vector3d reflectColor = new Vector3d(0, 0, 0);
 		Vector3d refractColor = new Vector3d(0, 0, 0);
 		
@@ -44,7 +50,7 @@ public class Integrator {
 		double mirror = 0.0;
 		double opacity = 1.0;
 		
-		// If this returned true, we hit an object
+		//If this returned true, we hit an object
 		if(inter.hasNormal) {
 		
 			//rayColor = getRGBNormal(inter); // NORMAL INTEGRATOR
@@ -52,43 +58,30 @@ public class Integrator {
 			mirror = inter.material.mirror;
 			opacity = inter.material.opacity;
 			
-			if(mirror != 0) {// Reflection propagation
-				//System.out.println("has mirror");
+			if(mirror != 0) {//Reflection propagation
 				
-				// Get reflection ray
-				
+				//Get reflection ray
 				double rDotN = r.direction.dot(inter.getNormal());
 				double nDotI = inter.getNormal().dot(r.direction);
 				
-				// Inside-Outside Check
-				if (nDotI < 0) {
-					//System.out.println("outside surface");
-					// We are hitting the outside of an object
+				//Inside-Outside Check
+				if (nDotI < 0) { // Outside
+					//Generate reflection ray
 					Vector3d delta = (new Vector3d(inter.getNormal())).mul(2.0);
 					delta = delta.mul(rDotN);
 					Vector3d reflectDirection = (new Vector3d(r.direction)).sub(delta);
 					reflectDirection = reflectDirection.normalize();
+					
 					Ray reflection = new Ray(inter.getPosition(), reflectDirection);
 					reflection.nudgeOrigin(.01);
-					
-					//System.out.println("starting reflect ray, normals is: "+inter.getNormal());
-
 					reflectColor = new Vector3d(propagate(reflection,depth+1));
-					//System.out.println("recieved reflect color: "+reflectColor);
-					//System.out.println("recieved reflect color, normal is:  "+inter.getNormal());
-
 					reflectColor = reflectColor.mul(mirror);
-				}else {
-					//System.out.println("inside surface");
+				} else {
+					//We're inside the object -- don't reflect!
 				}
-				
-				 // Otherwise its traveling inside of an object (Refraction)	
-				//Rr = Ri - 2 N (Ri . N)
-			}
+			}//reflection
 			
-			//System.out.println("op: "+ opacity);
 			if(opacity < 1.0) {// Refraction propagation
-				//System.out.println("has clearness");
 				double outsideIOR = 1;
 				double insideIOR = inter.material.indexOfRefraction;
 				Vector3d incidence = new Vector3d(r.direction);
@@ -103,27 +96,19 @@ public class Integrator {
 					nDotI = 1.0;
 				
 				if(nDotI < 0) {//Outside surface
-					//System.out.println("outside Surface ");
 					nDotI = -nDotI;
 				} else {//Inside surface
-					//System.out.println("inside Surface ");
 					opacity = 0.0;
 					normal.mul(-1.0);
 					double temp = outsideIOR;
 					outsideIOR = insideIOR;
 					insideIOR = temp;
 				}
-				
 				double eta = outsideIOR / insideIOR;
 				double k = 1 - eta * eta * (1 - nDotI * nDotI);
-				//System.out.println("k: "+k);
 				if(k < 0) {
-					//System.out.println("K?");
 					return rayColor;
 				}
-				
-				// double kr = this.fresnel(nDotI, outsideIOR, insideIOR);
-				
 				//Should be: eta * I + (eta + nDotI - sqrt(k)) * N
 				Vector3d refractionDir = new Vector3d(normal);
 				Vector3d incidenceCopy = new Vector3d(incidence);
@@ -132,26 +117,15 @@ public class Integrator {
 				refractionDir = refractionDir.mul(normScalar);
 				refractionDir = refractionDir.add(incidenceCopy);
 				refractionDir = refractionDir.normalize();
-				
-				
-				
 				Ray refraction = new Ray(inter.getPosition(), refractionDir);
 				refraction.nudgeOrigin(0.001);
-				//System.out.println("starting refract ray, normals is: "+inter.getNormal());
-
 				refractColor = new Vector3d(propagate(refraction, depth + 1));
-
 				refractColor = refractColor.mul((1 - opacity) * (1 - mirror));
-				//System.out.println("recieved refract Color: "+refractColor);
-				//System.out.println("recieved refract Color, normal is: "+inter.getNormal());
-
-			}
-		}else{
-			//System.out.println("didnt hit anything");
-			//return new Vector3d(0,0,0);
+			}//refraction
+		} else {
+			//Didn't hit anything
 		}
 		rayColor = rayColor.mul((1 - mirror) * opacity);
-		//System.out.println("everything else Color: "+rayColor);
 		rayColor = rayColor.add(reflectColor);
 		rayColor = rayColor.add(refractColor);
 		
@@ -161,18 +135,8 @@ public class Integrator {
 				rayColor.setComponent(i, 1.0);
 			}
 		}
-		
-		if(depth == 1) {
-			//System.out.println("FINAL COLORS:");
-			//System.out.println("reflect: "+reflectColor);
-			//System.out.println("refract: "+refractColor);
-			//System.out.println("final Color: "+rayColor);
-		}
-		
-		
-		//System.out.println("END OF DEPTH "+depth+" ------------");
 		return rayColor;
-	}// propagate
+	}//propagate
 	
 	
 	/**
@@ -184,7 +148,7 @@ public class Integrator {
 	 */
 	public boolean inHardShadow(Ray r) {
 		return rendCon.getScene().shadowIntersect(r);
-	}// inHardShadow
+	}//inHardShadow
 
 	/**
 	 * Calculates the RGB values to display to the pixel. Uses the Phong 
@@ -237,12 +201,12 @@ public class Integrator {
 					lightIntensity = new Vector3d(light.i);
 					lightIntensity.mul(reflection);
 					
-				}else{
-					// In shadow
-				}// Shadow Check
-			}else { 
-				// Not in light's path
-			} // lDotN check
+				} else {
+					//In shadow
+				}//Shadow Check
+			} else { 
+				//Not in light's path
+			} //lDotN check
 			rgb = rgb.add(lightIntensity);
 		}
 		
@@ -256,9 +220,8 @@ public class Integrator {
 				rgb.setComponent(i, 1.0);
 			}
 		}
-	
 		return rgb;
-	}// getRGBPhong
+	}//getRGBPhong
 
 	/**
 	 * Calculates the RGB values to display to the pixel. Determines color 
@@ -275,22 +238,8 @@ public class Integrator {
 		// Translate the value to fit Color Object specifications
 		for(int i = 0; i < 3; i++) {
 			n.setComponent(i, (n.get(i)+1)/2 );
-
 		}
-
 		return n;
 	}// getRGBNormal
 	
-	public double fresnel(double cosi, double outsideIndex, double insideIndex) {
-		double sint = outsideIndex / insideIndex * Math.sqrt(Math.max(0.0, 1 - cosi * cosi));
-		if(sint >= 1) {
-			return 1;
-		} else {
-			double cost = Math.sqrt(Math.max(0.0, 1 - sint * sint));
-			cosi = Math.abs(cosi);
-			double Rs = ((insideIndex * cosi) - (outsideIndex * cost)) / ((insideIndex * cosi) + (outsideIndex * cost));
-			double Rp = ((outsideIndex * cosi) - (insideIndex * cost)) / ((outsideIndex * cosi) + (insideIndex * cost));
-			return (Rs * Rs + Rp * Rp) / 2;
-		}
-	}
-}
+}//class

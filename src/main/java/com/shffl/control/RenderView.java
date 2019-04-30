@@ -1,17 +1,14 @@
 package com.shffl.control;
-import java.awt.BorderLayout;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -25,7 +22,8 @@ import javax.swing.SwingUtilities;
  * file select and to export the image.
  *
  */
-public class RenderView extends javax.swing.JFrame {
+@SuppressWarnings("serial")
+public class RenderView extends JFrame {
 	
 	private RenderController rendCon;
 	private ImageIcon displayImage;
@@ -65,12 +63,12 @@ public class RenderView extends javax.swing.JFrame {
 		int frameHeight = height;
 		if(frameWidth < 300) {
 			frameWidth = 300;
-		}else if(frameWidth > 1200) {
+		} else if(frameWidth > 1200) {
 			frameWidth = 1200;
 		}
 		if (frameHeight < 300) {
 			frameHeight = 300;
-		}else if(frameHeight > 700) {
+		} else if(frameHeight > 700) {
 			frameHeight = 700;
 		}
 		
@@ -82,7 +80,7 @@ public class RenderView extends javax.swing.JFrame {
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 		setVisible(true);
-	}// RenderView
+	}//RenderView
 
 	/**
 	 * Builds the JFrame components of the GUI
@@ -119,7 +117,7 @@ public class RenderView extends javax.swing.JFrame {
 		
 		panelSouth.add(returnButton);
 		panelSouth.add(exportButton);
-	}// buildView
+	}//buildView
 	
 	/**
 	 * Sets up the action listeners for the buttons
@@ -149,17 +147,17 @@ public class RenderView extends javax.swing.JFrame {
 			}
 		});
 
-	}// initActionListeners
+	}//initActionListeners
 	
 	/** 
 	 * Called every by the RenderController to update 
-	 * the image display to the User via the Render GUI
+	 * the image display to the User via the Render GUI.
 	 * 
-	 * @param newImage the updated BufferedIMage to be displayed
+	 * @param newImage the updated BufferedImage to be displayed
 	 */
 	public void updateView(BufferedImage newImage) {
 		
-		// Ensure the Swing GUI Updates in its own thread.
+		//Ensure the Swing GUI Updates in its own thread
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				displayImage = new ImageIcon(newImage);
@@ -168,11 +166,11 @@ public class RenderView extends javax.swing.JFrame {
 			}
 		});
 		
-	}// updateView
+	}//updateView
 	
 	private void exitProcedure() {
 		rendCon.stopRendering();
 		this.dispose();
-	}
+	}//exitProcedure
 
-}
+}//class

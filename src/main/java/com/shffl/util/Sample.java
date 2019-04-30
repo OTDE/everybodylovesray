@@ -1,10 +1,8 @@
 package com.shffl.util;
 
-
 /**
- * Sample class for storing sample data.
  * @author Ethan Wiederspan and Seth Chapman
- *
+ * Sample class for storing sample data.
  */
 public class Sample {
 	
@@ -25,7 +23,7 @@ public class Sample {
 		
 		offsetX = offX;
 		offsetY = offY;
-	}
+	}//constructor
 
 	/**
 	 * Accessors and mutators
@@ -33,4 +31,5 @@ public class Sample {
 	public double getOffsetX() { return offsetX; }
 
 	public double getOffsetY() { return offsetY; }
-}
+	
+}//class

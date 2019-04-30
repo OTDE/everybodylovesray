@@ -1,10 +1,7 @@
 package com.shffl.util;
-import org.joml.Matrix3dc;
+
 import org.joml.Matrix4d;
-import org.joml.Matrix4dc;
-import org.joml.Quaterniondc;
 import org.joml.Vector3d;
-import org.joml.Vector4d;
 
 import com.shffl.assets.Ray;
 
@@ -43,7 +40,7 @@ public class Camera {
 		System.out.println("ViewMatrix: \n"+this.viewMatrix());
 		this.film = f;
 		
-	}// Constructor
+	}//constructor
 
 	/**
 	 * Builds the camera's rotation matrix based on imput from JSON file
@@ -72,7 +69,7 @@ public class Camera {
 		view.translate(new Vector3d(this.eye));
 		
 		return view;
-	}// viewMatrix
+	}//viewMatrix
 	
 	/**
 	 * Constructor for the RenderController Class. Connects
@@ -109,6 +106,6 @@ public class Camera {
 		rayDirection.normalize();
 
 		return new Ray(rayOrigin, rayDirection);
-	}// generateRay
+	}//generateRay
 
-}
+}//class

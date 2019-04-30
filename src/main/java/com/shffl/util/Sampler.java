@@ -1,4 +1,5 @@
 package com.shffl.util;
+
 /**
  * Sampler class for fetching arrays of samples for input
  * @author Ethan Wiederspan and Seth Chapman
@@ -17,7 +18,7 @@ public class Sampler {
 		
 		samplesPerPixel = sampNum;
 		sampleSet = new SampleArray(samplesPerPixel);
-	}
+	}//constructor
 	
 	/**
 	 * Method to get an array of samples for a pixel
@@ -31,5 +32,6 @@ public class Sampler {
 		sampleSet.setPixelY(pixelY);
 		sampleSet.fill();
 		return sampleSet;
-	}
-}
+	}//getPixelSamples
+	
+}//class

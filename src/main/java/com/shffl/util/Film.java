@@ -32,50 +32,30 @@ public class Film {
 		this.width = w;
 		this.height = h;
 		renderedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		
-		// FOR TESTING PURPOSES
-		g2d = renderedImage.createGraphics();
-        g2d.setColor(Color.RED);
-	}// Film
+	}//constructor
 	
 	/**
 	 * Getter for the BufferedImage thatholds the image in process
 	 * @return
 	 */
 	public BufferedImage getRenderedImage() {
-
 		return renderedImage;
 	}// getRenderedImage
 	
-		
+	//Accessors	
+	
 	public int getWidth() {	return this.width; }
 	
 	public int getHeight() { return this.height; }
 
-    /**
-	 * Constructor for the RenderController Class. Connects
-	 * this controller to the master controller and the 
-	 * Scene build off of the input JSON.
-	 * 
-	 * @param s Sample containing the subpixel location of the ray
-	 * @param pixelX, pixelY int X and Y coordinates of of the ray directions in
-	 *        pixel space
-	 * @param c Color derived from the intersection
+	/**
+	 * Develops the image at a given pixel location.
+	 * @param x the pixel's x-coordinate
+	 * @param y the pixel's y-coordinate
+	 * @param color the color to develop the film at
 	 */
-	public void develop(Sample s, int pixelX, int pixelY, Color c) {
-		
-		double rX = s.getOffsetX() + pixelX;
-		double rY = s.getOffsetX() + pixelY;
-		double pixelCenterX = 0.5 + pixelX;
-		double pixelCenterY = 0.5 + pixelY;
-						
-			
-	}// develop
-
 	public void develop(int x, int y, Color color) {
 		renderedImage.setRGB(x,y,color.getRGB());
-		
-	}
+	}//develop
 	
-
-}
+}//class
