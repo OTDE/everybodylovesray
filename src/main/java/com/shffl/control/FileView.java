@@ -1,33 +1,17 @@
 package com.shffl.control;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileSystemView;
-
-import com.shffl.util.Tags;
-
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 /**
  * @author Ethan Wiederspan and Seth Chapman
@@ -37,7 +21,8 @@ import javafx.stage.Stage;
  * two options for output filetype.
  */
 
-public class FileView extends javax.swing.JFrame {
+@SuppressWarnings("serial")
+public class FileView extends JFrame {
 
 	MasterController mastCon;
 
@@ -68,6 +53,9 @@ public class FileView extends javax.swing.JFrame {
 		setVisible(true);
 	}
 
+	/**
+	 * Builds layout.
+	 */
 	private void buildDisplay() {
 
 		JPanel panelNorth = new JPanel();
@@ -115,12 +103,18 @@ public class FileView extends javax.swing.JFrame {
 
 	}
 
+	/**
+	 * Event handlers for button clicks.
+	 */
 	private void initEventHandlers() {
 
 		buttonRender.addActionListener(new ActionListener() {
 
+			/**
+			 * Render button
+			 */
 			@Override
-			public void actionPerformed(java.awt.event.ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {
 
 				if(isInfoValid()) {
 					mastCon.parseFile(selectedFile, fieldOutput.getText());
@@ -131,8 +125,11 @@ public class FileView extends javax.swing.JFrame {
 		chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 		buttonBrowse.addActionListener(new ActionListener() {
 
+			/**
+			 * File chooser
+			 */
 			@Override
-			public void actionPerformed(java.awt.event.ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {
 				
 				int returnValue = chooser.showOpenDialog(null);
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -143,37 +140,35 @@ public class FileView extends javax.swing.JFrame {
 				}
 			}
 		});
+	}//initEventHandlers
 
-
-
-	}
-
+	/**
+	 * Checks if the input is valid.
+	 * @return true if the file is a JSON file, false otherwise.
+	 */
 	public boolean isInfoValid() {
 		
 		if(!fileSelected) {
-			labelMessage.setText("Please Select an input file");
+			labelMessage.setText("Please select an input file");
 			return false;
 		}
 		if(fieldOutput.getText().length() == 0) {
-			labelMessage.setText("Please Select an output file name");
+			labelMessage.setText("Please select an output file name");
 			return false;
 		}
-		
-		
 		
 		int extStart = filename.lastIndexOf(".");
 		String ext = filename.substring(extStart, filename.length());
 	
 		if(!ext.equals(".json") && !ext.equals(".JSON")) {
-			labelMessage.setText("Please Select a .JSON file as input");
+			labelMessage.setText("Please select a .JSON file as input");
 			return false;
-		}else if(fieldOutput.getText().contains(" ")) {
+		} else if(fieldOutput.getText().contains(" ")) {
 			labelMessage.setText("Output cannot include spaces");
 			return false;
 		}
-		
 		return true;
-	}
+	}//isInfoValid
 
-}
+}//class
 

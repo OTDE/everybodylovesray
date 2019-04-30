@@ -1,5 +1,4 @@
 package com.shffl.control;
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +39,6 @@ public class RenderController {
 	
 	private MasterController mastCon;
 	private RenderView rendView;
-	private boolean running = false;
 	private boolean rendering = false;
 
 	/**
@@ -139,24 +137,22 @@ public class RenderController {
 								Vector3d rgb = integrator.propagate(ray, 1);
 								
 								double weight = getWeight(s, sampArr.getPixelX(), sampArr.getPixelY());
-								//color.updateColor(rgb, weight); // ONLY COMMENT OUT WHEN USING 1 SAMPLE
+								color.updateColor(rgb, weight); // ONLY COMMENT OUT WHEN USING 1 SAMPLE
 								color.updateColor(rgb, 1.0);
 
 							}
 							
-							// develop film and update view
+							//Develop film and update view
 							film.develop(a,b,color.getColor());
 							rendView.updateView(film.getRenderedImage());
 							b++;
 						}
 					}
-				}	
-				
-				// Done rendering, write image
+				}
+				//Done rendering, write image
 				exportImage();
-				
 			}//run		
-		});// renderThread	
+		});//renderThread	
 		renderThread.start();
 	}//startRendering
 
@@ -180,7 +176,7 @@ public class RenderController {
 		weight = 1 - weight;
 	
 		return weight;
-	}
+	}//getWeight
 
 	/**
 	 * Takes image in Film class and exports it to a png with
@@ -198,14 +194,15 @@ public class RenderController {
 		    System.out.println("ERROR WHILE WRITING: " + e.getMessage());
 		}		
 		System.out.println("done writing!");
-	}// exportImage
+	}//exportImage
 	
 
 	public void stopRendering() {
 		rendering = false;
-	}
+	}//stopRendering
 
 	public Scene getScene() {
 		return this.scene;
-	}
-}
+	}//getScene
+	
+}//class

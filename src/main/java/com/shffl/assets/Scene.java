@@ -7,14 +7,13 @@ import com.owens.oobjloader.builder.Face;
 
 /**
  * @author Ethan Wiederspan and Seth Chapman
- * 
-<<<<<<< HEAD
  * Scene class. GSON parses into this,
  * which represents a 3D scene and everything
  * it contains within it.
  */
 public class Scene {
 
+	//Fields parsed by GSON
 	public int height;
 	public int width;
 	public double[] eyeInput;
@@ -24,6 +23,7 @@ public class Scene {
 
 	public ObjModel[] objects;
 
+	//Fields used post-parsing
 	private transient Octree faceStorage;
 	public transient ArrayList<Face> allFaces;
 	public transient Vector3d eye;
@@ -46,7 +46,7 @@ public class Scene {
 			return new Vector3d(0, 0, 0);
 		}
 		return eye;
-	}
+	}//getEye
 
 	/**
 	 * Converts the atInput array into a vector if it hasn't already. Returns at otherwise.
@@ -62,7 +62,7 @@ public class Scene {
 			return new Vector3d(0, 0, 0);
 		}
 		return at;
-	}
+	}//getAt
 
 	/**
 	 * Converts the upInput array into a vector if it hasn't already. Returns up otherwise.
@@ -78,7 +78,7 @@ public class Scene {
 			return new Vector3d(0, 0, 0);
 		}
 		return up;
-	}
+	}//getUp
 
 	/**
 	 * Converts the globalLight array into a Vector3d if it hasn't already. Returns ambient otherwise.
@@ -94,7 +94,7 @@ public class Scene {
 			return new Vector3d(0, 0, 0);
 		}
 		return ambient;
-	}
+	}//getAmbient
 
 	/**
 	 * Checks a given ray against all the objects in a scene for intersections. 
@@ -127,27 +127,27 @@ public class Scene {
 			denom = (rayDirection.cross(edge2).dot(edge1));
 			coefficient = 1 / denom;
 
-			// First check b1
+			// First, check b1
 			rayDirection = new Vector3d(r.direction);
 			b1 = coefficient * rayDirection.cross(edge2).dot(s);
 
 			if (b1 > 0 && b1 < 1) {
 
-				// Next check b2 with the same parameters
+				// Next, check b2 with the same parameters
 				rayDirection = new Vector3d(r.direction);
 				b2 = coefficient * new Vector3d(s).cross(edge1).dot(rayDirection);
 
 				if(b2 > 0 && b2 < 1 && b1 + b2 <= 1) {
 
-					// Next check t against tMax
+					//Next, check t against tMax
 					t = coefficient * s.cross(edge1).dot(edge2);
 
-					// Only calculate intersection data if it is the closest intersection point
+					//Only calculate intersection data if it is the closest intersection point
 					if(r.tMax == -1 || (t < r.tMax && t > .001)) {
 
 						r.tMax = t;
 
-						// Fill in intersection with normal of intersection 
+						//Fill in intersection with normal of intersection 
 						v0 = new Vector3d(f.vertices.get(0).n);
 						v1 = new Vector3d(f.vertices.get(1).n);
 						v2 = new Vector3d(f.vertices.get(2).n);
@@ -161,10 +161,10 @@ public class Scene {
 
 						inter.setNormal(norm);
 
-						// Get position of intersection
+						//Get position of intersection
 						inter.setPosition(r.positionAtTMax());
 
-						// Get materials of triangles
+						//Get materials of triangles
 						Vector3d ambient = f.material.ka.getRGB();
 						Vector3d diffuse = f.material.kd.getRGB();
 						Vector3d specular = f.material.ks.getRGB();
@@ -175,18 +175,20 @@ public class Scene {
 
 						inter.setMaterialAttributes(ambient,diffuse,specular,shiny,mirror,index,opacity);
 					}
-				}else {
-					// Didn't hit
+				} else {
+					//Didn't hit
 				}
-			}else {
-				// Didn't hit
+			} else {
+				//Didn't hit
 			}
-		}// for faces
-
+		}//for faces
 		return inter;
-	}// intersect
+	}//intersect
 
 
+	/**
+	 * Loads faces into the Octree structure
+	 */
 	public void initializeFaces() {
 		System.out.println("started initialization");
 		allFaces = new ArrayList<Face>();
@@ -198,8 +200,7 @@ public class Scene {
 		faceStorage = new Octree(allFaces, new BoundingBox(min, max));
 		faceStorage.build(0);
 		System.out.println("done initializing");
-		//faceStorage.testNodes();
-	}
+	}//initializeFaces
 
 	/**
 	 * Determines if ray intersects any object in the direction of a light 
@@ -213,11 +214,11 @@ public class Scene {
 		for(ObjModel obj: objects) {
 			for(Face f: obj.objData.faces) {
 
-				// Determine if there is an intersection between the ray and face.
+				//Determine if there is an intersection between the ray and face
 				Vector3d s, edge1, edge2, v0, v1, v2, rayDirection;
 				double denom, coefficient, b1, b2;
 
-				// Get edge vertices
+				//Get edge vertices
 				v0 = new Vector3d(f.vertices.get(0).v);
 				v1 = new Vector3d(f.vertices.get(1).v);
 				v2 = new Vector3d(f.vertices.get(2).v);
@@ -230,34 +231,35 @@ public class Scene {
 				denom = (rayDirection.cross(edge2).dot(edge1));
 				coefficient = 1 / denom;
 
-				// First check b1
+				//First check b1
 				rayDirection = new Vector3d(r.direction);
 				b1 = coefficient * rayDirection.cross(edge2).dot(s);
 
 				if (b1 > 0 && b1 < 1) {
 
-					// Next check b2 with the same parameters
+					//Next check b2 with the same parameters
 					rayDirection = new Vector3d(r.direction);
 					b2 = coefficient * new Vector3d(s).cross(edge1).dot(rayDirection);
 
 					if(b2 > 0 && b2 < 1 && b1 + b2 <= 1) {
 
-						// Make sure collision is in front of the object
+						//Make sure collision is in front of the object
 						double t = coefficient * s.cross(edge1).dot(edge2);
 						if(t > 0 && t < r.tMax) {
-							// r.tMax = t;							
-							// It hit something, its in a shadow
+							//r.tMax = t;							
+							//It hit something; it's in a shadow
 							return true;
 						}
-					}else {
-						// Didn't hit
+					} else {
+						//Didn't hit
 					}
-				}else {
-					// Didn't hit
+				} else {
+					//Didn't hit
 				}
-			}// for faces
+			}//for faces
 		}// for objects
-		// Didn't hit anything
+		//Didn't hit anything
 		return false;
-	}
-}
+	}//shadowIntersect
+	
+}//class

@@ -28,7 +28,7 @@ public class SampleArray {
 		sampleSize = size;
 		samples = new Sample[sampleSize];
 		rng = new Random();
-	}
+	}//constructor (3-param)
 	
 	/**
 	 * Constructor for the sample array without a specified pixel
@@ -39,7 +39,7 @@ public class SampleArray {
 		sampleSize = size;
 		samples = new Sample[sampleSize];
 		rng = new Random();
-	}
+	}//constructor (1-param)
 	
 	/**
 	 * Fills the array of samples with new samples
@@ -49,11 +49,9 @@ public class SampleArray {
 		for(int i = 0; i < sampleSize; i++) {
 			samples[i] = new Sample(rng.nextDouble(), rng.nextDouble());
 		}
-	}
+	}//fill
 	
-	/**
-	 * Accessors and mutators
-	 */
+	//Accessors and Mutators
 	
 	public void setPixelX(int pixelX) { this.pixelX = pixelX; }
 
@@ -64,4 +62,5 @@ public class SampleArray {
 	public int getPixelY() { return pixelY; }
 
 	public int getSampleSize() { return sampleSize; }
-}
+	
+}//class
