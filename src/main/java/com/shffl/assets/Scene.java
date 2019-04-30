@@ -210,53 +210,54 @@ public class Scene {
 	 */
 	public boolean shadowIntersect(Ray r) {
 
-		for(ObjModel obj: objects) {
-			for(Face f: obj.objData.faces) {
+		ArrayList<Face> faceGroup = faceStorage.getFacesWithin(r);
 
-				// Determine if there is an intersection between the ray and face.
-				Vector3d s, edge1, edge2, v0, v1, v2, rayDirection;
-				double denom, coefficient, b1, b2;
+		for(Face f: faceGroup) {
 
-				// Get edge vertices
-				v0 = new Vector3d(f.vertices.get(0).v);
-				v1 = new Vector3d(f.vertices.get(1).v);
-				v2 = new Vector3d(f.vertices.get(2).v);
+			// Determine if there is an intersection between the ray and face.
+			Vector3d s, edge1, edge2, v0, v1, v2, rayDirection;
+			double denom, coefficient, b1, b2;
 
-				s = (new Vector3d(r.origin)).sub(v0); 
-				edge1 = (new Vector3d(v1)).sub(v0);   
-				edge2 = (new Vector3d(v2)).sub(v0);  
+			// Get edge vertices
+			v0 = new Vector3d(f.vertices.get(0).v);
+			v1 = new Vector3d(f.vertices.get(1).v);
+			v2 = new Vector3d(f.vertices.get(2).v);
 
+			s = (new Vector3d(r.origin)).sub(v0); 
+			edge1 = (new Vector3d(v1)).sub(v0);   
+			edge2 = (new Vector3d(v2)).sub(v0);  
+
+			rayDirection = new Vector3d(r.direction);
+			denom = (rayDirection.cross(edge2).dot(edge1));
+			coefficient = 1 / denom;
+
+			// First check b1
+			rayDirection = new Vector3d(r.direction);
+			b1 = coefficient * rayDirection.cross(edge2).dot(s);
+
+			if (b1 > 0 && b1 < 1) {
+
+				// Next check b2 with the same parameters
 				rayDirection = new Vector3d(r.direction);
-				denom = (rayDirection.cross(edge2).dot(edge1));
-				coefficient = 1 / denom;
+				b2 = coefficient * new Vector3d(s).cross(edge1).dot(rayDirection);
 
-				// First check b1
-				rayDirection = new Vector3d(r.direction);
-				b1 = coefficient * rayDirection.cross(edge2).dot(s);
+				if(b2 > 0 && b2 < 1 && b1 + b2 <= 1) {
 
-				if (b1 > 0 && b1 < 1) {
-
-					// Next check b2 with the same parameters
-					rayDirection = new Vector3d(r.direction);
-					b2 = coefficient * new Vector3d(s).cross(edge1).dot(rayDirection);
-
-					if(b2 > 0 && b2 < 1 && b1 + b2 <= 1) {
-
-						// Make sure collision is in front of the object
-						double t = coefficient * s.cross(edge1).dot(edge2);
-						if(t > 0 && t < r.tMax) {
-							// r.tMax = t;							
-							// It hit something, its in a shadow
-							return true;
-						}
-					}else {
-						// Didn't hit
+					// Make sure collision is in front of the object
+					double t = coefficient * s.cross(edge1).dot(edge2);
+					if(t > 0 && t < r.tMax) {
+						// r.tMax = t;							
+						// It hit something, its in a shadow
+						return true;
 					}
 				}else {
 					// Didn't hit
 				}
-			}// for faces
-		}// for objects
+			}else {
+				// Didn't hit
+			}
+		}// for faces
+
 		// Didn't hit anything
 		return false;
 	}

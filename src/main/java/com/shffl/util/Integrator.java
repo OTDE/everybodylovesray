@@ -29,7 +29,7 @@ public class Integrator {
 		
 		//System.out.println("Start of depth "+depth);
 		
-		Vector3d rayColor = new Vector3d(0, 0, 0);
+		Vector3d rayColor = new Vector3d(1, 1, 1);
 		Vector3d reflectColor = new Vector3d(0, 0, 0);
 		Vector3d refractColor = new Vector3d(0, 0, 0);
 		
